@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <title>OTP Verification</title>
+    <style>
+        form{
+      height: 220px;
+      width: 400px;
+      background-color: rgba(255,255,255,0.13);
+      position: absolute;
+      transform: translate(-50%,-50%);
+      top: 50%;
+      left: 50%;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 40px rgba(8,7,16,0.6);
+      padding: 50px 35px;
+  }
+    </style>
+   
+</head>
+
+<body>
+    <h1>OTP Verification</h1>
+    
+    {% if msg %}
+        <p>{{ msg }}</p>
+    {% endif %}
+    
+    <form method="POST" action="{% url 'otplogin' otp as otp %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <br>
+        <br>
+        <br>
+
+        
+        <label for="otp">Enter OTP:</label>
+        <input type="text" id="otp" name="otp" required>
+        
+        <input type="submit" value="Verify OTP">
+    </form>
+</body>
+</html>
