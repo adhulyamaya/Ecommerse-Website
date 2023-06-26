@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -53,9 +54,16 @@
       <div class="mb-3">
         <label for="exampleInputPassword1" class="form-label">Password</label>
         <input type="password" class="form-control" id="password" name="password">
-        <h1>
-          {{superuser_error}}
-        </h1>
+        {% if user404 %}
+        <div class="alert alert-danger" role="alert">
+          {{ user404 }}
+        </div>
+        {% endif %}
+        {% if user404_empty %}
+        <div class="alert alert-danger" role="alert">
+          {{ user404_empty }}
+        </div>
+        {% endif %}
       </div>
       <br>
       <button type="submit" class="btn btn-primary">Login</button>

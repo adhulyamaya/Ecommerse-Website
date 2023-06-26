@@ -11,21 +11,21 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path('',views.user_login, name='userlogin'),
-    path('admin_login',views.admin_login, name='adminlogin'),
-    path('user_home',views.user_home, name='userhome'),
-    path('admin_home',views.admin_home, name='adminhome'),
-    path('signup',views.signup, name='signup'),
-    path('otplogin',views.otplogin, name='otplogin'),
+   
+   
+    path('', views.user_login, name='user_login'),
+    path('admin_login', views.admin_login, name='adminlogin'),
+    path('user_home', views.user_home, name='userhome'),
+    path('signup', views.signup, name='signup'),
+    path('otplogin', views.otplogin, name='otplogin'),
     # path('otplogin/<str:otp>/', views.otplogin, name='otplogin'),
     path('otp_grn/', views.otp_grn, name='otp_grn'),
-    path('logout',views.user_logout, name='logout'),
-    path('user_product/<int:Category_id>/',views.user_product, name='user_product'),
+    path('logout', views.user_logout, name='logout'),
+    path('user_product/<int:Category_id>/', views.user_product, name='user_product'),
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
-    path('product/<int:category_id>/', views.user_product, name='user_product'),
+    path('admin_home', views.admin_home, name='adminhome'),
+   
 
-    path('product/', views.user_product, name='user_product'),
-    path('product/<int:category_id>/', views.user_product, name='user_product'),
 
 
     

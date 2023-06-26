@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.views.decorators.cache import never_cache
 from .models import category
-# dummy text
+
 
 import re
 import random,vonage
@@ -24,7 +24,7 @@ sms=vonage.Sms(client)
 def user_login(request):
     if 'username' in request.session:
         username = request.session['username']
-        user = custom_user.objects.get(username = username)
+        user = custom_user.objects.get(username=username)
 
         if not user.is_superuser:
             return redirect('userhome')
@@ -34,65 +34,69 @@ def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
+
+        if not username.strip() or not password.strip():
+            return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
+
         try:
-            user = custom_user.objects.get(username = username, password = password)
-            
+            user = custom_user.objects.get(username=username, password=password)
+
             if user is not None:
-                if not user.is_superuser: 
-                    if user.status:   
+                if not user.is_superuser:
+                    if user.status:
                         request.session['username'] = username
                         return redirect('userhome')
                     else:
-                        return render(request, 'user_login.html')
+                        return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
                 else:
                     return render(request, 'user_login.html', {'user404': 'Please use admin login'})
-            
+
         except custom_user.DoesNotExist:
             return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
 
     return render(request, 'user_login.html')
 
-# @never_cache
-# def user_home(request):
-#     if 'username' in request.session:
-#         username = request.session['username']
-#         user = custom_user.objects.get(username = username)
 
-#         if not user.is_superuser :
-#             return render(request,'user_home.html')
-#         else:
-#             return redirect('adminhome')
-
-#     return redirect ('userlogin')
-
-# from .models import category
 
 @never_cache
 def user_home(request):
     if 'username' in request.session:
         username = request.session['username']
-        user = custom_user.objects.get(username=username)
+        users = custom_user.objects.filter(username=username)
 
-        if not user.is_superuser:
-            categories = category.objects.all()
-            return render(request, 'user_home.html', {'categories': categories})
-        else:
-            return redirect('adminhome')
+        if users.exists():
+            user = users.first()
+
+            if not user.is_superuser:
+                categories = category.objects.all()
+                best_selling_products = Product.objects.order_by('-sales_count')[:4]
+                wardrobe_essentials = Product.objects.filter(wardrobe_essential=True)[:4]
+                return render(request, 'user_home.html', {
+                    'categories': categories,
+                    'best_selling_products': best_selling_products,
+                    'wardrobe_essentials': wardrobe_essentials
+                })
+            else:
+                return redirect('adminhome')
 
     return redirect('userlogin')
+
+
+
+
+
 
 
 def user_logout(request):
     if 'username' in request.session:
         request.session.flush()
-        return redirect('userlogin')
+        return redirect('user_login')
     
 def signup(request):
     if 'name' in request.session:
         return render(request, 'user_home.html')
-    if request.user.is_authenticated:
-     return redirect('adminhome')
+    # if request.user.is_authenticated:
+    #  return redirect('adminhome')
     if request.method == 'POST':
         print("haiiiiiiiiii")
         # Retrieve form data
@@ -110,6 +114,8 @@ def signup(request):
             error = 'Email is required.'
         elif not phone_number or phone_number.strip() == '' or len(phone_number) != 10 or not phone_number.isdigit():
             error = 'Invalid phone number. Please provide a 10-digit number.'
+        elif password != cpassword:
+            error = 'Passwords do not match.'    
 
         if error:
             return render(request, 'signup.html', {'error': error})
@@ -143,6 +149,66 @@ def signup(request):
     else:
         return render(request, 'signup.html')
     
+
+
+# @never_cache
+# def user_home(request):
+#     if 'username' in request.session:
+#         username = request.session['username']
+#         users = custom_user.objects.filter(username=username)
+
+#         if users.exists():
+#             user = users.first()
+
+#             if not user.is_superuser:
+#                 categories = category.objects.all()
+#                 best_selling_products = Product.objects.order_by('-sales_count')[:4]
+#                 wardrobe_essentials = Product.objects.filter(wardrobe_essential=True)[:4]
+#                 return render(request, 'user_home.html', {
+#                     'categories': categories,
+#                     'best_selling_products': best_selling_products,
+#                     'wardrobe_essentials': wardrobe_essentials
+#                 })
+#             else:
+#                 return redirect('adminhome')
+
+#     return redirect('userlogin')
+
+
+
+
+
+
+
+# @never_cache
+# def user_home(request):
+#     if 'username' in request.session:
+#         username = request.session['username']
+#         users = custom_user.objects.filter(username=username)
+
+#         if users.exists():
+#             user = users.first()
+
+#             if not user.is_superuser:
+#                 categories = category.objects.all()
+#                 best_selling_products = Product.objects.order_by('-sales_count')[:4]
+#                 wardrobe_essentials = Product.objects.filter(wardrobe_essential=True)[:4]
+#                 return render(request, 'user_home.html', {
+#                     'categories': categories,
+#                     'best_selling_products': best_selling_products,
+#                     'wardrobe_essentials': wardrobe_essentials
+#                 })
+#             else:
+#                 return redirect('adminhome')
+    
+#     # If the user is new and has just signed up, redirect them to the user home page.
+#     # This will trigger the code above to load the products and categories for the new user.
+#     if 'signup_success' in request.session:
+#         return redirect('userhome')
+
+#     return redirect('userlogin')
+   
+    
 def otp_grn(request):
     if request.method == 'POST':
         otp= request.session['otp']
@@ -163,7 +229,7 @@ def otplogin(request):
 
 
 
-# views.py
+
 
 from django.shortcuts import render, get_object_or_404
 from .models import Product
@@ -174,66 +240,31 @@ def product_detail(request, product_id):
 
 
 
-def user_product(request, category_id=None):
-    if category_id:
-        products = Product.objects.filter(category_id=category_id)
-    else:
-        products = Product.objects.all()
+
+
+
+
+
+
+def user_product(request, Category_id):
+    # products = Product.objects.all()
+    # categories = category.objects.all()  # Retrieve all categories for the navigation menu
+    categoryobj=category.objects.get(id=Category_id)
+    products = Product.objects.filter(category=categoryobj)
+    # if category_id:
+    #     try:
+    #         category = category.objects.get(id=category_id)
+    #         products = Product.filter(category=category)
+    #     except category.DoesNotExist:
+    #         pass  # Handle the case where the category ID is invalid
 
     context = {
-        'products': products
+        'products': products,
+       
     }
 
     return render(request, 'user_product.html', context)
 
-
-# def user_product(request, category_id):
-#     # products = Product.objects.all()
-#     # categories = category.objects.all()  # Retrieve all categories for the navigation menu
-#     print(category_id,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<?????????????")
-#     if category_id:
-#         try:
-#             categoryobj = category.objects.get(id=category_id)
-#             print(categoryobj,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-#             productobj = Product.objects.filter(category=categoryobj)
-#         except categoryobj.DoesNotExist:
-#             pass  # Handle the case where the category ID is invalid
-
-#     context = {
-#         'products': productobj,
-#         # 'categories': categories,
-#     }
-
-#     return render(request, 'user_product.html', context)
-
-
-
-
-
-
-# def user_product(request, Category_id):
-#     # products = Product.objects.all()
-#     # categories = category.objects.all()  # Retrieve all categories for the navigation menu
-#     category.objects.get(id=Category_id)
-#     products = Product.objects.filter(category=category)
-#     # if category_id:
-#     #     try:
-#     #         category = category.objects.get(id=category_id)
-#     #         products = Product.filter(category=category)
-#     #     except category.DoesNotExist:
-#     #         pass  # Handle the case where the category ID is invalid
-
-#     context = {
-#         'products': products,
-#         'categories': categories,
-#     }
-
-#     return render(request, 'user_product.html', context)
-
-# def category_based_product(request,someid):
-#     categoryobj=Category.objects.get(id=someid)
-#     productobjs=Products.objects.filter(category=categoryobj)
-#     return render(request,"store/category_based_product.html",{"productobjs":productobjs})
 
 
 
@@ -294,7 +325,7 @@ def admin_home(request):
                 details = custom_user.objects.filter(is_superuser = False)
             return render(request, 'admin_home.html', {'detailskey':details})
     
-    return redirect('userlogin')
+    return redirect('user_login')
 
 # 1 USER________________________________________________________________________
 def admin_user(request):
@@ -342,6 +373,7 @@ def delete_product(request, product_id):
 def category_view(request):
     categories = category.objects.all()  # Retrieve all categories
     return render(request, 'category.html', {'categories': categories})
+
 
 
 

@@ -4,7 +4,6 @@
     <title>Products</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        /* Additional custom styles */
         body {
             padding: 20px;
         }
@@ -13,7 +12,11 @@
         }
         .status-blocked {
             color: red;
-        }
+        }    
+        .product-image {
+                max-width: 100px;
+                max-height: 100px;
+            }     
     </style>
 </head>
 <body>
@@ -30,9 +33,9 @@
                     <th>Size</th>
                     <th>Category</th>
                     <th>Description</th>
-                    
                     <th>Edit</th>
                     <th>Delete</th>
+                    <th>variant </th>
                 </tr>
             </thead>
             <tbody>
@@ -40,7 +43,7 @@
                 <tr>
                     <td>{{ product.id }}</td>
                     <td>{{ product.name }}</td>
-                    <td>image</td>
+                    <td><img src="{{ product.product_image.url }}" alt="{{ product.name }}" class="product-image"></td>
                     <td>{{ product.brand }}</td>
                     <td>{{ product.color }}</td>
                     <td>{{ product.size }}</td>
@@ -55,6 +58,12 @@
                             <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                         </form>
                     </td>
+                    {% comment %} <td>
+                        <form method="POST" action="{% url '' product.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-dark">variant</button>
+                        </form>
+                    </td> {% endcomment %}
                 </tr>
                 {% endfor %}
             </tbody>
