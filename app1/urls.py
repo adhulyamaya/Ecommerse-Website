@@ -24,7 +24,10 @@ urlpatterns = [
     path('user_product/<int:Category_id>/', views.user_product, name='user_product'),
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
     path('admin_home', views.admin_home, name='adminhome'),
-   
+    path('product/<int:product_id>/variant_detail/<int:variant_id>/', views.variant_detail, name="variant_detail"),
+
+    # path('product/<int:product_id>/variant_detail/', views.variant_detail, name="variant_detail"),
+path('product/<int:product_id>/variant_detail/<int:variant_id>/', views.variant_detail, name="variant_detail"),
 
 
 

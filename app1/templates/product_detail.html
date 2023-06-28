@@ -39,36 +39,31 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6">
-            <img src="{{ product.product_image.url }}" alt="{{ product.name }}" class="img-fluid">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
         </div>
         <div class="col-md-6">
             <!-- Add more details as needed -->
             <h1>{{ product.name }}</h1>
             <p>Brand: {{ product.brand }}</p>
-            <p>Color: {{ product.color }}</p>
-            <div class="d-flex mb-4">
-                <p class="text-dark font-weight-medium mb-0 mr-3">Colors:</p>
-                <form>
-                    {% for color_variant in product.color_variants.all %}
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-{{ color_variant.id }}" name="color" value="{{ color_variant.color }}">
-                            <label class="custom-control-label" for="color-{{ color_variant.id }}">{{ color_variant.color }}</label>
+
+                    <div class="d-flex mb-3">
+                        <p class="text-dark font-weight-medium mb-0 mr-3">Size:</p>
+                        <div class="sizes-container">
+                            {% for size in sizes %}
+                                <div class="size">{{ size }}</div>
+                               
+                            {% endfor %}
                         </div>
-                    {% endfor %}
-                </form>
-            </div>
-            <p>Size: {{ product.size }}</p>
-            <div class="d-flex mb-3">
-                <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
-                <form>
-                    {% for size_variant in product.size_variants.all %}
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-{{ size_variant.id }}" name="size" value="{{ size_variant.size }}">
-                            <label class="custom-control-label" for="size-{{ size_variant.id }}">{{ size_variant.size }}</label>
+                    </div>
+                    <div class="d-flex mb-3">
+                        <p class="text-dark font-weight-medium mb-0 mr-3">Color:</p>
+                        <div class="colors-container">
+                            {% for color in colors %}
+                                <span class="badge badge-primary">{{ color }}</span>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
-                </form>
-            </div>
+                    </div>
+                    
             <p>Category: {{ product.category }}</p>
             <p>Description: {{ product.description }}</p>
             <div class="d-flex mb-3">
@@ -85,10 +80,26 @@
         
     </div>
 </div>
+<div class="d-flex">
+    <div class="d-flex">
+        {% for variant in variants %}
+        
+            <div class="variant-item">
+                <a href="{% url 'variant_detail' product_id=product.id variant_id=variant.id %}">
+                    <img src="{{ variant.image1.url }}" alt="" class="img-fluid">
+                </a>
+                
+                                
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
 
 {% endblock main-content%}
-
-
 
 {% block content%} {% endblock content%}
 
@@ -114,3 +125,5 @@
                 </div>
             </div>
         </div> {% endcomment %}
+         
+

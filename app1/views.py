@@ -8,8 +8,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.views.decorators.cache import never_cache
-from .models import category
-
+from .models import *
 
 import re
 import random,vonage
@@ -233,15 +232,24 @@ def otplogin(request):
 
 from django.shortcuts import render, get_object_or_404
 from .models import Product
-
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    return render(request, 'product_detail.html', {'product': product})
+    variants = Variant.objects.filter(Product=product)
+    sizes = Variant.objects.filter(Product=product).values_list('Size__size', flat=True).distinct()
+    colors = Variant.objects.filter(Product=product).values_list('Color__color', flat=True).distinct()
+    return render(request, 'product_detail.html', {'product': product, 'sizes': sizes, 'colors': colors,'variants': variants})
 
 
 
 
-
+# def variant_detail(request, product_id, variant_id):
+#     product = get_object_or_404(Product, id=product_id)
+#     variants = Variant.objects.filter(Product=product)
+#     return render(request, 'variants.html', {'product': product, 'variants': variants})
+def variant_detail(request, product_id, variant_id):
+    product = get_object_or_404(Product, id=product_id)
+    variant = get_object_or_404(Variant, id=variant_id, Product=product)
+    return render(request, 'variants.html', {'product': product, 'variant': variant})
 
 
 
