@@ -14,6 +14,7 @@ class custom_user(models.Model):
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     status =  models.BooleanField(default=True)
 
+
     def __str__(self):
         return self.username
 
@@ -46,12 +47,10 @@ class Product(models.Model):
     brand = models.CharField(max_length=100)
     category = models.ForeignKey(category,on_delete=models.CASCADE)
     description = models.TextField()
-    # product_image = models.ImageField(upload_to='products',default='default_image.jpg')
     sales_count = models.PositiveIntegerField(default=0)
     wardrobe_essential = models.BooleanField(default=False)
     image = models.ImageField(blank=True, upload_to='images/') 
  
-    # Variant = models.CharField(max_length=100,choices = VARIANTS , default='None')
     def __str__(self):
         return self.name
 
@@ -68,10 +67,21 @@ class Variant(models.Model):
     image2 = models.ImageField(blank=True, upload_to='images/') 
     image3 = models.ImageField(blank=True, upload_to='images/') 
     image4 = models.ImageField(blank=True, upload_to='images/') 
-    
+    def __str__(self):
+        return self.variant
+
    
 
     
+class Cart(models.Model):
+    username = models.ForeignKey(custom_user,on_delete=models.CASCADE)
+    variant = models.ForeignKey(Variant,on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    
+   
+
+    def total_cost(self):
+        return self.quantity * self.variant.price
 
     
 

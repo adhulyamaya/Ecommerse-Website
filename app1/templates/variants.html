@@ -36,11 +36,16 @@
 
 <div class="col-lg-3 col-md-5 col-sm-12 pb-1">
 <div class="variant-item card">
-    <img src="{{ variant.image1.url }}" alt="" class="img-fluid">
+    <img src="{{ variant.image1.url  }}" alt="" class="img-fluid">
     <div class="card-footer d-flex justify-content-between bg-light border">
-        <a href="" class="btn btn-sm btn-primary text-white"><i class="fas fa-shopping-cart mr-1"></i>Add To Cart</a>
+        <form action="{% url 'add-to-cart' %}" method="POST" class="d-inline">
+            {% csrf_token %}
+            <input name="variant_id" value="{{ variant.id }}">
+            <button type="submit" class="btn btn-primary px-5 py-2">Add to Cart</button>
+        </form>
     </div>
     <div class="card-body">
+        <p class="card-text"> {{ variant.variant }}</p>
         <p class="card-text">Color: {{ variant.Color.color }}</p>
         <p class="card-text">Size: {{ variant.Size.size }}</p>
         <p class="card-text">Price: {{ variant.price }}</p>

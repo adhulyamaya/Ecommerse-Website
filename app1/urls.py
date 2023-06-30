@@ -25,14 +25,13 @@ urlpatterns = [
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
     path('admin_home', views.admin_home, name='adminhome'),
     path('product/<int:product_id>/variant_detail/<int:variant_id>/', views.variant_detail, name="variant_detail"),
-
-    # path('product/<int:product_id>/variant_detail/', views.variant_detail, name="variant_detail"),
-path('product/<int:product_id>/variant_detail/<int:variant_id>/', views.variant_detail, name="variant_detail"),
-
-
-
-    
-    
+    path('product/<int:product_id>/variant_detail/<int:variant_id>/', views.variant_detail, name="variant_detail"),
+    # path('add-to-cart', views.add_to_cart, name='add-to-cart'),
+    path('add-to-cart', views.add_to_cart, name='add-to-cart'),
+    path('show-cart', views.show_cart, name='show-cart'),
+    path('cart_inc/<int:item_id>', views.cart_inc, name='cart_inc'),
+    path('cart_dec/<int:item_id>', views.cart_dec, name='cart_dec'),
+    path('Checkout', views.Checkout, name='Checkout'),
 
     
     path('admin_user/', views.admin_user, name='admin_user'),

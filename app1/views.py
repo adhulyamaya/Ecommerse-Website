@@ -48,12 +48,20 @@ def user_login(request):
                     else:
                         return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
                 else:
-                    return render(request, 'user_login.html', {'user404': 'Please use admin login'})
+                    return render(request, 'admin_home.html')
+                    # return render(request, 'user_login.html', {'user404': 'Please use admin login'})
 
         except custom_user.DoesNotExist:
             return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
 
     return render(request, 'user_login.html')
+
+
+
+
+
+
+
 
 
 
@@ -147,65 +155,6 @@ def signup(request):
 
     else:
         return render(request, 'signup.html')
-    
-
-
-# @never_cache
-# def user_home(request):
-#     if 'username' in request.session:
-#         username = request.session['username']
-#         users = custom_user.objects.filter(username=username)
-
-#         if users.exists():
-#             user = users.first()
-
-#             if not user.is_superuser:
-#                 categories = category.objects.all()
-#                 best_selling_products = Product.objects.order_by('-sales_count')[:4]
-#                 wardrobe_essentials = Product.objects.filter(wardrobe_essential=True)[:4]
-#                 return render(request, 'user_home.html', {
-#                     'categories': categories,
-#                     'best_selling_products': best_selling_products,
-#                     'wardrobe_essentials': wardrobe_essentials
-#                 })
-#             else:
-#                 return redirect('adminhome')
-
-#     return redirect('userlogin')
-
-
-
-
-
-
-
-# @never_cache
-# def user_home(request):
-#     if 'username' in request.session:
-#         username = request.session['username']
-#         users = custom_user.objects.filter(username=username)
-
-#         if users.exists():
-#             user = users.first()
-
-#             if not user.is_superuser:
-#                 categories = category.objects.all()
-#                 best_selling_products = Product.objects.order_by('-sales_count')[:4]
-#                 wardrobe_essentials = Product.objects.filter(wardrobe_essential=True)[:4]
-#                 return render(request, 'user_home.html', {
-#                     'categories': categories,
-#                     'best_selling_products': best_selling_products,
-#                     'wardrobe_essentials': wardrobe_essentials
-#                 })
-#             else:
-#                 return redirect('adminhome')
-    
-#     # If the user is new and has just signed up, redirect them to the user home page.
-#     # This will trigger the code above to load the products and categories for the new user.
-#     if 'signup_success' in request.session:
-#         return redirect('userhome')
-
-#     return redirect('userlogin')
    
     
 def otp_grn(request):
@@ -252,6 +201,59 @@ def variant_detail(request, product_id, variant_id):
     return render(request, 'variants.html', {'product': product, 'variant': variant})
 
 
+
+
+def add_to_cart(request):
+    username=custom_user.objects.get(username=request.session["username"])
+    variant_id = request.POST.get("variant_id")
+    variant = Variant.objects.get(id=variant_id)
+    cart = Cart(username=username, variant=variant,quantity = 1)
+    
+    cart.save()
+    return redirect("show-cart")
+
+def show_cart(request):
+#   username = request.user.username
+  username=custom_user.objects.get(username=request.session["username"])
+  cart = Cart.objects.filter(username = username)
+  amount = 0
+  quantityobj=0
+  for i in cart:
+      value = i.quantity * i.variant.price
+      amount = amount + value
+      total = amount + 40
+      quantityobj +=i.quantity
+  return render (request,'addtocart.html',{'cart': cart,'total':total,'amount':amount,'quantityobj':quantityobj})
+
+def cart_inc(request,item_id):
+    cartobj = Cart.objects.get(id=item_id)
+    username = cartobj.username
+    variant = cartobj.variant
+
+    cart_item = Cart.objects.filter(username = username , variant = variant).first()
+
+    if cart_item :
+        cart_item.quantity+=1
+        cart_item.save()
+
+    return redirect("show-cart")
+
+def cart_dec(request,item_id):
+    cartobj = Cart.objects.get(id=item_id)
+    username = cartobj.username
+    variant = cartobj.variant
+
+    cart_item = Cart.objects.filter(username = username , variant = variant).first()
+
+    if cart_item :
+        cart_item.quantity-=1
+        cart_item.save()
+
+    return redirect("show-cart")
+
+
+def Checkout(request):
+    pass
 
 
 def user_product(request, Category_id):
@@ -357,6 +359,8 @@ from .models import Product
 def edit_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     return render(request, 'edit_product.html', {'product': product})
+
+
 
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product

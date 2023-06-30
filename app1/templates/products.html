@@ -58,12 +58,7 @@
                             <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                         </form>
                     </td>
-                    {% comment %} <td>
-                        <form method="POST" action="{% url '' product.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-dark">variant</button>
-                        </form>
-                    </td> {% endcomment %}
+                    
                 </tr>
                 {% endfor %}
             </tbody>

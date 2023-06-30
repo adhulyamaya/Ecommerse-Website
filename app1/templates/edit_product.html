@@ -1,0 +1,111 @@
+{% extends 'admin_home.html' %}
+
+{% block content %}
+
+<style>
+  .error-message {
+    color: red;
+    font-size: 12px;
+  }
+  
+  /* Add your custom styles here */
+  .container {
+    width: fit-content;
+    display: flex;
+  }
+  
+  /* Additional styles for form elements */
+  .form-group {
+    margin-top: 2rem;
+  }
+  
+  label {
+    font-weight: bold;
+  }
+  
+  input[type="text"],
+  select {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  button[type="submit"] {
+    margin-top: 1rem;
+  }
+</style>
+
+<div class="container">
+  <form class="p-5" method="POST" action="" enctype="multipart/form-data"> 
+    {% csrf_token %}
+    
+    <div class="form-group">
+      <label for="productname">Name</label>
+      <input value="{{ content.name }}" name="name" type="text" placeholder="Product Name">
+    </div>
+    
+    <span class="error-message">{{ error_message.name }}</span>
+
+    <div class="form-group">
+      <label for="brand">Brand</label>
+      <select name="brand">
+        <option value="" {% if not content.brand %}selected{% endif %}>None</option>
+        {% for item in brands %}
+          <option value="{{ item.id }}" {% if item == content.brand %}selected{% endif %}>{{ item.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    
+    <span class="error-message">{{ error_message.brand }}</span>
+    
+    <div class="form-group">
+      <label for="inputPassword">Category</label>
+      <select id="dropdown" name="category">
+        {% for item in categoryobjs %}
+          <option value="{{ item.name }}">{{ item.name }}</option>
+        {% endfor %}
+      </select> 
+    </div>
+
+  <div>
+    <label>Images</label>
+    <br>
+    {% for image in images %}
+      <img src="{{ image.image.url }}" alt="{{ image.product.name }}" width="80" height="80">
+    {% endfor %}
+  </div>
+  <br>
+  <div class="form-group">
+    <label for="condition">Condition</label>
+    <select name="condition">
+      <option value="Old" {% if content.condition == 'Old' %}selected{% endif %}>Old</option>
+      <option value="New" {% if content.condition == 'New' %}selected{% endif %}>New</option>
+    </select>
+  </div>
+<br>  
+  
+  <div class="form-group mt-2">
+      <label for="newImages">Add New Images</label>
+      <input type="file" name="image" multiple>
+  </div>
+  
+  <div class="form-group mt-2">
+      <label for="deleteImages">Delete Images</label>
+      <select name="delete_images" multiple>
+          {% for image in images %}
+          <option value="{{ image.id }}">{{ image.image.name }}</option>
+          {% endfor %}
+      </select>
+     
+  </div>
+    
+    <span class="error-message">{{ error_message.category }}</span>
+    
+    <button type="submit" class="btn btn-primary mt-4">Update</button>
+  </form> 
+</div>
+
+<script defer src="https://cdn.crop.guide/loader/l.js?c=ZXDVHR"></script>
+
+{% endblock content %}
