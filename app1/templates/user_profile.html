@@ -61,17 +61,72 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        body{margin-top:20px;
+background-color:#f2f6fc;
+color:#69707a;
+}
+.img-account-profile {
+    height: 10rem;
+}
+.rounded-circle {
+    border-radius: 50% !important;
+}
+.card {
+    box-shadow: 0 0.15rem 1.75rem 0 rgb(33 40 50 / 15%);
+}
+.card .card-header {
+    font-weight: 500;
+}
+.card-header:first-child {
+    border-radius: 0.35rem 0.35rem 0 0;
+}
+.card-header {
+    padding: 1rem 1.35rem;
+    margin-bottom: 0;
+    background-color: rgba(33, 40, 50, 0.03);
+    border-bottom: 1px solid rgba(33, 40, 50, 0.125);
+}
+.form-control, .dataTable-input {
+    display: block;
+    width: 100%;
+    padding: 0.875rem 1.125rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1;
+    color: #69707a;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #c5ccd6;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0.35rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+
     </style>
 </head>
+
+<div class="container-xl px-4 mt-4">
+       
+                      
 <body>
     <div class="container">
         <div class="row">
             <div class="col-md-4">
                 <div class="profile-sidebar">
-                    <h1>User Profile</h1>
+                    {% comment %} <h1>User Profile</h1> {% endcomment %}
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" href="#profile">Profile</a>
+                            <a class="nav-link" href="#profile">Profile
+                                 <!-- Profile picture card-->
+                                 <div class="card-body text-center">
+                                    <!-- Profile picture image-->
+                                    <img class="img-account-profile rounded-circle mb-4" src="http://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                                
+                                </div>
+                            </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#address">Address</a>
@@ -81,54 +136,71 @@
             </div>
             <div class="col-md-8">
                 <div class="profile-content">
+                    <hr class="mt-0 mb-4">
+    
                     <h1>Profile</h1>
                     <div id="profile">
-                        <h2>User Profile</h2>
-                        
+                       
+
+                        <p>Username : {{username}}</p>
+                        <p>phonenum: {{phone_number}}</p>
+                        <p>Address : {{phonenumber}}</p>
+                        {%for address in address%} 
+                        <li>
+                            <p>Flat: {{ address.flat }}</p>
+                            <p>Locality: {{ address.locality }}</p>
+                            <p>City: {{ address.city }}</p>
+                            <p>Pincode: {{ address.pincode }}</p>
+                            <p>State: {{ address.state }}</p>
+                        </li>
+                    {% endfor %}   
+                    <div style = "display:inline-block;">
+                        <button type="submit" class="btn btn-dark " style="color: white;">Edit Address</button>
+                    </div> 
                     </div>
-                    <div id="address" style="display: none;">
-                        <h2>Address</h2>
-                        <form>
-                            <div class="form-group">
-                                <label for="username">Username:</label>
-                                <input type="text" id="username" name="username" class="form-control" required>
-                            </div>
-                
+                    <div id="address"  style="display: none;">
+                      
+                        <form  action="{% url 'user_address' %}"  method="POST" class="d-inline" >
+                            {%csrf_token%}
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            
+
+                           
+                           
+                           
                             <div class="form-group">
                                 <label for="flat">Flat:</label>
-                                <input type="text" id="flat" name="flat" class="form-control" required>
+                                <input type="text" id="flat" name="flat" value="{{ address.flat }}" class="form-control" required>
                             </div>
                 
                             <div class="form-group">
-                                <label for="locality">Locality:</label>
+                                <label for="locality">Locality:{{ address.locality }}</label>
                                 <input type="text" id="locality" name="locality" class="form-control" required>
                             </div>
                 
                             <div class="form-group">
-                                <label for="city">City:</label>
+                                <label for="city">City:{{ address.city }}</label>
                                 <input type="text" id="city" name="city" class="form-control" required>
                             </div>
                 
                             <div class="form-group">
-                                <label for="pincode">Pincode:</label>
+                                <label for="pincode">Pincode:{{ address.pincode }}</label>
                                 <input type="text" id="pincode" name="pincode" class="form-control" required>
                             </div>
                 
                             <div class="form-group">
-                                <label for="state">State:</label>
+                                <label for="state">State:{{ address.state}}</label>
                                 <input type="text" id="state" name="state" class="form-control" required>
                             </div>
-                
-                            <div class="form-group">
-                                <label for="phone">Phone Number:</label>
-                                <input type="tel" id="phone" name="phone" class="form-control" required>
-                            </div>
-                
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </form>
+
+                           
+                        <div class ="dflex">
                             
-                        <p>Add your address details here.</p>
-                        <a href="address.html" class="btn btn-primary">Edit Address</a>
+                            <div style = "display:inline-block;">
+                                    <a href="address.html" class="btn btn-primary">Save</a>
+                            </div>
+                        </div>
+                        </form>
                     </div>
                 </div>
                 </div>
@@ -138,18 +210,24 @@
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.nav-link').click(function(e) {
-                e.preventDefault();
-                var target = $(this).attr('href');
-                $('.profile-content > div').hide();
-                $(target).show();
-            });
+  <script>
+    $(document).ready(function() {
+        $('.nav-link').click(function(e) {
+            e.preventDefault();
+            var target = $(this).attr('href');
+            $('.profile-content > div').hide();
+            
+            $(target).show();
         });
-    </script>
+    });
+ </script>
 </body>
 </html>
-
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
 {% endblock main-content %}

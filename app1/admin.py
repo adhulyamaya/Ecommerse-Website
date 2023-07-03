@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-from .models import custom_user, category, Product, Color, Size, Variant,Cart
+from .models import *
 
 
 class ColorAdmin(admin.ModelAdmin):
@@ -22,7 +22,10 @@ class VariantAdmin(admin.ModelAdmin):
 
 
 class CartAdmin(admin.ModelAdmin):
-    list_display = ['id','username','variant','quantity']    
+    list_display = ['id','username','variant','quantity']  
+
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ['username','flat','locality','city']  
 
 
 
@@ -34,5 +37,5 @@ admin.site.register(Size, SizeAdmin)
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Variant,VariantAdmin)
-
+admin.site.register(Address,AddressAdmin)
 

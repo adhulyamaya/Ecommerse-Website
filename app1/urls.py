@@ -41,6 +41,12 @@ urlpatterns = [
     path('cart_remove/<int:item_id>',views.cart_remove,name = 'cart_remove'),
     path('shop',views.shop,name = 'shop'),
     path('user_profile',views.user_profile,name = 'user_profile'),
+    path('user_address/',views.user_address, name='user_address'),
+
+
+
+
+
     
     path('admin_user/', views.admin_user, name='admin_user'),
     path('products',views.products, name='products'),

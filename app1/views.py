@@ -190,10 +190,29 @@ def otplogin(request):
 
 
 
-def user_profile(request):
-    username=custom_user.objects.get(username=request.session["username"])
-    address = Address.objects.all()
-    return render(request,"user_profile.html")
+# def user_profile(request):
+#     username=custom_user.objects.get(username=request.session["username"])
+#     address = Address.objects.filter(username=username)
+    
+#     return render(request,"user_profile.html")
+
+
+
+# def user_profile(request):
+#     username = custom_user.objects.get(username=request.session["username"])
+#     user_phone = username.phone_number
+#     addresses = Address.objects.filter(username=username)
+
+#     context = {
+#         'username': username,
+#         'phone_number': user_phone,
+#         'addresses': addresses
+#     }
+
+#     return render(request, "user_profile.html", context)
+
+
+
 
 
 def shop(request):
@@ -238,6 +257,43 @@ def variant_detail(request, product_id, variant_id):
     product = get_object_or_404(Product, id=product_id)
     variant = get_object_or_404(Variant, id=variant_id, Product=product)
     return render(request, 'variants.html', {'product': product, 'variant': variant})
+
+
+def user_profile(request):
+    username = custom_user.objects.get(username=request.session["username"])
+    user_phone = username.phone_number
+    addresses = Address.objects.filter(username=username)
+
+    context = {
+        'username': username,
+        'phone_number': user_phone,
+        'addresses': addresses
+    }
+
+    return render(request, "user_profile.html", context)
+
+# def user_address(request):
+#     user_id = request.POST.get("user_id")
+#     username = custom_user.objects.get (id = user_id)
+#     addressuser = Address(username=username, )
+#     return render(request, "user_profile.html")
+
+
+def user_address(request):
+    if request.method == 'POST':
+        user_id = request.POST.get("user_id")
+        username = custom_user.objects.get(id=user_id)
+        flat = request.POST.get("flat")
+        locality = request.POST.get("locality")
+        city = request.POST.get("city")
+        pincode = request.POST.get("pincode")
+        state = request.POST.get("state")
+        phone = request.POST.get("phone")
+        
+        address = Address(username=username,flat=flat,locality=locality, city=city,pincode=pincode, state=state,
+            phone=phone)
+        address.save()
+    return render(request, "user_profile.html")
 
 
 
