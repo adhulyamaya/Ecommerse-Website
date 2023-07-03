@@ -1,6 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends 'admin_home.html' %}
+{% load static %}
     <title>Products</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -15,8 +14,9 @@
             color: red;
         }
     </style>
-</head>
-<body>
+
+{% block content %}
+<div class="row mt-5"></div>
     <div class="container">
         <h1>Category</h1>
         <table class="table table-bordered">
@@ -53,5 +53,4 @@
             </tbody>
         </table>
     </div>
-</body>
-</html>
+    {% endblock content %}

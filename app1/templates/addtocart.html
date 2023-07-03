@@ -78,9 +78,10 @@
 
                     <td class="align-middle">${{ item.total_cost }}</td>
                     <td class="align-middle">
-                        <button class="btn btn-sm btn-primary">
+                        <a href="{% url 'cart_remove' item.id %}" class="btn btn-primary" onclick="return confirm('Do you want to remove this product from the cart?');">
                             <i class="fa fa-times"></i>
-                        </button>
+                        </a>
+                        
                     </td>
                 </tr>
                 {% endfor %}

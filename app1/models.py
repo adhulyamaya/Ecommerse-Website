@@ -17,6 +17,24 @@ class custom_user(models.Model):
 
     def __str__(self):
         return self.username
+    
+
+class Address(models.Model):
+    username = models.ForeignKey(custom_user, on_delete=models.CASCADE)
+    flat = models.CharField(max_length=255)
+    locality = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    pincode = models.CharField(max_length=20, blank=True, null=True)
+    state = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.flat
+
+
+
+
+
+
 
 class category(models.Model):
     id = models.AutoField(primary_key=True)

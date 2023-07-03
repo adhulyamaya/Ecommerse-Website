@@ -49,7 +49,6 @@ def user_login(request):
                         return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
                 else:
                     return render(request, 'admin_home.html')
-                    # return render(request, 'user_login.html', {'user404': 'Please use admin login'})
 
         except custom_user.DoesNotExist:
             return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
@@ -63,7 +62,7 @@ def user_login(request):
 
 
 
-
+# USER_HOME AFTER LOGIN
 
 @never_cache
 def user_home(request):
@@ -89,7 +88,14 @@ def user_home(request):
     return redirect('userlogin')
 
 
+# USER_HOME BEFORE LOGIN
 
+def home_before(request):
+    categories = category.objects.all()
+    best_selling_products = Product.objects.order_by('-sales_count')[:4]
+    wardrobe_essentials = Product.objects.filter(wardrobe_essential=True)[:4]
+    return render(request, 'home_before.html', {'categories': categories, 'best_selling_products': best_selling_products,
+       'wardrobe_essentials': wardrobe_essentials})
 
 
 
@@ -171,8 +177,41 @@ def otp_grn(request):
     else:
         # Render the OTP verification page
         return render(request, 'otplogin.html')  
+    
+
+
+
 def otplogin(request):
     return render(request, 'otplogin.html') 
+
+
+
+
+
+
+
+def user_profile(request):
+    username=custom_user.objects.get(username=request.session["username"])
+    address = Address.objects.all()
+    return render(request,"user_profile.html")
+
+
+def shop(request):
+    if "username" in request.session:
+        products = Product.objects.all()
+        context = {
+            "products":products
+        }
+        return render(request,'shop.html',context)
+
+def shop_before(request):
+    products = Product.objects.all()
+    context = {
+        "products":products
+    }
+    return render (request,"shop_before.html",context)
+
+
 
 
 
@@ -252,8 +291,18 @@ def cart_dec(request,item_id):
     return redirect("show-cart")
 
 
-def Checkout(request):
-    pass
+
+def cart_remove(request,item_id):
+    cartobj = Cart.objects.get(id = item_id)
+    cartobj.delete()
+    return redirect ("show-cart")
+
+
+
+
+
+def checkout(request):
+    return render (request,"checkout.html")
 
 
 def user_product(request, Category_id):
@@ -357,8 +406,23 @@ from django.shortcuts import render, get_object_or_404
 from .models import Product
 
 def edit_product(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    return render(request, 'edit_product.html', {'product': product})
+    product = Product.objects.get(id=product_id)
+    categoryobjs = category.objects.all()
+    if request.method == "POST":
+        name = request.POST.get('name')
+        brand = request.POST.get('brand')
+        cat = request.POST.get('category')
+        image = request.POST.get('image')
+        catobj = category.objects.filter(name=cat).first()
+        print(catobj,">>>>>>>",name,brand)
+        product.name=name
+        product.brand=brand
+        product.category=catobj
+        product.image = image
+        product.save()
+        return redirect(products)
+
+    return render(request, 'edit_product.html', {'product': product,'categoryobjs':categoryobjs})
 
 
 
@@ -390,23 +454,33 @@ def category_view(request):
 
 
 
+# def update_category(request, category_id):
+#     if request.method == 'POST':
+#         return redirect('category')
+#     return render(request, 'delete_category.html')
+
+
+
 def edit_category(request, category_id):
-    # Logic to retrieve the category by ID and process the edit action
-    # Replace the following placeholder code with your implementation
-    category = category.objects.get(id=category_id)
-    if request.method == 'POST':
-        # Process the form data and save the changes to the category
-        # Redirect to the appropriate page after editing
+    category_obj = category.objects.get(id=category_id)
+    print(category_obj,"?????????????")
+    if request.method == 'POST':  
+        name = request.POST.get("category_name") 
+        category_obj.name = name
+        print(name,">>>>>>>>")
+        new_category = category(id=category_id, name=name)
+        
+        new_category.save()
+
         return redirect('category')
-    return render(request, 'edit_category.html', {'category': category})
+    return render(request, 'edit_category.html', {'category': category_obj})
+
+
 
 def delete_category(request, category_id):
-    # Logic to retrieve the category by ID and process the delete action
-    # Replace the following placeholder code with your implementation
+   
     category = category.objects.get(id=category_id)
-    if request.method == 'POST':
-        # Perform the deletion of the category
-        # Redirect to the appropriate page after deletion
+    if request.method == 'POST':       
         return redirect('category')
     return render(request, 'delete_category.html', {'category': category})
 

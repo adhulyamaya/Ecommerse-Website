@@ -15,8 +15,14 @@ urlpatterns = [
    
     path('', views.user_login, name='user_login'),
     path('admin_login', views.admin_login, name='adminlogin'),
-    path('user_home', views.user_home, name='userhome'),
-    path('signup', views.signup, name='signup'),
+    path('user_home/', views.user_home, name='userhome'),
+
+    path('home_before/', views.home_before, name='home_before'),
+
+    path('products',views.products, name='products'),
+    path('shop_before/',views.shop_before, name='shop_before'),
+
+    path('signup/', views.signup, name='signup'),
     path('otplogin', views.otplogin, name='otplogin'),
     # path('otplogin/<str:otp>/', views.otplogin, name='otplogin'),
     path('otp_grn/', views.otp_grn, name='otp_grn'),
@@ -31,13 +37,16 @@ urlpatterns = [
     path('show-cart', views.show_cart, name='show-cart'),
     path('cart_inc/<int:item_id>', views.cart_inc, name='cart_inc'),
     path('cart_dec/<int:item_id>', views.cart_dec, name='cart_dec'),
-    path('Checkout', views.Checkout, name='Checkout'),
-
+    path('checkout', views.checkout, name='checkout'),
+    path('cart_remove/<int:item_id>',views.cart_remove,name = 'cart_remove'),
+    path('shop',views.shop,name = 'shop'),
+    path('user_profile',views.user_profile,name = 'user_profile'),
     
     path('admin_user/', views.admin_user, name='admin_user'),
     path('products',views.products, name='products'),
     path('category/', views.category_view, name='category'),
     path('edit_category/<int:category_id>/', views.edit_category, name='edit_category'),
+    # path('update_category/<int:category_id>/', views.update_category, name='update_category'),
     path('delete_category/<int:category_id>/', views.delete_category, name='delete_category'),
     path('admin_user/<int:user_id>/', views.block_unblock_user, name='block_unblock_user'),
     path('edit/<int:product_id>/', views.edit_product, name='edit_product'),

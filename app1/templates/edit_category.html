@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Category</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Additional custom styles */
+        body {
+            padding: 20px;
+        }
+        .status-active {
+            color: green;
+        }
+        .status-blocked {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Category</h1>
+        <form method="POST" action="{% url 'edit_category' category.id %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="category-name">Category Name</label>
+                <input type="text" name="category_name" class="form-control" value="{{ category.name }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+</body>
+</html>
