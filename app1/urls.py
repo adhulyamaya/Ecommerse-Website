@@ -42,6 +42,9 @@ urlpatterns = [
     path('shop',views.shop,name = 'shop'),
     path('user_profile',views.user_profile,name = 'user_profile'),
     path('user_address/',views.user_address, name='user_address'),
+    path('user_proeditadd/<int:address_id>', views.user_proeditadd, name='user_proeditadd'),
+    # path('user_proeditadd/', views.user_proeditadd, name='user_proeditadd'),
+
 
 
 

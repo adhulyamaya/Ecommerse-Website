@@ -145,59 +145,64 @@ color:#69707a;
                         <p>Username : {{username}}</p>
                         <p>phonenum: {{phone_number}}</p>
                         <p>Address : {{phonenumber}}</p>
-                        {%for address in address%} 
+                        {% for addr in addresses %}
                         <li>
-                            <p>Flat: {{ address.flat }}</p>
-                            <p>Locality: {{ address.locality }}</p>
-                            <p>City: {{ address.city }}</p>
-                            <p>Pincode: {{ address.pincode }}</p>
-                            <p>State: {{ address.state }}</p>
+                            <p>Flat: {{ addr.flat }}</p>
+                            <p>Locality: {{ addr.locality }}</p>
+                            <p>City: {{ addr.city }}</p>
+                            <p>Pincode: {{ addr.pincode }}</p>
+                            <p>State: {{ addr.state }}</p>
                         </li>
-                    {% endfor %}   
-                    <div style = "display:inline-block;">
-                        <button type="submit" class="btn btn-dark " style="color: white;">Edit Address</button>
-                    </div> 
+                        <div style="display:inline-block;">
+                            
+                            <a href="{% url 'user_proeditadd' addr.id %}" class="btn btn-dark" style="color: white;">Edit Address</a>
+                        </div>  
+                        {% endfor %}
+                     
+                   
+                    
+                    
+
                     </div>
                     <div id="address"  style="display: none;">
                       
                         <form  action="{% url 'user_address' %}"  method="POST" class="d-inline" >
                             {%csrf_token%}
-                            <input type="hidden" name="user_id" value="{{ user.id }}">
-                            
-
-                           
-                           
+                            <input type="hidden" name="user_id" value="{{ username.id }}">
+                            <div class="form-group">
+                                <label for="flat">Username:</label>
+                                <input type="text" id="flat" name="username"  class="form-control" required>
+                            </div>
                            
                             <div class="form-group">
                                 <label for="flat">Flat:</label>
-                                <input type="text" id="flat" name="flat" value="{{ address.flat }}" class="form-control" required>
+                                <input type="text" id="flat" name="flat"  class="form-control" required>
                             </div>
                 
                             <div class="form-group">
-                                <label for="locality">Locality:{{ address.locality }}</label>
+                                <label for="locality">Locality:</label>
                                 <input type="text" id="locality" name="locality" class="form-control" required>
                             </div>
                 
                             <div class="form-group">
-                                <label for="city">City:{{ address.city }}</label>
+                                <label for="city">City:</label>
                                 <input type="text" id="city" name="city" class="form-control" required>
                             </div>
                 
                             <div class="form-group">
-                                <label for="pincode">Pincode:{{ address.pincode }}</label>
+                                <label for="pincode">Pincode:</label>
                                 <input type="text" id="pincode" name="pincode" class="form-control" required>
                             </div>
                 
                             <div class="form-group">
-                                <label for="state">State:{{ address.state}}</label>
+                                <label for="state">State:</label>
                                 <input type="text" id="state" name="state" class="form-control" required>
                             </div>
-
-                           
                         <div class ="dflex">
                             
                             <div style = "display:inline-block;">
-                                    <a href="address.html" class="btn btn-primary">Save</a>
+                                <button class="btn btn-primary" type="submit"> Save </button>
+                                    {% comment %} <a href="address.html" class="btn btn-primary">Save</a> {% endcomment %}
                             </div>
                         </div>
                         </form>

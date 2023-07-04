@@ -20,6 +20,7 @@ class custom_user(models.Model):
     
 
 class Address(models.Model):
+    
     username = models.ForeignKey(custom_user, on_delete=models.CASCADE)
     flat = models.CharField(max_length=255)
     locality = models.CharField(max_length=255)

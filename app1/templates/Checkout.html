@@ -19,9 +19,9 @@
 
 
 <!-- Checkout Start -->
-<div class="container-fluid pt-5">
+<div class="container-fluid ">
     <div class="row px-xl-5">
-        <div class="col-lg-8">
+        <div class="col-lg-5">
             <div class="mb-4">
                 <h4 class="font-weight-semi-bold mb-4">Billing Address</h4>
                 <div class="row">
@@ -135,7 +135,64 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
+
+
+
+
+
+
+
+
+
+       
+<div class="container-fluid pt-5 sm-8">
+    <div class="col-lg-8 table-responsive mb-5">
+        <table class="table table-bordered text-center mb-0">
+            
+            <tbody class="align-middle">
+                {% for item in cart %}
+                <tr>
+                    <td class="align-middle">
+                        <img src="{{ item.variant.image1.url }}" alt="" class="img-fluid">
+                    </td>
+                    <td class="align-middle">
+                        <p class="card-text">Price: {{ item.variant.price }}</p>
+                    </td>
+
+                    <td class="align-middle">
+                        <div class="input-group quantity mx-auto" style="width: 200px;">
+                            <div class="input-group-btn">
+                                <a href="{% url 'cart_dec' item.id %}" class="btn btn-primary">
+                                    <button class="btn btn-sm btn-primary btn-minus">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                </a>
+                               
+                            </div>
+                            <input type="text" class="form-control form-control-sm bg-secondary text-center" value="{{ item.quantity }}">
+                            <div class="input-group-btn">
+                                <a href="{% url 'cart_inc' item.id %}" class="btn btn-primary">
+                                <button class="btn btn-sm btn-primary btn-plus">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </a>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td class="align-middle">${{ item.total_cost }}</td>
+                    <td class="align-middle">
+                        <a href="{% url 'cart_remove' item.id %}" class="btn btn-primary" onclick="return confirm('Do you want to remove this product from the cart?');">
+                            <i class="fa fa-times"></i>
+                        </a>
+                        
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+        <div class="col-lg-6">
             <div class="card border-secondary mb-5">
                 <div class="card-header bg-secondary border-0">
                     <h4 class="font-weight-semi-bold m-0">Order Total</h4>
@@ -155,49 +212,32 @@
                         <p>$150</p>
                     </div>
                     <hr class="mt-0">
-                    <div class="d-flex justify-content-between mb-3 pt-1">
-                        <h6 class="font-weight-medium">Subtotal</h6>
-                        <h6 class="font-weight-medium">$150</h6>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3 pt-1">
+                            <h6 class="font-weight-medium">Subtotal</h6>
+                            <h6 class="font-weight-medium">₹ {{amount}}</h6>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 pt-1">
+                            <h6 class="font-weight-medium">Quantity</h6>
+                            <h6 class="font-weight-medium">{{quantityobj}}</h6>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <h6 class="font-weight-medium">Shipping</h6>
+                            <h6 class="font-weight-medium">₹40</h6>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <h6 class="font-weight-medium">Shipping</h6>
-                        <h6 class="font-weight-medium">$10</h6>
-                    </div>
-                </div>
-                <div class="card-footer border-secondary bg-transparent">
-                    <div class="d-flex justify-content-between mt-2">
-                        <h5 class="font-weight-bold">Total</h5>
-                        <h5 class="font-weight-bold">$160</h5>
-                    </div>
+                    <div class="card-footer border-secondary bg-transparent">
+                        <div class="d-flex justify-content-between mt-2">
+                            <h5 class="font-weight-bold">Total</h5>
+                            <h5 class="font-weight-bold">{{total}}</h5>
+                        </div>
+                        <div class="d-grid">
+                            <a href="{% url 'checkout' %}" class="btn btn-primary">Place order</a>
+                        </div>
                 </div>
             </div>
-            <div class="card border-secondary mb-5">
-                <div class="card-header bg-secondary border-0">
-                    <h4 class="font-weight-semi-bold m-0">Payment</h4>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" name="payment" id="paypal">
-                            <label class="custom-control-label" for="paypal">Paypal</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" name="payment" id="directcheck">
-                            <label class="custom-control-label" for="directcheck">Direct Check</label>
-                        </div>
-                    </div>
-                    <div class="">
-                        <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" name="payment" id="banktransfer">
-                            <label class="custom-control-label" for="banktransfer">Bank Transfer</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer border-secondary bg-transparent">
-                    <button class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3">Place Order</button>
-                </div>
+            
+               
             </div>
         </div>
     </div>

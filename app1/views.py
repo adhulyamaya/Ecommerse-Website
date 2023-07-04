@@ -272,11 +272,34 @@ def user_profile(request):
 
     return render(request, "user_profile.html", context)
 
-# def user_address(request):
-#     user_id = request.POST.get("user_id")
-#     username = custom_user.objects.get (id = user_id)
-#     addressuser = Address(username=username, )
-#     return render(request, "user_profile.html")
+
+
+
+
+def user_proeditadd(request,address_id):    
+    address = Address.objects.get(id=address_id)
+    if request.method == 'POST':
+        flat = request.POST.get("flat")
+        locality = request.POST.get("locality")
+        city = request.POST.get("city")
+        pincode = request.POST.get("pincode")
+        state = request.POST.get("state")
+
+        # address.flat = flat
+        # address.locality = locality
+        # address.city = city
+        # address.pincode = pincode
+        # address.state = state
+        address = Address(flat=flat,locality=locality, city=city,pincode=pincode, state=state,
+        )
+        address.save()
+        return redirect(user_profile)
+   
+    return render(request, 'user_proeditadd.html', {'address': address, })
+
+
+
+
 
 
 def user_address(request):
@@ -288,12 +311,25 @@ def user_address(request):
         city = request.POST.get("city")
         pincode = request.POST.get("pincode")
         state = request.POST.get("state")
-        phone = request.POST.get("phone")
+       
         
         address = Address(username=username,flat=flat,locality=locality, city=city,pincode=pincode, state=state,
-            phone=phone)
+        )
         address.save()
-    return render(request, "user_profile.html")
+        return redirect('user_profile')
+    # return render(request, "user_profile.html",{"address":address})
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -469,6 +505,7 @@ def edit_product(request, product_id):
         brand = request.POST.get('brand')
         cat = request.POST.get('category')
         image = request.POST.get('image')
+
         catobj = category.objects.filter(name=cat).first()
         print(catobj,">>>>>>>",name,brand)
         product.name=name
@@ -514,7 +551,24 @@ def category_view(request):
 #     if request.method == 'POST':
 #         return redirect('category')
 #     return render(request, 'delete_category.html')
-
+def user_proeditadd(request,address_id):    
+    address = Address.objects.get(id=address_id)
+    if request.method == 'POST':
+        flat = request.POST.get("flat")
+        locality = request.POST.get("locality")
+        city = request.POST.get("city")
+        pincode = request.POST.get("pincode")
+        state = request.POST.get("state")
+        print(flat,">>>>>>>>")
+        address.flat = flat
+        address.locality = locality
+        address.city = city
+        address.pincode = pincode
+        address.state = state
+        address.save()
+        return redirect(user_profile)
+   
+    return render(request, 'user_proeditadd.html', {'address': address, })
 
 
 def edit_category(request, category_id):
