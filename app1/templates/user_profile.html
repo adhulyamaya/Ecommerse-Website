@@ -168,10 +168,10 @@ color:#69707a;
                       
                         <form  action="{% url 'user_address' %}"  method="POST" class="d-inline" >
                             {%csrf_token%}
-                            <input type="hidden" name="user_id" value="{{ username.id }}">
+                            <input type="hidden" name="user_id" value="{{ username.id }}" >
                             <div class="form-group">
                                 <label for="flat">Username:</label>
-                                <input type="text" id="flat" name="username"  class="form-control" required>
+                                <input type="text" id="flat" name="username"  class="form-control" value="{{username}}" readonly>
                             </div>
                            
                             <div class="form-group">

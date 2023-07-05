@@ -98,7 +98,7 @@
                         </div>
                         <div id="address">
                             
-                            <form action="{% url 'user_address' %}" method="POST" class="d-inline">
+                            <form action="{% url 'user_proeditadd' address.id %}" method="POST" class="d-inline">
                                 {% csrf_token %}
                                 {% comment %} <input type="hidden" name="user_id" value="{{ user.id }}"> {% endcomment %}
                                 <div class="form-group">

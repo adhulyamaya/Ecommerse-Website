@@ -277,7 +277,7 @@ def user_profile(request):
 
 
 def user_proeditadd(request,address_id):    
-    address = Address.objects.get(id=address_id)
+    
     if request.method == 'POST':
         flat = request.POST.get("flat")
         locality = request.POST.get("locality")
@@ -285,17 +285,18 @@ def user_proeditadd(request,address_id):
         pincode = request.POST.get("pincode")
         state = request.POST.get("state")
 
-        # address.flat = flat
-        # address.locality = locality
-        # address.city = city
-        # address.pincode = pincode
-        # address.state = state
-        address = Address(flat=flat,locality=locality, city=city,pincode=pincode, state=state,
-        )
-        address.save()
+        addressobj = Address.objects.get(id=address_id)
+        print(addressobj,">>>>>>error")
+        addressobj.flat = flat
+        addressobj.locality = locality
+        addressobj.city = city
+        addressobj.pincode = pincode
+        addressobj.state = state
+        
+        addressobj.save()
         return redirect(user_profile)
-   
-    return render(request, 'user_proeditadd.html', {'address': address, })
+    
+    return render(request, 'user_proeditadd.html', {'address': addressobj})
 
 
 
@@ -303,31 +304,25 @@ def user_proeditadd(request,address_id):
 
 
 def user_address(request):
-    if request.method == 'POST':
-        user_id = request.POST.get("user_id")
-        username = custom_user.objects.get(id=user_id)
-        flat = request.POST.get("flat")
-        locality = request.POST.get("locality")
-        city = request.POST.get("city")
-        pincode = request.POST.get("pincode")
-        state = request.POST.get("state")
-       
+    if "username" in request.session:
+        if request.method == 'POST':
+            # user_id = request.POST.get("user_id")
+            # username = custom_user.objects.filter(id=user_id).first()
+            username = request.session["username"]
+            userobj = custom_user.objects.get(username=username)
+            print(username,"???????????????hi",userobj)
+            flat = request.POST.get("flat")
+            locality = request.POST.get("locality")
+            city = request.POST.get("city")
+            pincode = request.POST.get("pincode")
+            state = request.POST.get("state")
         
-        address = Address(username=username,flat=flat,locality=locality, city=city,pincode=pincode, state=state,
-        )
-        address.save()
-        return redirect('user_profile')
-    # return render(request, "user_profile.html",{"address":address})
-
-
-
-
-
-
-
-
-
-
+            
+            address = Address(username=userobj,flat=flat,locality=locality, city=city,pincode=pincode, state=state,
+            )
+            address.save()
+            return redirect('user_profile')
+        # return render(request, "user_profile.html",{"address":address})
 
 
 
@@ -394,7 +389,19 @@ def cart_remove(request,item_id):
 
 
 def checkout(request):
-    return render (request,"checkout.html")
+  username=custom_user.objects.get(username=request.session["username"])
+  cartobj = Cart.objects.filter(username = username)
+  addobj = Address.objects.filter(username = username)
+  context = {
+        'username': username,
+        'cartobj': cartobj,
+        'addobj': addobj
+        }
+  return render (request,"checkout.html",context)
+
+
+
+
 
 
 def user_product(request, Category_id):
