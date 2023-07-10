@@ -29,7 +29,6 @@ class AddressAdmin(admin.ModelAdmin):
 
 
 
-
 admin.site.register(custom_user)
 admin.site.register(category)
 admin.site.register(Color, ColorAdmin)
@@ -38,4 +37,6 @@ admin.site.register(Cart, CartAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Variant,VariantAdmin)
 admin.site.register(Address,AddressAdmin)
+admin.site.register(Order)
+admin.site.register(OrderItems)
 

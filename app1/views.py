@@ -1,3 +1,4 @@
+import datetime
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import custom_user,Product
@@ -389,17 +390,58 @@ def cart_remove(request,item_id):
 
 
 def checkout(request):
-  username=custom_user.objects.get(username=request.session["username"])
-  cartobj = Cart.objects.filter(username = username)
-  addobj = Address.objects.filter(username = username)
-  context = {
-        'username': username,
-        'cartobj': cartobj,
-        'addobj': addobj
-        }
+  if "username" in request.session:
+    username=custom_user.objects.get(username=request.session["username"])
+    cartobj = Cart.objects.filter(username = username)
+    addobj = Address.objects.filter(username = username)
+
+    
+    if request.method == "POST":
+        username = request.session.get("username")
+        customer = custom_user.objects.get(username=username)
+        cartobj = Cart.objects.filter(username = customer)
+        addobj = Address.objects.filter(username = customer)
+
+        addressid = request.POST.get("address")
+        print(addressid,"hiiiiiiiiiiiiii")
+        address = Address.objects.get(id=addressid)
+        date_ordered = datetime.date.today()
+
+        orderobj = Order(customer = customer, address=address, date_ordered=date_ordered,total = 0)
+        orderobj.save()
+
+        for item in cartobj:
+            pdtvariant = item.variant
+            price = item.variant.price
+            quantity = item.quantity
+            item_total = quantity*price
+
+            orderitemobj = OrderItems(variant = pdtvariant, order = orderobj, quantity=quantity, price=price, total = item_total)
+            orderitemobj.save()
+
+            pdtvariant.quantity -= quantity
+            pdtvariant.save()
+
+            orderobj.total += item_total
+
+            item.delete()
+
+        orderobj.save()
+        return redirect(ordersuccess)
+
+        
+    context = {
+            'username': username,
+            'cartobj': cartobj,
+            'addobj': addobj
+            }
+    return render (request,"checkout.html",context)
+  
   return render (request,"checkout.html",context)
 
 
+def ordersuccess(request):
+    return render (request,"ordersuccess.html")
 
 
 

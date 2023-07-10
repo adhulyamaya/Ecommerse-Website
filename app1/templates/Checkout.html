@@ -425,15 +425,25 @@ body{
 <!-- Page Header End -->
 
 
+
+
+
+
+
 <!-- Checkout Start -->
 
         <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-        <div class="container pb-5 mb-2">
-           
+
+
+
+
+  <div class="container pb-5 mb-2">
+    
             <div class="cart-item d-md-flex justify-content-between"><span class="remove-item"><i class="fa fa-times"></i></span>
                 {% for item in cartobj %}
                 <div class="px-3 my-3">
-                        <div class="cart-item-product-thumb"><img src="{{ item.variant.image1.url }}" alt="" class="img-fluid"></div>
+                        <div class="cart-item-product-thumb"><img src="{{ item.variant.image1.url }}" alt="" class="img-fluid">
+                        </div>
                         
                         <div class="cart-item-product-info">
                             <h4 class="cart-item-product-title"> {{ item.variant.variant }}</h4><span><strong>Type:</strong> Mirrorless</span><span><strong>Color:</strong> {{cart.Color.color}}</span>
@@ -453,30 +463,37 @@ body{
                 {% endfor%}
             </div>
 
+
+    <form action="{% url 'checkout'  %}" method="POST" class="d-inline">
+              {% csrf_token %}
             <div><p>Address: </p>
-              <select id="address-select">
-                  {% comment %} <option value="">Select an address</option> {% endcomment %}
+              <select id="address-select" name="address">
+                  
                   {% for address in addobj %}
-                      <option value="{{ address.flat }},{{ address.locality }},{{ address.city }}">{{ address.flat }}, {{ address.locality }}, {{ address.city }}</option>
+                      <option value="{{ address.id }}">{{ address.flat }}, {{ address.locality }}, {{ address.city }}</option>
+                     {% comment %} <input type="hidden" name="address_id" value="{{ address.id }}">  {% endcomment %}
                   {% endfor %}
               </select>
             </div><br>
 
-            <!-- Coupon + Subtotal-->
-            <div class="d-sm-flex justify-content-between align-items-center text-center text-sm-left">
-                {% comment %} <form class="form-inline py-2">
-                    <label class="sr-only">Coupon code</label>
-                    <input class="form-control form-control-sm my-2 mr-3" type="text" placeholder="Coupon code" required="">
-                    <button class="btn btn-style-1 btn-secondary btn-sm my-2 mx-auto mx-sm-0" type="submit">Apply Coupon</button>
-                </form> {% endcomment %}
-                <div class="py-2"><span class="d-inline-block align-middle text-sm text-muted font-weight-medium text-uppercase mr-2">Subtotal:</span><span class="d-inline-block align-middle text-xl font-weight-medium">$188.50</span></div>
-            </div>
+          
             <!-- Buttons-->
             <hr class="my-2">
             <div class="row pt-3 pb-5 mb-2">
-                <div class="col-sm-6 mb-3"><a class="btn btn-style-1 btn-secondary btn-block" href="#"><i class="fe-icon-refresh-ccw"></i>&nbsp;Update Cart</a></div>
-                <div class="col-sm-6 mb-3"><a class="btn btn-style-1 btn-primary btn-block" href="checkout-address.html"><i class="fe-icon-credit-card"></i>&nbsp;Checkout</a></div>
+                <div class="col-sm-6 mb-3">
+                  <a class="btn btn-style-1 btn-secondary btn-block" href="show-cart.html"><i class="fe-icon-refresh-ccw"></i>&nbsp;Update Cart</a></div>
+                <div class="col-sm-6 mb-3">
+                  <button name="checkout" type="submit" class="btn btn-style-1 btn-primary btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;Checkout</button>
+                </div>
             </div>
+
+    </form> 
+
+
+
+
+          
+            
         
                
             </div>
@@ -484,52 +501,7 @@ body{
 
         </table>
     </div>
-        {% comment %} <div class="col-lg-6">
-            <div class="card border-secondary mb-5">
-                <div class="card-header bg-secondary border-0">
-                    <h4 class="font-weight-semi-bold m-0">Order Total</h4>
-                </div>
-                <div class="card-body">
-                    <h5 class="font-weight-medium mb-3">Products</h5>
-                    <div class="d-flex justify-content-between">
-                        <p>Colorful Stylish Shirt 1</p>
-                        <p>$150</p>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <p>Colorful Stylish Shirt 2</p>
-                        <p>$150</p>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <p>Colorful Stylish Shirt 3</p>
-                        <p>$150</p>
-                    </div>
-                    <hr class="mt-0">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between mb-3 pt-1">
-                            <h6 class="font-weight-medium">Subtotal</h6>
-                            <h6 class="font-weight-medium">₹ {{amount}}</h6>
-                        </div>
-                        <div class="d-flex justify-content-between mb-3 pt-1">
-                            <h6 class="font-weight-medium">Quantity</h6>
-                            <h6 class="font-weight-medium">{{quantityobj}}</h6>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">₹40</h6>
-                        </div>
-                    </div>
-                    <div class="card-footer border-secondary bg-transparent">
-                        <div class="d-flex justify-content-between mt-2">
-                            <h5 class="font-weight-bold">Total</h5>
-                            <h5 class="font-weight-bold">{{total}}</h5>
-                        </div>
-                        <div class="d-grid">
-                            <a href="{% url 'checkout' %}" class="btn btn-primary">Place order</a>
-                        </div>
-                </div>
-            </div>
-             {% endcomment %}
-               
+    
             </div>
         </div>
     </div>
@@ -538,3 +510,14 @@ body{
 
 {% endblock main-content %}
 
+
+
+  {% comment %} <!-- Coupon + Subtotal-->
+<div class="d-sm-flex justify-content-between align-items-center text-center text-sm-left">
+  {% comment %} <form class="form-inline py-2">
+      <label class="sr-only">Coupon code</label>
+      <input class="form-control form-control-sm my-2 mr-3" type="text" placeholder="Coupon code" required="">
+      <button class="btn btn-style-1 btn-secondary btn-sm my-2 mx-auto mx-sm-0" type="submit">Apply Coupon</button>
+  </form> 
+  <div class="py-2"><span class="d-inline-block align-middle text-sm text-muted font-weight-medium text-uppercase mr-2">Subtotal:</span><span class="d-inline-block align-middle text-xl font-weight-medium">$188.50</span></div>
+</div> {% endcomment %}
