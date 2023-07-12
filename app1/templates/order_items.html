@@ -1,0 +1,39 @@
+
+{% extends 'admin_home.html' %}
+{% load static %}
+    <title>Orders</title>
+    {% block content %}
+    <div class="container">
+        <h1>Order items</h1>
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>order</th>
+                    <th>variant</th>
+                    <th>price</th>
+                    <th>quantity </th>
+                    <th>Total</th>
+                    
+                    
+                   
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itemobj %}
+                <tr>
+                    <td>{{ item.order.id }}</td>
+                    <td>{{ item.variant }}</td>
+                    {% comment %} <td><img src="{{ image.url }}" alt="{{ product.name }}" class="product-image"></td> {% endcomment %}
+                    {% comment %} <td>{{ product.brand }}</td> {% endcomment %}
+                    
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{item.total}}</td>
+                   {% comment %} <td><a href="{% url 'order_items' order.id %}">view order details</a></td> {% endcomment %}
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endblock content %}

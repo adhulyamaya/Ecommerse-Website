@@ -97,7 +97,11 @@ class Cart(models.Model):
     def total_cost(self):
         return self.quantity * self.variant.price
 
-
+class Wishlist(models.Model):
+    username = models.ForeignKey(custom_user,on_delete=models.CASCADE)
+    variant = models.ForeignKey(Variant,on_delete=models.CASCADE)
+   
+    
 
 
     
@@ -130,7 +134,7 @@ class OrderItems(models.Model):
     order = models.ForeignKey(Order,on_delete=models.SET_NULL,blank=True,null=True)
     quantity = models.IntegerField(default=0,null=True,blank=True)
     price = models.DecimalField(max_digits=10,decimal_places=2,default=0)
-    total = models.DateTimeField(auto_now_add=True)
+    total = models.DecimalField(max_digits=10,decimal_places=2,default=0)
 
     def __str__(self):
         return f"OrderItem #{self.id}"

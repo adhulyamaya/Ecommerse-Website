@@ -12,8 +12,15 @@
         
         <form action="{% url 'add-to-cart' %}" method="POST" class="d-inline">
             {% csrf_token %}
-            <input name="variant_id" value="{{ variant.id }}">
-            <button type="submit" class="btn btn-primary px-5 py-2">Add to Cart</button>
+            <input type = "hidden" name="variant_id" value="{{ variant.id }}">
+            <button type="submit" class="btn btn-primary px-5 py-2"><i class="fas fa-shopping-cart"></i></button>
+        </form>
+
+
+        <form action="{% url 'add_to_wishlist'   %}" method="POST" class="d-inline">
+            {% csrf_token %}
+            <input type = "hidden" name="variant_id" value="{{ variant.id }}">
+        <button type="submit" class="btn btn-dark px-5 py-2"><i class="fas fa-heart"></i></button>
         </form>
 
 

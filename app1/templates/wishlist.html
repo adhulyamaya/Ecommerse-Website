@@ -1,0 +1,61 @@
+{% extends 'product_detail.html' %}
+{% load static %}
+{% block tittle%} wishlist{% endblock tittle %}
+
+{% block main-content %}
+<!-- Page Header Start -->
+<div class="container-fluid bg-secondary mb-5">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 100px">
+        <h1 class="font-weight-semi-bold text-uppercase mb-3">wishlist</h1>
+        <div class="d-inline-flex">
+        </div>
+    </div>
+</div>
+<!-- Page Header End -->
+
+
+
+<div class="container pt-4 sm-8 ">
+    <div class="col-lg-8  mb-5 ml-5">
+        
+        <table class="table table-bordered text-center mb-0 ml-5 " style="">
+            <thead class="bg-secondary text-dark ">
+                <tr>
+                    <th>Products</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Remove</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody class="align-middle">
+                {% for item in wishlistobj %}
+                <tr>
+                   
+                    <td class="align-middle">
+                        <img src="{{ item.variant.image1.url }}" alt="">
+                    </td>
+                    <td>{{item.variant.variant}}</td>
+                    <td class="align-middle">
+                        <p class="card-text">Price: {{ item.variant.price }}</p>
+                    </td>
+                                      
+                    <td class="align-middle">
+                        <a href="{% url 'cart_remove' item.id %}" class="btn btn-danger" onclick="return confirm('Do you want to remove this product from the cart?');">
+                            <i class="fa fa-times"></i>
+                        </a>
+                        
+                    </td>
+                    <td>
+                        <form action="{% url 'add-to-cart' %}" method="POST" class="d-inline">
+                            {% csrf_token %}
+                            <input type = "hidden" name="variant_id" value="{{ variant.id }}">
+                            <button type="submit" class="btn btn-success px-3 py-2">Add to Cart</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endblock main-content %}

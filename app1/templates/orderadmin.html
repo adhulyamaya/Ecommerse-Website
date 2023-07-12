@@ -1,0 +1,41 @@
+
+{% extends 'admin_home.html' %}
+{% load static %}
+    <title>Orders</title>
+    {% block content %}
+    <div class="container">
+        <h1>Order</h1>
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>customer</th>
+                    <th>address</th>
+                    <th>Total</th>
+                    <th>payment type</th>
+                    <th>order status</th>
+                    <th>Order Details</th>
+                    
+                   
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orderobj %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.customer.username }}</td>
+                    {% comment %} <td><img src="{{ image.url }}" alt="{{ product.name }}" class="product-image"></td> {% endcomment %}
+                    
+                    <td>{{ order.address }}</td>
+                    <td>{{ order.total }}</td>
+
+                    <td>{{ order.payment_type }}</td>
+                    <td>{{order.order_status}}</td>
+                   <td><a href="{% url 'order_items' order.id %}">view order details</a></td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endblock content %}

@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Users</title>
+{% extends 'admin_home.html' %}
+{% load static %}
+    <title>USER</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
+     <style>
         /* Additional custom styles */
         body {
             padding: 20px;
@@ -15,8 +14,7 @@
             color: red;
         }
     </style>
-</head>
-<body>
+    {% block content %}
     <div class="container">
         <h1>Admin Users</h1>
         <table class="table table-bordered">
@@ -64,5 +62,4 @@
             </tbody>
         </table>
     </div>
-</body>
-</html>
+    {% endblock content %}

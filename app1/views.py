@@ -340,7 +340,6 @@ def add_to_cart(request):
     return redirect("show-cart")
 
 def show_cart(request):
-#   username = request.user.username
   username=custom_user.objects.get(username=request.session["username"])
   cart = Cart.objects.filter(username = username)
   amount = 0
@@ -466,9 +465,26 @@ def user_product(request, Category_id):
     return render(request, 'user_product.html', context)
 
 
+def contact(request):
+    return render(request,"contact.html")
 
 
 
+def about(request):
+    return render(request,"about.html")
+
+def add_to_wishlist(request):
+    username=custom_user.objects.get(username=request.session["username"])
+    variant_id = request.POST.get("variant_id")
+    variant = Variant.objects.get(id=variant_id)
+    wishlist = Wishlist(username=username, variant=variant)
+    wishlist.save()
+    return redirect("wishlist")
+
+def wishlist(request):
+    username=custom_user.objects.get(username=request.session["username"])
+    wishlistobj = Wishlist.objects.filter(username = username)   
+    return render (request,"wishlist.html",{'wishlistobj': wishlistobj})
 
 
 
@@ -638,9 +654,28 @@ def edit_category(request, category_id):
 
 def delete_category(request, category_id):
    
-    category = category.objects.get(id=category_id)
+    categoryobj = category.objects.get(id=category_id)
     if request.method == 'POST':       
         return redirect('category')
-    return render(request, 'delete_category.html', {'category': category})
+    return render(request, 'delete_category.html', {'category': categoryobj})
 
 
+def orderadmin(request):
+    orderobj = Order.objects.all()
+    context = {
+        "orderobj":orderobj
+    }
+    return render (request,"orderadmin.html",context)
+
+def order_items(request, order_id):
+    orderobj = Order.objects.get(id=order_id)
+    print(orderobj, ">>>>>>>>>>in=vdeeeeeeeeeeeeeeeeee")
+    
+    items = OrderItems.objects.filter(order=orderobj)  # Filter items based on the order object
+    
+    
+    context = {
+        "itemobj": items
+    }
+    
+    return render(request, 'order_items.html', context)

@@ -1,102 +1,58 @@
 {% extends 'user_product.html' %}
 {% load static %}
-{% block tittle%} Products_detail {% endblock tittle %}
+{% block title %}Products Detail{% endblock title %}
 
-
-
-    {% block main-content%}
-<!-- product_detail.html -->
-
-<!-- product_detail.html -->
-
+{% block main-content %}
 <div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
-        </div>
-        <div class="col-md-6">
-            <!-- Add more details as needed -->
-            <h1>{{ product.name }}</h1>
-            <p>Brand: {{ product.brand }}</p>
-
-                    <div class="d-flex mb-3">
-                        <p class="text-dark font-weight-medium mb-0 mr-3">Size:</p>
-                        <div class="sizes-container">
-                            {% for size in sizes %}
-                                <div class="size">{{ size }}</div>
-                               
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="d-flex mb-3">
-                        <p class="text-dark font-weight-medium mb-0 mr-3">Color:</p>
-                        <div class="colors-container">
-                            {% for color in colors %}
-                                <span class="badge badge-primary">{{ color }}</span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    
-            <p>Category: {{ product.category }}</p>
-            <p>Description: {{ product.description }}</p>
-            <div class="d-flex mb-3">
-                <div class="text-primary mr-2">
-                    <small class="fas fa-star"></small>
-                    <small class="fas fa-star"></small>
-                    <small class="fas fa-star"></small>
-                    <small class="fas fa-star-half-alt"></small>
-                    <small class="far fa-star"></small>
-                </div>
-            </div>
-            <small class="pt-1">(50 Reviews)</small>
-        </div>
-        
-    </div>
-</div>
-<div class="d-flex">
-    <div class="d-flex">
+  <div class="row">
+    <div class="row mt-5"></div>
+    <div class="col-md-6">
+      <div class="d-flex flex-column">
         {% for variant in variants %}
-        
-            <div class="variant-item">
-                <a href="{% url 'variant_detail' product_id=product.id variant_id=variant.id %}">
-                    <img src="{{ variant.image1.url }}" alt="" class="img-fluid">
-                </a>
-                
-                                
-            </div>
+        <div class="variant-item">
+          <a href="{% url 'variant_detail' product_id=product.id variant_id=variant.id %}">
+            <img src="{{ variant.image1.url }}" alt="" class="img-fluid">
+          </a>
+        </div>
         {% endfor %}
+      </div>
     </div>
+    <div class="col-md-6">
+      <div class="product-details">
+        <h1>{{ product.name }}</h1>
+        <p>Brand: {{ product.brand }}</p>
+        <div class="d-flex mb-3">
+          <p class="text-dark font-weight-medium mb-0 mr-3">Size:</p>
+          <div class="sizes-container">
+            {% for size in sizes %}
+            <div class="size">{{ size }}</div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="d-flex mb-3">
+          <p class="text-dark font-weight-medium mb-0 mr-3">Color:</p>
+          <div class="colors-container">
+            {% for color in colors %}
+            <span class="badge badge-primary">{{ color }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        <p>Category: {{ product.category }}</p>
+        <p>Description: {{ product.description }}</p>
+        <div class="d-flex mb-3">
+          <div class="text-primary mr-2">
+            <small class="fas fa-star"></small>
+            <small class="fas fa-star"></small>
+            <small class="fas fa-star"></small>
+            <small class="fas fa-star-half-alt"></small>
+            <small class="far fa-star"></small>
+          </div>
+          <small class="pt-1">(50 Reviews)</small>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+{% endblock main-content %}
 
-
-
-
-
-{% endblock main-content%}
-
-{% block content%} {% endblock content%}
-
-
-            
-                {% comment %} <div class="d-flex align-items-center mb-4 pt-2">
-                    <div class="input-group quantity mr-3" style="width: 130px;">
-                        <div class="input-group-btn">
-                            <button class="btn btn-primary btn-minus" >
-                            <i class="fa fa-minus"></i>
-                            </button>
-                        </div>
-                        <input type="text" class="form-control bg-secondary text-center" value="1">
-                        <div class="input-group-btn">
-                            <button class="btn btn-primary btn-plus">
-                                <i class="fa fa-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
-                </div>
-               
-                </div>
-            </div>
-        </div> {% endcomment %}
-         
-
+{% block content %}{% endblock content %}

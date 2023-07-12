@@ -44,8 +44,11 @@ urlpatterns = [
     path('user_address/',views.user_address, name='user_address'),
     path('user_proeditadd/<int:address_id>', views.user_proeditadd, name='user_proeditadd'),
     # path('user_proeditadd/', views.user_proeditadd, name='user_proeditadd'),
-    path('ordersuccess',views.ordersuccess,name = 'ordersuccess'),
-
+    path('ordersuccess/',views.ordersuccess,name = 'ordersuccess'),
+    path('contact/',views.contact,name ='contact'),
+    path('about/',views.about,name ='about'),
+    path('wishlist/',views.wishlist,name ='wishlist'),
+    path('add_to_wishlist/',views.add_to_wishlist,name ='add_to_wishlist'),
 
 
 
@@ -53,7 +56,9 @@ urlpatterns = [
 
     
     path('admin_user/', views.admin_user, name='admin_user'),
-    path('products',views.products, name='products'),
+    path('products/',views.products, name='products'),
+    path('orderadmin/',views.orderadmin, name='orderadmin'),
+    path("order_items/<int:order_id>",views.order_items,name = 'order_items'),
     path('category/', views.category_view, name='category'),
     path('edit_category/<int:category_id>/', views.edit_category, name='edit_category'),
     # path('update_category/<int:category_id>/', views.update_category, name='update_category'),
