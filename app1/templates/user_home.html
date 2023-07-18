@@ -93,10 +93,12 @@
                 </form>
     
                 <a href="{% url 'wishlist' %}" class="btn border ml-3">
-                    <i class="fas fa-heart"></i>
+                    <i class="fas fa-heart">({{ wishlist_count }})</i>
                 </a>
+
+
                 <a href="{% url 'show-cart' %}" class="btn border ml-1">
-                    <i class="fas fa-shopping-cart"></i>
+                    <i class="fas fa-shopping-cart">({{ cart_count }})</i>
                 </a>
                 <a href="{% url 'user_profile' %}" class="btn border ml-1">
                     <i class="fa fa-user" aria-hidden="true"></i>

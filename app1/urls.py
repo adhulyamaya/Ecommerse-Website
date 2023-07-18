@@ -13,17 +13,19 @@ from django.conf.urls.static import static
 urlpatterns = [
    
    
-    path('', views.user_login, name='user_login'),
-    path('admin_login', views.admin_login, name='adminlogin'),
-    path('user_home/', views.user_home, name='userhome'),
+    path('user_login/', views.user_login, name='user_login'),
+    path('admin_login/', views.admin_login, name='adminlogin'),
+    path("admin_logout/",views.admin_logout,name="admin_logout"),
+    path('', views.user_home, name='userhome'),
 
     path('home_before/', views.home_before, name='home_before'),
 
-    path('products',views.products, name='products'),
+    path('products/',views.products, name='products'),
     path('shop_before/',views.shop_before, name='shop_before'),
+    path('shop/',views.shop, name='shop'),
 
     path('signup/', views.signup, name='signup'),
-    path('otplogin', views.otplogin, name='otplogin'),
+    path('otplogin/', views.otplogin, name='otplogin'),
     # path('otplogin/<str:otp>/', views.otplogin, name='otplogin'),
     path('otp_grn/', views.otp_grn, name='otp_grn'),
     path('logout', views.user_logout, name='logout'),
@@ -48,7 +50,9 @@ urlpatterns = [
     path('contact/',views.contact,name ='contact'),
     path('about/',views.about,name ='about'),
     path('wishlist/',views.wishlist,name ='wishlist'),
+
     path('add_to_wishlist/',views.add_to_wishlist,name ='add_to_wishlist'),
+    path('wishlist_remove/<int:item_id>',views.wishlist_remove,name = 'wishlist_remove'),
 
 
 
@@ -57,6 +61,7 @@ urlpatterns = [
     
     path('admin_user/', views.admin_user, name='admin_user'),
     path('products/',views.products, name='products'),
+    path('admin_variant/',views.admin_variant, name='admin_variant'),
     path('orderadmin/',views.orderadmin, name='orderadmin'),
     path("order_items/<int:order_id>",views.order_items,name = 'order_items'),
     path('category/', views.category_view, name='category'),
@@ -66,6 +71,9 @@ urlpatterns = [
     path('admin_user/<int:user_id>/', views.block_unblock_user, name='block_unblock_user'),
     path('edit/<int:product_id>/', views.edit_product, name='edit_product'),
     path('delete/<int:product_id>/',views.delete_product, name='delete_product'),
+    path('color_admin',views.color_admin, name='color_admin'),
+
+    path('size_admin',views.size_admin, name='size_admin'),
 
     
     

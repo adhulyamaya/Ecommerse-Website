@@ -10,10 +10,13 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.views.decorators.cache import never_cache
 from .models import *
-
+from .models import Wishlist
 import re
+
 import random,vonage
 from vonage import Sms
+from django.shortcuts import render, get_object_or_404
+from .models import Product
 
 client=vonage.Client(key="23594a08",secret="asBI3u5U6nnRnMd6")
 sms=vonage.Sms(client)
@@ -23,36 +26,39 @@ sms=vonage.Sms(client)
 @never_cache
 def user_login(request):
     if 'username' in request.session:
-        username = request.session['username']
-        user = custom_user.objects.get(username=username)
+        # username = request.session['username']
+        # user = custom_user.objects.get(username=username)
 
-        if not user.is_superuser:
-            return redirect('userhome')
-        else:
-            return redirect('adminhome')
+        # if not user.is_superuser:
+        #     return redirect('userhome')
+        # else:
+        #     return redirect('adminhome')
+        return redirect(user_home)
+    else:
+    
 
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
 
-        if not username.strip() or not password.strip():
-            return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
+            if not username.strip() or not password.strip():
+                return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
 
-        try:
-            user = custom_user.objects.get(username=username, password=password)
+            try:
+                user = custom_user.objects.get(username=username, password=password)
 
-            if user is not None:
-                if not user.is_superuser:
-                    if user.status:
-                        request.session['username'] = username
-                        return redirect('userhome')
+                if user is not None:
+                    if not user.is_superuser:
+                        if user.status:
+                            request.session['username'] = username
+                            return redirect('userhome')
+                        else:
+                            return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
                     else:
-                        return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
-                else:
-                    return render(request, 'admin_home.html')
+                        return render(request, 'admin_home.html')
 
-        except custom_user.DoesNotExist:
-            return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
+            except custom_user.DoesNotExist:
+                return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
 
     return render(request, 'user_login.html')
 
@@ -65,46 +71,53 @@ def user_login(request):
 
 # USER_HOME AFTER LOGIN
 
+
 @never_cache
+
 def user_home(request):
-    if 'username' in request.session:
-        username = request.session['username']
-        users = custom_user.objects.filter(username=username)
 
-        if users.exists():
-            user = users.first()
+    if 'username' in request.session: 
 
-            if not user.is_superuser:
-                categories = category.objects.all()
-                best_selling_products = Product.objects.order_by('-sales_count')[:4]
-                wardrobe_essentials = Product.objects.filter(wardrobe_essential=True)[:4]
-                return render(request, 'user_home.html', {
-                    'categories': categories,
-                    'best_selling_products': best_selling_products,
-                    'wardrobe_essentials': wardrobe_essentials
-                })
-            else:
-                return redirect('adminhome')
+        username = request.session["username"]
+        user = custom_user.objects.get(username=username)
+        wishlistobj = Wishlist.objects.filter(username=user)
+        wishlist_count = wishlistobj.count()
+        cart = Cart.objects.filter(username = user)
+        cart_count = cart.count()
 
-    return redirect('userlogin')
+
+        categories = category.objects.all()
+        best_selling_products = Product.objects.order_by('-sales_count')[:4]
+        wardrobe_essentials = Product.objects.filter(wardrobe_essential=True)[:4]    
+        return render(request, 'user_home.html', {
+            'categories': categories,
+            'best_selling_products': best_selling_products,
+            'wardrobe_essentials': wardrobe_essentials,
+            'wishlist_count':wishlist_count,
+            "cart":cart,
+            "cart_count":cart_count
+                   
+        })
+    else:
+        return redirect('home_before')
 
 
 # USER_HOME BEFORE LOGIN
 
 def home_before(request):
+    
     categories = category.objects.all()
     best_selling_products = Product.objects.order_by('-sales_count')[:4]
     wardrobe_essentials = Product.objects.filter(wardrobe_essential=True)[:4]
     return render(request, 'home_before.html', {'categories': categories, 'best_selling_products': best_selling_products,
-       'wardrobe_essentials': wardrobe_essentials})
-
+    'wardrobe_essentials': wardrobe_essentials})
 
 
 
 def user_logout(request):
     if 'username' in request.session:
         request.session.flush()
-        return redirect('user_login')
+        return redirect('home_before')
     
 def signup(request):
     if 'name' in request.session:
@@ -187,73 +200,63 @@ def otplogin(request):
 
 
 
-
-
-
-
-# def user_profile(request):
-#     username=custom_user.objects.get(username=request.session["username"])
-#     address = Address.objects.filter(username=username)
-    
-#     return render(request,"user_profile.html")
-
-
-
-# def user_profile(request):
-#     username = custom_user.objects.get(username=request.session["username"])
-#     user_phone = username.phone_number
-#     addresses = Address.objects.filter(username=username)
-
-#     context = {
-#         'username': username,
-#         'phone_number': user_phone,
-#         'addresses': addresses
-#     }
-
-#     return render(request, "user_profile.html", context)
-
-
-
-
-
 def shop(request):
-    if "username" in request.session:
-        products = Product.objects.all()
-        context = {
-            "products":products
-        }
-        return render(request,'shop.html',context)
+    username = request.session["username"]
+    user = custom_user.objects.get(username=username)
+    wishlistobj = Wishlist.objects.filter(username=user)
+    wishlist_count = wishlistobj.count()
+
+    products = Product.objects.all()
+    brands = Brand.objects.all()
+    
+    selected_brands = request.POST.getlist('brands')  # Get the selected brands from the form
+    if selected_brands:
+        # Filter the products based on the selected brands
+        products = products.filter(brand__id__in=selected_brands)
+    
+    context = {
+        "products": products,
+        "brand": brands,
+        "wishlist_count":wishlist_count
+    }
+    return render(request,'shop.html',context)
+
+
 
 def shop_before(request):
     products = Product.objects.all()
+        
     context = {
-        "products":products
-    }
+            "products":products,
+            
+        }
+       
     return render (request,"shop_before.html",context)
 
 
 
 
 
-
-
-
-from django.shortcuts import render, get_object_or_404
-from .models import Product
 def product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+    product = Product.objects.get(id=product_id)
+    colobj = Color.objects.all()
+    sizeobj = Size.objects.all()
     variants = Variant.objects.filter(Product=product)
     sizes = Variant.objects.filter(Product=product).values_list('Size__size', flat=True).distinct()
     colors = Variant.objects.filter(Product=product).values_list('Color__color', flat=True).distinct()
-    return render(request, 'product_detail.html', {'product': product, 'sizes': sizes, 'colors': colors,'variants': variants})
+    selected_color = request.POST.getlist('colors')
+
+    selected_color = request.POST.getlist('colors')
+    if selected_color:
+        variants = variants.filter(Color__id__in=selected_color)
+    
+    selected_size = request.POST.get('size')
+    if selected_size:
+        variants = variants.filter(Size__id__in = selected_size)   
+    context = {'product': product, 'sizes': sizes, 'colors': colors,'variants': variants,"colobj":colobj,"sizeobj":sizeobj}
+    return render(request, 'product_detail.html',context)
 
 
-
-
-# def variant_detail(request, product_id, variant_id):
-#     product = get_object_or_404(Product, id=product_id)
-#     variants = Variant.objects.filter(Product=product)
-#     return render(request, 'variants.html', {'product': product, 'variants': variants})
 def variant_detail(request, product_id, variant_id):
     product = get_object_or_404(Product, id=product_id)
     variant = get_object_or_404(Variant, id=variant_id, Product=product)
@@ -264,11 +267,19 @@ def user_profile(request):
     username = custom_user.objects.get(username=request.session["username"])
     user_phone = username.phone_number
     addresses = Address.objects.filter(username=username)
+    wishlistobj = Wishlist.objects.filter(username = username)
+    wishlist_count = Wishlist.objects.filter(username = username).count() 
+    cart = Cart.objects.filter(username = username)
+    cart_count = Cart.objects.filter(username = username).count()
 
     context = {
         'username': username,
         'phone_number': user_phone,
-        'addresses': addresses
+        'addresses': addresses,
+        'wishlistobj':wishlistobj,
+        'wishlist_count':wishlist_count,
+        'cart':cart,
+        'cart_count': cart_count
     }
 
     return render(request, "user_profile.html", context)
@@ -342,14 +353,16 @@ def add_to_cart(request):
 def show_cart(request):
   username=custom_user.objects.get(username=request.session["username"])
   cart = Cart.objects.filter(username = username)
+  cart_count = Cart.objects.filter(username = username).count()
   amount = 0
   quantityobj=0
   for i in cart:
       value = i.quantity * i.variant.price
       amount = amount + value
-      total = amount + 40
+      total = amount +40
       quantityobj +=i.quantity
-  return render (request,'addtocart.html',{'cart': cart,'total':total,'amount':amount,'quantityobj':quantityobj})
+  return render (request,'addtocart.html',{'cart': cart,'total':total,'amount':amount,
+                                           'quantityobj':quantityobj,"cart_count":cart_count})
 
 def cart_inc(request,item_id):
     cartobj = Cart.objects.get(id=item_id)
@@ -393,8 +406,8 @@ def checkout(request):
     username=custom_user.objects.get(username=request.session["username"])
     cartobj = Cart.objects.filter(username = username)
     addobj = Address.objects.filter(username = username)
+    couponobj = Coupon.objects.all()
 
-    
     if request.method == "POST":
         username = request.session.get("username")
         customer = custom_user.objects.get(username=username)
@@ -402,20 +415,34 @@ def checkout(request):
         addobj = Address.objects.filter(username = customer)
 
         addressid = request.POST.get("address")
-        print(addressid,"hiiiiiiiiiiiiii")
         address = Address.objects.get(id=addressid)
+
+        couper_id = request.POST.get("coupon")
+        coup = Coupon.objects.get(id=couper_id) 
+
         date_ordered = datetime.date.today()
+        
 
-        orderobj = Order(customer = customer, address=address, date_ordered=date_ordered,total = 0)
+
+        orderobj = Order(customer = customer, address=address, date_ordered=date_ordered, total = 0)
         orderobj.save()
-
+       
         for item in cartobj:
             pdtvariant = item.variant
             price = item.variant.price
             quantity = item.quantity
             item_total = quantity*price
+            if coup:
+                coupon_discount = (item_total * coup.discount) / 100
+                final = item_total - coupon_discount
 
-            orderitemobj = OrderItems(variant = pdtvariant, order = orderobj, quantity=quantity, price=price, total = item_total)
+
+                orderitemobj = OrderItems(variant = pdtvariant, order = orderobj,
+                                        quantity=quantity, price=price, total = final)
+            else:
+                orderitemobj = OrderItems(variant = pdtvariant, order = orderobj,
+                                        quantity=quantity, price=price, total = item_total)
+                
             orderitemobj.save()
 
             pdtvariant.quantity -= quantity
@@ -428,15 +455,21 @@ def checkout(request):
         orderobj.save()
         return redirect(ordersuccess)
 
-        
+    total_cost = sum(item.total_cost() for item in cartobj)     
     context = {
             'username': username,
             'cartobj': cartobj,
-            'addobj': addobj
+            'addobj': addobj,
+            'total_cost':total_cost,
+            "couponobj":couponobj
             }
     return render (request,"checkout.html",context)
   
-  return render (request,"checkout.html",context)
+#   return render (request,"checkout.html",context)
+
+
+
+
 
 
 def ordersuccess(request):
@@ -445,24 +478,19 @@ def ordersuccess(request):
 
 
 
+
 def user_product(request, Category_id):
-    # products = Product.objects.all()
-    # categories = category.objects.all()  # Retrieve all categories for the navigation menu
     categoryobj=category.objects.get(id=Category_id)
     products = Product.objects.filter(category=categoryobj)
-    # if category_id:
-    #     try:
-    #         category = category.objects.get(id=category_id)
-    #         products = Product.filter(category=category)
-    #     except category.DoesNotExist:
-    #         pass  # Handle the case where the category ID is invalid
-
     context = {
         'products': products,
        
     }
 
     return render(request, 'user_product.html', context)
+
+
+
 
 
 def contact(request):
@@ -483,9 +511,16 @@ def add_to_wishlist(request):
 
 def wishlist(request):
     username=custom_user.objects.get(username=request.session["username"])
-    wishlistobj = Wishlist.objects.filter(username = username)   
-    return render (request,"wishlist.html",{'wishlistobj': wishlistobj})
+    wishlistobj = Wishlist.objects.filter(username = username)
+    wishlist_count = Wishlist.objects.filter(username = username).count()   
+    # return render (request,"wishlist.html",{'wishlistobj': wishlistobj})
+    return render(request, "wishlist.html", {'wishlistobj': wishlistobj, 'wishlist_count': wishlist_count})
 
+
+def wishlist_remove(request,item_id):
+    wishlistobj = Wishlist.objects.get(id = item_id)
+    wishlistobj.delete()
+    return redirect ("wishlist")
 
 
 
@@ -496,30 +531,25 @@ def wishlist(request):
 @never_cache
 def admin_login(request):
     if 'username' in request.session:
-        username = request.session['username']
-        user = custom_user.objects.get(username = username)
+        return redirect(admin_home)
+    else:
 
-        if user.is_superuser:
-            return redirect('adminhome')
-        else:
-            return redirect('userhome')
-
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        
-        try:
-            user = custom_user.objects.get(username = username, password = password)
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
             
-            if user is not None:
-                if user.is_superuser:    
-                    request.session['username'] = username
-                    return redirect('adminhome')
-                else:
-                    return render(request, 'admin_login.html', {'admin404': 'Please use user login'})
-            
-        except custom_user.DoesNotExist:
-            return render(request, 'admin_login.html', {'admin404': 'Wrong credentials'})
+            try:
+                user = custom_user.objects.get(username = username, password = password)
+                
+                if user is not None:
+                    if user.is_superuser:    
+                        request.session['username'] = username
+                        return redirect('adminhome')
+                    else:
+                        return render(request, 'admin_login.html', {'admin404': 'Please use user login'})
+                
+            except custom_user.DoesNotExist:
+                return render(request, 'admin_login.html', {'admin404': 'Wrong credentials'})
 
     return render(request, 'admin_login.html')
 
@@ -542,6 +572,11 @@ def admin_home(request):
             return render(request, 'admin_home.html', {'detailskey':details})
     
     return redirect('user_login')
+
+def admin_logout(request):
+    if 'username' in request.session:
+        request.session.flush()
+        return redirect('adminlogin')
 
 # 1 USER________________________________________________________________________
 def admin_user(request):
@@ -679,3 +714,22 @@ def order_items(request, order_id):
     }
     
     return render(request, 'order_items.html', context)
+
+def admin_variant(request):
+    variantobj = Variant.objects.all()
+    return render(request, 'admin_variant.html',{ "variantobj":variantobj })
+
+def color_admin(request):
+    color = Color.objects.all()
+    context ={
+        "color":color
+    }
+    return render(request, 'color_admin.html',context)
+
+
+def size_admin(request):
+    size = Size.objects.all()
+    context ={
+        "size":size
+    }
+    return render (request,'size_admin.html',context)

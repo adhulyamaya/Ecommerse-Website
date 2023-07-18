@@ -53,6 +53,50 @@
     </div>
   </div>
 </div>
+
+
+
+
+<div class="col-lg-3 col-md-12">
+  <div class="border-bottom mb-4 pb-4">
+      <h5 class="font-weight-semi-bold mb-4">Filter by Color</h5>
+  <form method="post">
+      {% csrf_token %}
+    <!-- Color Start -->
+    {% for c in colobj %}
+    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+      <input type="checkbox" class="custom-control-input" id="color-{{ c.id }}" name="colors" value="{{ c.id }}">
+
+      <label class="custom-control-label" for="color-{{ c.id }}">{{ c.color }}</label>
+      <span class="badge border font-weight-normal">150</span>
+    </div>
+    {% endfor %}
+    <button type="submit" hidden>Submit</button> <!-- Add a submit button inside the form -->
+  </form>
+</div>
+</div>
+
+
+
+<div class="col-lg-3 col-md-12">
+  <div class="border-bottom mb-4 pb-4">
+      <h5 class="font-weight-semi-bold mb-4">Filter by Size</h5>
+  <form method="post">
+      {% csrf_token %}
+    <!-- Color Start -->
+    {% for s in sizeobj %}
+    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+      <input type="checkbox" class="custom-control-input" id="brand-{{ s.id }}" name="size" value="{{ s.id }}">
+      <label class="custom-control-label" for="brand-{{ s.id }}">{{ s.size }}</label>
+      <span class="badge border font-weight-normal">150</span>
+    </div>
+    {% endfor %}
+    <button type="submit" hidden>Submit</button> <!-- Add a submit button inside the form -->
+  </form>
+</div>
+</div>
+
+
 {% endblock main-content %}
 
 {% block content %}{% endblock content %}

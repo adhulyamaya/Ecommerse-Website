@@ -446,7 +446,9 @@ body{
                         </div>
                         
                         <div class="cart-item-product-info">
-                            <h4 class="cart-item-product-title"> {{ item.variant.variant }}</h4><span><strong>Type:</strong> Mirrorless</span><span><strong>Color:</strong> {{cart.Color.color}}</span>
+                            <h4 class="cart-item-product-title"> </h4><span><strong>Type:</strong> {{ item.variant.variant }}</span>
+                            <span><strong>Color:</strong> {{item.variant.Color}}</span>
+                            <span><strong>Size:</strong> {{item.variant.Size}}</span>
                         </div>
                         
                 </div>
@@ -455,13 +457,19 @@ body{
                      <div class="count-input">
                        {{ item.quantity }}
                     </div>
+                    <div class="cart-item-label">P:</div>
+                    <div class="count-input">
+                      {{ item.variant.price }}
+                   </div>
                    
                 </div>
-                <div class="px-3 my-3 text-center">
-                    <div class="cart-item-label">Subtotal</div><span class="text-xl font-weight-medium">$910.00</span>
-                </div>
+              
                 {% endfor%}
+                <div class="px-3 my-3 text-center">
+                    <div class="cart-item-label">Subtotal :{{total_cost}}</div><span class="text-xl font-weight-medium"></span>
+                </div>
             </div>
+          </div>
 
 
     <form action="{% url 'checkout'  %}" method="POST" class="d-inline">
@@ -475,6 +483,19 @@ body{
                   {% endfor %}
               </select>
             </div><br>
+
+    <form action="{% url 'checkout'  %}" method="POST" class="d-inline" >
+      {% csrf_token %}
+    <div><p>Coupons: </p>
+      <select id="coupon-select" name="coupon">
+          
+          {% for coupon in couponobj %}
+              <option value="{{ coupon.id }}">{{ coupon.name }}</option>
+              {% comment %} <input type="hidden" name="address_id" value="{{ address.id }}">  {% endcomment %}
+          {% endfor %}
+      </select>
+      <button type="submit">Apply</button>
+    </div><br>        
 
           
             <!-- Buttons-->

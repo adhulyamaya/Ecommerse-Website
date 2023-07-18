@@ -52,13 +52,17 @@ class Size(models.Model):
     
     def __str__(self):
         return self.size
+class Brand(models.Model):
+    brand = models.CharField(max_length=20)
+    
+    def __str__(self):
+        return f"{self.id} - {self.brand}" 
     
 class Product(models.Model):
-    VARIANTS = (('None','None'),('Size','Size'),('Color','Color'),('Size-Color','Size-Color'))
-
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    brand = models.CharField(max_length=100)
+    brand = models.ForeignKey(Brand,on_delete=models.CASCADE)
+    
     category = models.ForeignKey(category,on_delete=models.CASCADE)
     description = models.TextField()
     sales_count = models.PositiveIntegerField(default=0)
@@ -84,7 +88,12 @@ class Variant(models.Model):
     def __str__(self):
         return self.variant
 
-   
+class Coupon(models.Model):
+    name= models.CharField(max_length=100 ,blank=True,null = True)
+    discount = models.FloatField(default=0)
+    minimum = models.FloatField(default=0)
+    def __str__(self):
+        return self.name
 
     
 class Cart(models.Model):
@@ -95,7 +104,7 @@ class Cart(models.Model):
    
 
     def total_cost(self):
-        return self.quantity * self.variant.price
+        return self.quantity * self.variant.price +40
 
 class Wishlist(models.Model):
     username = models.ForeignKey(custom_user,on_delete=models.CASCADE)

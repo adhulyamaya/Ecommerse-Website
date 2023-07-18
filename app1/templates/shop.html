@@ -14,6 +14,7 @@
             </div>
         </div>
         <!-- Page Header End -->
+        
 <div class="container-fluid pt-5">
     <div class="row px-xl-5 pb-3 ">
         {% for product in products  %}
@@ -39,6 +40,23 @@
         </div>
         {% endfor %}
     </div>
+    <div class="col-lg-3 col-md-12">
+        <div class="border-bottom mb-4 pb-4">
+            <h5 class="font-weight-semi-bold mb-4">Filter by Brand</h5>
+        <form method="post">
+            {% csrf_token %}
+          <!-- Color Start -->
+          {% for b in brand %}
+          <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+            <input type="checkbox" class="custom-control-input" id="brand-{{ b.id }}" name="brands" value="{{ b.id }}">
+            <label class="custom-control-label" for="brand-{{ b.id }}">{{ b.brand }}</label>
+            <span class="badge border font-weight-normal">150</span>
+          </div>
+          {% endfor %}
+          <button type="submit" hidden>Submit</button> <!-- Add a submit button inside the form -->
+        </form>
+      </div>
+      
 </div>
 
 {%endblock main-content%}
@@ -46,3 +64,9 @@
 {% block content %}{% endblock content %}
 
 
+
+
+
+
+
+                

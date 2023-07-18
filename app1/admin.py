@@ -10,6 +10,8 @@ class ColorAdmin(admin.ModelAdmin):
 class SizeAdmin(admin.ModelAdmin):
     list_display = ['size']
 
+class WishlistAdmin(admin.ModelAdmin):
+    list_display = ['username',"variant"]
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -25,8 +27,12 @@ class CartAdmin(admin.ModelAdmin):
     list_display = ['id','username','variant','quantity']  
 
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ['username','flat','locality','city']  
+    list_display = ['username','flat','locality','city'] 
 
+class BrandAdmin(admin.ModelAdmin):
+    list_display = ['id','brand']  
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ['id','name']  
 
 
 admin.site.register(custom_user)
@@ -39,4 +45,6 @@ admin.site.register(Variant,VariantAdmin)
 admin.site.register(Address,AddressAdmin)
 admin.site.register(Order)
 admin.site.register(OrderItems)
-
+admin.site.register(Wishlist)
+admin.site.register(Brand)
+admin.site.register(Coupon)

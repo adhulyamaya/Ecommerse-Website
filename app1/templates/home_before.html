@@ -1,126 +1,439 @@
-{% extends 'user_home.html' %}
-{% load static %}
-{% block tittle%} home_before {% endblock tittle %}
+<!DOCTYPE html>
+<html lang="en">
+  
+  {% load static %}
 
 
+  
+<head>
+    <meta charset="utf-8">
+    <title> PINKVILLA | {% block title %}{% endblock title%}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
 
-<div class="text-center mb-4">
-    <br>
-    <br>
-    <h2 class="section-title px-5"><span class="px-2">Browse By Category</span></h2>
-</div>
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900 & display=swap" rel="stylesheet"> 
 
-<div class="container-fluid pt-5">
-<div class="row px-xl-5 pb-3">
-    {% for category in categories %}
-    <div class="col-lg-3 col-md-3 pb-3">
-        <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
-            <p class="text-right">{{ category.product_count }}</p>
-            <a href="{% url 'user_product' category.id %}" class="cat-img position-relative overflow-hidden mb-3" style="height: 300px; width: 300px;">
-                <img class="img-fluid" src="{{ category.category_image.url }}" alt="" style="height: 100%; width: 100%; object-fit: cover;">
-            </a>
-            <h5 class="font-weight-semi-bold m-0">{{ category.name }}</h5>
-        </div>
-    </div>
-    {% endfor %}
-</div>
-</div>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized css Stylesheet -->
+    <link href="/static/app/css/style.min.css" rel="stylesheet">
+    <link href="{% static 'app/css/style.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+    
+  
+    <div class="row align-items-center py-1 px-xl-4">
+        <div class="d-flex align-items-center">
+            <div class="mr-5 d-none d-lg-block">
+                <a href="" class="text-decoration-none">
+                    <h1 class="mb-3 display-5 font-weight-semi-bold">
+                      
+                             <img src="{% static "app/img/product/logo2.jpg" %}" alt="Logo" class="img-fluid"  style="width: 90px; height: auto; ">
+                    </h1>
+                </a>
+            </div>
+
+            <div class="mr-3">
+                <a href="{% url 'userhome' %}" style="text-decoration: none;">
+                    <button type="button" style="border: none; background: none; padding: 0; cursor: pointer;">Home</button>
+                </a>
+            </div>
+            <div class="mr-3">
+                <a href="{% url 'shop_before' %}" style="text-decoration: none;">
+                    <button type="button" style="border: none; background: none; padding: 0; cursor: pointer;">Shop</button>
+                </a>
+            </div>
+            <div class="mr-3">
+                <a href="{% url 'about' %}" style="text-decoration: none;">
+                    <button type="button" style="border: none; background: none; padding: 0; cursor: pointer;">About</button>
+                </a>
+            </div>
+            <div class="mr-3">
+                <a href="{% url 'contact' %}" style="text-decoration: none;">
+                    <button type="button" style="border: none; background: none; padding: 0; cursor: pointer;">Contact</button>
+                </a>
+            </div>
+            <div class="mr-3">
+                <a href="{% url 'user_login' %}" style="text-decoration: none;">
+                    <button type="button" style="border: none; background: none; padding: 0; cursor: pointer;">Login</button>
+                </a>
+            </div>
+            <div class="mr-3">
+                <a href="{% url 'signup' %}" style="text-decoration: none;">
+                    <button type="button" style="border: none; background: none; padding: 0; cursor: pointer;">Signup</button>
+                </a>
+            </div>
+            {% comment %} <div class="mr-3">
+                <a href="{% url 'logout' %}" style="text-decoration: none;">
+                    <button type="button" style="border: none; background: none; padding: 0; cursor: pointer;">logout</button>
+                </a>
+            </div> {% endcomment %}
 
 
-
-{% block content%}
-<!-- Offer Start -->
-<div class="container-fluid offer pt-5">
-    <div class="row px-xl-5">
-        <div class="col-md-6 pb-4">
-            <div class="position-relative bg-secondary text-center text-md-right text-white mb-2 py-5 px-5">
-                <img src="img/offer-1.png" alt="">
-                <div class="position-relative" style="z-index: 1;">
-                    <h5 class="text-uppercase text-primary mb-3">20% off the all order</h5>
-                    <h1 class="mb-4 font-weight-semi-bold">Spring Collection</h1>
-                    <a href="" class="btn btn-outline-primary py-md-2 px-md-3">Shop Now</a>
-                </div>
+    
+            <div class="ml-auto d-flex align-items-center">
+                <form action="" class="flex-grow-1">
+                    <div class="input-group" style="width: 300px;">
+                        <input type="text" class="form-control" placeholder="Search for products">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-transparent text-primary">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+    
+                <a href="{% url 'wishlist' %}" class="btn border ml-3">
+                    <i class="fas fa-heart"></i>
+                </a>
+                <a href="{% url 'show-cart' %}" class="btn border ml-1">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <a href="{% url 'user_profile' %}" class="btn border ml-1">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                </a>
             </div>
         </div>
-        <div class="col-md-6 pb-4">
-            <div class="position-relative bg-secondary text-center text-md-left text-white mb-2 py-5 px-5">
-                <img src="img/offer-2.png" alt="">
-                <div class="position-relative" style="z-index: 1;">
-                    <h5 class="text-uppercase text-primary mb-3">20% off the all order</h5>
-                    <h1 class="mb-4 font-weight-semi-bold">Winter Collection</h1>
-                    <a href="" class="btn btn-outline-primary py-md-2 px-md-3">Shop Now</a>
-                </div>
-            </div>
-        </div>
     </div>
-</div>
-<!-- Offer End -->
+    
+   
+    <!-- Topbar End -->
+
+    
+   <!-- Navbar Start -->
 
 
-<div class="container-fluid pt-5">
-    <div class="text-center mb-4">
-        <h2 class="section-title px-5"><span class="px-2">Best Selling Brands</span></h2>
-    </div>
-    <div class="row px-xl-5 pb-3">
-        {% for product in best_selling_products %}
-        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-            <div class="card product-item border-0 mb-4">
-                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                    <img class="img-fluid w-100" src="{{ product.image.url }}" alt="">
-                </div>
-                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                    <h6 class="text-truncate mb-3">{{ product.name }}</h6>
-                    <div class="d-flex justify-content-center">
-                        <h6>1000.00rs </h6><h6 class="text-muted ml-2"><del>1230.00 rs</del></h6>
+
+   {% block main-content%}  
+<div class="container-fluid mb-5">
+    <div class="row border-top px-xl-5">        
+        <div class="col-lg-9">          
+                           
+            <div id="header-carousel" class="carousel slide mt-5 " data-ride="carousel" style="width: 1400px;">
+                <div class="carousel-inner">
+                    <div class="carousel-item active" style="height:500px; ">
+                        <img class="img-fluid" src="{% static "app/img/product/carousel-1.jpg"%}" alt="Image">
+                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                            <div class="p-3" style="max-width: 700px;">
+                                <h4 class="text-light text-uppercase font-weight-medium mb-3">10% Off Your First Order</h4>
+                                <h3 class="display-4 text-white font-weight-semi-bold mb-4">Fashionable Dress</h3>
+                                <a href="{% url 'shop_before' %}" class="btn btn-light py-2 px-3">Shop Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item " style="height: 500px; ">
+                        <img class="img-fluid" src="{% static "app/img/product/carousel-2.jpg"%}" alt="Image">
+                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                            <div class="p-3" style="max-width: 700px;">
+                                <h4 class="text-light text-uppercase font-weight-medium mb-3">10% Off Your First Order</h4>
+                                <h3 class="display-4 text-white font-weight-semi-bold mb-4">Reasonable Price</h3>
+                                <a href="{% url 'shop_before' %}" class="btn btn-light py-2 px-3">Shop Now</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="card-footer d-flex justify-content-between bg-light border">
-                    <a href="{% url 'product_detail' product.id %}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                    <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
-                </div>
+                <a class="carousel-control-prev" href="#header-carousel" data-slide="prev">
+                    <div class="btn btn-dark" style="width: 45px; height: 45px;">
+                        <span class="carousel-control-prev-icon mb-n2"></span>
+                    </div>
+                </a>
+                <a class="carousel-control-next" href="#header-carousel" data-slide="next">
+                    <div class="btn btn-dark" style="width: 45px; height: 45px;">
+                        <span class="carousel-control-next-icon mb-n2"></span>
+                    </div>
+                </a>
             </div>
+
+        </div>
+    </div>
+</div>
+
+<br>
+    <br>
+    <br>
+    <!-- Navbar End -->
+   
+    <div class="text-center mb-4">
+           
+        <h2 class="section-title px-5"><span class="px-2">Browse By Category</span></h2>
+    </div>
+
+
+    <div class="row px-xl-5 pb-3">
+        {% for category in categories %}
+        <div class="col-lg-3 col-md-3 pb-3 mt-4 ">
+            {% comment %} <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;"> {% endcomment %}
+                <a href="{% url 'user_product' category.id %}" class="cat-img position-relative overflow-hidden mb-3" style="height: 300px; width: 300px;">
+                    <img class="img-fluid" src="{{ category.category_image.url }}" alt="" style="height: 350px; width:300px; object-fit: cover;">
+                </a>
+                <div class="row mt-2"></div>
+                
+                <h5 class="font-weight-semi-bold m-0 ">{{ category.name }}</h5>
+            {% comment %} </div> {% endcomment %}
         </div>
         {% endfor %}
     </div>
-</div>
 
+    
+    
+    
+    {% endblock main-content%}
+    <br>
+    
+    {% block content%}
+    <!-- Offer Start -->
+    <div class="container-fluid offer pt-5">
+        <div class="row px-xl-5">
+            <div class="col-md-6 pb-4">
+                <div class="position-relative bg-secondary text-center text-md-right text-white mb-2 py-5 px-5">
+                    <img src="{% static "app/img/product/offer-1.png"%}" alt="">
+                    <div class="position-relative" style="z-index: 1;">
+                        <h1 class="mb-4 font-weight-semi-bold">Spring Collection</h1>
+                      
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 pb-4">
+                <div class="position-relative bg-secondary text-center text-md-left text-white mb-2 py-5 px-5">
+                    <img src="{% static "app/img/product/offer-2.png"%}" alt="">
+                    <div class="position-relative" style="z-index: 1;">
+                        
+                        <h1 class="mb-4 font-weight-semi-bold">Winter Collection</h1>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Offer End -->
+    
 
-
-<!-- Wardrobe Essentials -->
     <div class="container-fluid pt-5">
-    <div class="text-center mb-4">
-        <h2 class="section-title px-5"><span class="px-2">Wardrobe Essentials</span></h2>
-    </div>
-    <div class="row px-xl-5 pb-3">
-        {% for product in wardrobe_essentials %}
-        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-            <div class="card product-item border-0 mb-4">
-                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                    <img class="img-fluid w-100" src="{{ product.image.url }}" alt="{{ product.name }}">
+        <div class="text-center mb-4">
+            <h2 class="section-title px-5"><span class="px-2">Best Selling Brands</span></h2>
+        </div>
+        <br>
+        <div class="row px-xl-5 pb-3 ">
+            {% for product in best_selling_products %}
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="card product-item border-0 mb-4" >
+                    <a href="{% url 'product_detail' product.id %}" >
+                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                      
+                        <img class="img-fluid w-100 " src="{{ product.image.url }}" alt="" style="height: 500px;">
+                  
+                    </div>  </a>
+                    {% comment %} <div class="card-body   text-center p-0 pt-0 pb-2"> {% endcomment %}
+                        <div class="d-flex p-1 pt-0 pb-2" style="justify-content: space-between;">
+                        <h6 class="text-truncate mb-2 mt-2">{{ product.name }}</h6>
+                        
+                       
+                            {% comment %} <i class="fas fa-eye text-dark mr-1"></i>View Detail {% endcomment %}
+                      
+                        
+                           {% comment %} <a href="#" class="btn btn-sm text-dark p-0  mb-2 mt-2">
+                            <i class="fa fa-heart" aria-hidden="true"></i>
+                        </a>  {% endcomment %}
+                    </div>
+                    {% comment %} </div> {% endcomment %}
+                   
                 </div>
-                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                    <h6 class="text-truncate mb-3">{{ product.name }}</h6>
-                    <div class="d-flex justify-content-center">
-                        <h6>3500{{ product.price }}</h6><h6 class="text-muted ml-2">3000{{ variant.price }}</h6>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+   
+
+    <!-- Wardrobe Essentials -->
+        <div class="container-fluid pt-5">
+        <div class="text-center mb-4">
+            <h2 class="section-title px-5"><span class="px-2">Wardrobe Essentials</span></h2>
+        </div>
+        <br>
+    
+        <div class="row px-xl-5 pb-3">
+            {% for product in wardrobe_essentials %}
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="card product-item border-0 mb-4">
+                    <a href="{% url 'product_detail' product.id %}" >
+                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                          
+                            <img class="img-fluid w-100 " src="{{ product.image.url }}" alt="" style="height: 500px;">
+                      
+                        </div>  </a>
+                    <div class="d-flex p-1 pt-0 pb-2" style="justify-content: space-between;">
+                        <h6 class="text-truncate mb-2 mt-2 ">{{ product.name }}</h6>
+                        
+                       
+                            {% comment %} <i class="fas fa-eye text-dark mr-1"></i>View Detail {% endcomment %}
+                      
+                        
+                           {% comment %} <a href="#" class="btn btn-sm text-dark p-0  mb-2 mt-2">
+                            <i class="fa fa-heart" aria-hidden="true"></i>
+                        </a>  {% endcomment %}
                     </div>
                 </div>
-                <div class="card-footer d-flex justify-content-between bg-light border">
-                    <a href="{% url 'product_detail' product.id %}" class="btn btn-sm text-dark p-0">
-                        <i class="fas fa-eye text-primary mr-1"></i>View Detail
-                    </a>
-                    {% comment %} <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm text-dark p-0">
-                        <i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart
-                    </a> {% endcomment %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+            
+
+ 
+    {% endblock content%}
+    <br>
+    <br>
+
+
+     <!-- Featured Start -->
+     <div class="container-fluid pt-5">
+        <div class="row px-xl-5 pb-3">
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
+                    <h1 class="fa fa-check text-primary m-0 mr-3"></h1>
+                    <h5 class="font-weight-semi-bold m-0">Quality Product</h5>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
+                    <h1 class="fa fa-shipping-fast text-primary m-0 mr-2"></h1>
+                    <h5 class="font-weight-semi-bold m-0">Free Shipping</h5>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
+                    <h1 class="fas fa-exchange-alt text-primary m-0 mr-3"></h1>
+                    <h5 class="font-weight-semi-bold m-0">14-Day Return</h5>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
+                    <h1 class="fa fa-phone-volume text-primary m-0 mr-3"></h1>
+                    <h5 class="font-weight-semi-bold m-0">24/7 Support</h5>
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
-</div>
-
-        
+    <!-- Featured End -->
 
 
-{% endblock content%}
-<br>
-<br>
+
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-white mt-3 pt-5">
+        <div class="row px-xl-5 pt-5">
+            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
+                <a href="" class="text-decoration-none">
+
+                </a>
+                <p>find style & garments that make you feel comfortable, beautiful..
+                    SHOP ONLINE AT PINKVILLA WITH COMPLETE CONVENIENCE
+Another reason why Myntra is the best of all online stores is the complete convenience that it offers.
+ You can view your favourite brands with price options for different products in one place. 
+ A user-friendly interface will guide you through your selection process. Comprehensive size charts,
+  product information and high-resolution images help you make the best buying decisions.
+   You also have the freedom to choose your payment options, be it card or cash-on-delivery.
+    The 14-day returns policy gives you more power as a buyer. 
+                </p>
+                <p class="mb-2"><i class="fa fa-map-marker-alt text-white mr-3"></i>123 Street, New York, USA</p>
+                <p class="mb-2"><i class="fa fa-envelope text-white mr-3"></i>pinkvilla@gmail.com</p>
+                <p class="mb-0"><i class="fa fa-phone-alt text-white mr-3"></i>+91 8123456789</p>
+            </div>
+            <div class="col-lg-8 col-md-12">
+                <div class="row">
+                    <div class="col-md-4 mb-5">
+                        <h5 class="font-weight-bold text-white mb-4">Quick Links</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-white mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                            <a class="text-white mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
+                            <a class="text-white mb-2" href="detail.html"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
+                            <a class="text-white mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
+                            <a class="text-white mb-2" href="checkout.html"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
+                            <a class="text-white" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                        </div>
+                    </div> 
+                     <div class="col-md-4 mb-5">
+                        <h5 class="font-weight-bold text-white mb-4"></h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <div class="d-inline-flex align-items-center">
+                                <a class="text-dark px-2" href="">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a class="text-dark px-2" href="">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a class="text-dark px-2" href="">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a class="text-dark px-2" href="">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a class="text-dark pl-2" href="">
+                                    <i class="fab fa-youtube"></i>
+                                </a>
+                                
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </div>
+        <div class="row border-top border-light mx-xl-5 py-4">
+            <div class="col-md-6 px-xl-0">
+                <p class="mb-md-0 text-center text-md-left text-white">
+                    &copy; <a class="text-white font-weight-semi-bold" href="#">PINKVILLA</a>. All Rights Reserved. Designed
+                    by Pinkvilla @ 2023
+                    
+                </p>
+            </div>
+            <div class="col-md-6 px-xl-0 text-center text-md-right">
+                <img class="img-fluid" src="img/payments.png" alt="">
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="mail/jqBootstrapValidation.min.js"></script>
+    <script src="mail/contact.js"></script>
+    
+
+
+
+
+    <!--popperjs,Bootstrap,jscdn-->
+
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" 
+integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
+ integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+
+ <script src ={% static 'app/js/main.js'%}></script>
+</body>
+
+</html>

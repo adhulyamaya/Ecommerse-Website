@@ -124,13 +124,13 @@
 
           
           <li class="nav-item menu-items">
-            <a class="nav-link" href="../../pages/charts/chartjs.html">
+            <a class="nav-link" href="{% url 'admin_variant' %}">
               <span class="menu-icon">
                 <i class="mdi mdi-chart-bar"></i>
               </span>
               <span class="menu-title">Variants</span>
             </a>
-          </li>
+          </li> 
 
 
           <li class="nav-item menu-items">
@@ -149,6 +149,22 @@
                 <i class="mdi mdi-contacts"></i>
               </span>
               <span class="menu-title">Orders</span>
+            </a>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{% url 'color_admin' %}">
+              <span class="menu-icon">
+                <i class="mdi mdi-playlist-play"></i>
+              </span>
+              <span class="menu-title">Color</span>
+            </a>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{% url 'size_admin' %}">
+              <span class="menu-icon">
+                <i class="mdi mdi-playlist-play"></i>
+              </span>
+              <span class="menu-title">Size</span>
             </a>
           </li>
                   
@@ -174,7 +190,7 @@
             </ul>
             <ul class="navbar-nav navbar-nav-right">
               <li class="nav-item dropdown d-none d-lg-block">
-                <a class="btn btn-primary btn-lg" href="{% url 'logout' %}">Log out</a>
+                <a class="btn btn-primary btn-lg" href="{% url 'admin_logout' %}">Log out</a>
                 
               <li class="nav-item dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
