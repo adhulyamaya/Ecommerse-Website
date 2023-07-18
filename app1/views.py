@@ -522,6 +522,17 @@ def wishlist_remove(request,item_id):
     wishlistobj.delete()
     return redirect ("wishlist")
 
+# def search_products(request):
+#     pass
+def search_products(request):
+    query = request.GET.get('q')  # Retrieve the search query from the request parameters
+    results = []
+
+    if query:
+        # Query the database for products matching the search query
+        results = Product.objects.filter(name__icontains=query)
+
+    return render(request, 'search_results.html', {'results': results, 'query': query})  
 
 
 
@@ -626,13 +637,10 @@ def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     if request.method == 'POST':
-        # Delete the product
+       
         product.delete()
 
-        # Redirect to a success page or show a success message
-        # ...
-
-        # For example, you can redirect back to the 'products' page
+     
         return redirect('products')
 
     return render(request, 'delete_product.html', {'product': product})
@@ -645,12 +653,6 @@ def category_view(request):
 
 
 
-
-
-# def update_category(request, category_id):
-#     if request.method == 'POST':
-#         return redirect('category')
-#     return render(request, 'delete_category.html')
 def user_proeditadd(request,address_id):    
     address = Address.objects.get(id=address_id)
     if request.method == 'POST':
@@ -669,6 +671,36 @@ def user_proeditadd(request,address_id):
         return redirect(user_profile)
    
     return render(request, 'user_proeditadd.html', {'address': address, })
+
+def add_category(request):
+    return render(request, 'add_category.html')
+
+    
+      
+def add_product(request):
+    brands=Brand.objects.all()
+    catobj=category.objects.all()
+    # print(">>>>>>>>>>>>>>",brands)
+    context={
+        "brands":brands,
+        "category":catobj
+    }
+    if request.method == 'POST':
+        
+        name = request.POST.get('name')
+        brand = request.POST.get('brand')
+        brandobj=Brand.objects.get(brand=brand)
+        category_name = request.POST.get('category')
+        catobj=category.objects.get(name=category_name)
+        # print(name,brand,brandobj,category_name,catobj,"....................................................")
+        description = request.POST.get('description')
+        image = request.POST.get('category_image')
+
+        new_product = Product(name=name, brand=brandobj, category=catobj, description=description, image=image)
+        new_product.save()
+
+        return redirect(products)
+    return render(request, 'add_product.html',context)
 
 
 def edit_category(request, category_id):
