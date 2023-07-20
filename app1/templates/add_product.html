@@ -17,7 +17,7 @@
     </style>
 </head>
 
-    <form method="POST" action="{% url 'add_product' %}" >
+    <form method="POST" action="{% url 'add_product' %}"  enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
             <label for="name">Name</label>
@@ -50,10 +50,8 @@
 
                     <label class="required" for="id_product_image">Product image:</label>
                     
-                        <input type="file" name="product_image" accept="image/*" id="id_product_image">
-                    
-                
-                
+                        <input type="file" name="image" accept="image/*" id="id_product_image">
+
             </div>
         
     </div>

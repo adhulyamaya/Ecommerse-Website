@@ -90,22 +90,27 @@ class Variant(models.Model):
         return self.variant
 
 class Coupon(models.Model):
-    name= models.CharField(max_length=100 ,blank=True,null = True)
-    discount = models.FloatField(default=0)
-    minimum = models.FloatField(default=0)
+    coupon_code= models.CharField(max_length=100 ,blank=True,null = True)
+    is_expired = models.BooleanField(default=False)
+    discount_price= models.IntegerField(default=100)
+    minimum_amount = models.IntegerField(default=500)
+    
     def __str__(self):
-        return self.name
+        return self.coupon_code
 
     
 class Cart(models.Model):
     username = models.ForeignKey(custom_user,on_delete=models.CASCADE)
     variant = models.ForeignKey(Variant,on_delete=models.CASCADE)
+    coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL,null=True,blank= True)
     quantity = models.PositiveIntegerField(default=1)
+    
+    
     
    
 
     def total_cost(self):
-        return self.quantity * self.variant.price +40
+        return self.quantity * self.variant.price 
 
 class Wishlist(models.Model):
     username = models.ForeignKey(custom_user,on_delete=models.CASCADE)

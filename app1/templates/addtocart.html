@@ -13,7 +13,7 @@
                     <th>Products</th>
                     <th>Price</th>
                     <th>Quantity</th>
-                    <th>Total</th>
+                    {% comment %} <th>Total</th> {% endcomment %}
                     <th>Remove</th>
                 </tr>
             </thead>
@@ -45,9 +45,9 @@
 
 
 
-                    <td class="align-middle">${{ amount }}
+                    {% comment %} <td class="align-middle">${{ amount }}
 
-                    </td>
+                    </td> {% endcomment %}
                     
                     <td class="align-middle">
                         <a href="{% url 'cart_remove' item.id %}" class="btn btn-dark" onclick="return confirm('Do you want to remove this product from the cart?');">
@@ -61,6 +61,25 @@
         </table>
     </div>
 </div>
+            <aside class =" col-md-3">
+                <div class = "card mb-3">
+                    <div class = " card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Have coupon ? </label>
+                                <div class="input-group">
+                                    <input type = "text" class ="form-control" name="coupon" placeholder="coupon">
+                                    <span class ="input-group-append">
+                                        <button type = "submit" class = "btn btn-primary">Apply</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
 
     <div class="container-fluid pt-4 sm-8">
     <div class="card border-secondary col- sm-4">

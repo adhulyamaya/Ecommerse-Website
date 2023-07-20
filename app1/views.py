@@ -1,5 +1,5 @@
 import datetime
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from .models import custom_user,Product
 from django.contrib.auth.models import User
@@ -333,6 +333,7 @@ def user_address(request):
             address = Address(username=userobj,flat=flat,locality=locality, city=city,pincode=pincode, state=state,
             )
             address.save()
+            print("Address saved:>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", address) 
             return redirect('user_profile')
         # return render(request, "user_profile.html",{"address":address})
 
@@ -396,7 +397,56 @@ def cart_remove(request,item_id):
     cartobj = Cart.objects.get(id = item_id)
     cartobj.delete()
     return redirect ("show-cart")
+from django.contrib import messages
 
+def show_cart(request):
+    username = custom_user.objects.get(username=request.session["username"])
+    cart_items = Cart.objects.filter(username=username)
+    cart_count = cart_items.count()
+
+    # Initialize couponobj with a default value
+    couponobj = None
+
+    if request.method == 'POST':
+        coupon = request.POST.get("coupon")
+        couponobj = Coupon.objects.filter(coupon_code__icontains=coupon)
+
+        if not couponobj.exists():
+            messages.warning(request, 'Invalid Coupon')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        for cart_item in cart_items:
+            if cart_item.coupon:
+                messages.warning(request, 'Coupon already applied')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            cart_item.coupon = couponobj[0]
+            cart_item.save()
+
+    amount = 0
+    quantityobj = 0
+    for cart_item in cart_items:
+        value = cart_item.quantity * cart_item.variant.price
+        amount += value
+        quantityobj += cart_item.quantity
+
+    
+    coupon_discount = 0
+    if couponobj and couponobj.exists(): 
+        coupon_discount = couponobj[0].discount_price
+        amount -= coupon_discount
+
+    total = amount + 40
+    print(total,">>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+    return render(request, 'addtocart.html', {
+        'cart': cart_items,
+        'total': total,
+        'amount': amount,
+        'quantityobj': quantityobj,
+        'coupon_discount': coupon_discount,
+        'cart_count': cart_count
+    })
 
 
 
@@ -406,7 +456,8 @@ def checkout(request):
     username=custom_user.objects.get(username=request.session["username"])
     cartobj = Cart.objects.filter(username = username)
     addobj = Address.objects.filter(username = username)
-    couponobj = Coupon.objects.all()
+    print("Address objects:????????????????????????????????????????????????", addobj)
+    
 
     if request.method == "POST":
         username = request.session.get("username")
@@ -417,8 +468,8 @@ def checkout(request):
         addressid = request.POST.get("address")
         address = Address.objects.get(id=addressid)
 
-        couper_id = request.POST.get("coupon")
-        coup = Coupon.objects.get(id=couper_id) 
+        # couper_id = request.POST.get("coupon")
+        # coup = Coupon.objects.get(id=couper_id) 
 
         date_ordered = datetime.date.today()
         
@@ -432,15 +483,15 @@ def checkout(request):
             price = item.variant.price
             quantity = item.quantity
             item_total = quantity*price
-            if coup:
-                coupon_discount = (item_total * coup.discount) / 100
-                final = item_total - coupon_discount
+            # if coup:
+            #     coupon_discount = (item_total * coup.discount) / 100
+            #     final = item_total - coupon_discount
 
 
-                orderitemobj = OrderItems(variant = pdtvariant, order = orderobj,
-                                        quantity=quantity, price=price, total = final)
-            else:
-                orderitemobj = OrderItems(variant = pdtvariant, order = orderobj,
+            #     orderitemobj = OrderItems(variant = pdtvariant, order = orderobj,
+            #                             quantity=quantity, price=price, total = final)
+            # else:
+            orderitemobj = OrderItems(variant = pdtvariant, order = orderobj,
                                         quantity=quantity, price=price, total = item_total)
                 
             orderitemobj.save()
@@ -455,13 +506,25 @@ def checkout(request):
         orderobj.save()
         return redirect(ordersuccess)
 
-    total_cost = sum(item.total_cost() for item in cartobj)     
+    total_cost = sum(item.total_cost() for item in cartobj)+40 
+
+    # couponobj = None
+    # if request.session.get("coupon_id"):
+    #         coupon_id = request.session["coupon_id"]
+    #         couponobj = Coupon.objects.get(id=coupon_id)
+    #         coupon_discount = couponobj.discount_price
+    #         total_cost -= coupon_discount 
+    #         print(total_cost,"))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))")
+    #         return render(request, "checkout.html", context)
+
+    # total_cost = sum(item.total_cost() for item in cartobj) + 40
+  
     context = {
             'username': username,
             'cartobj': cartobj,
             'addobj': addobj,
             'total_cost':total_cost,
-            "couponobj":couponobj
+            # "couponobj":couponobj
             }
     return render (request,"checkout.html",context)
   
@@ -680,21 +743,19 @@ def add_category(request):
 def add_product(request):
     brands=Brand.objects.all()
     catobj=category.objects.all()
-    # print(">>>>>>>>>>>>>>",brands)
     context={
         "brands":brands,
         "category":catobj
     }
     if request.method == 'POST':
-        
         name = request.POST.get('name')
         brand = request.POST.get('brand')
         brandobj=Brand.objects.get(brand=brand)
         category_name = request.POST.get('category')
         catobj=category.objects.get(name=category_name)
-        # print(name,brand,brandobj,category_name,catobj,"....................................................")
         description = request.POST.get('description')
-        image = request.POST.get('category_image')
+        image = request.FILES.get('image')
+        print(image,"...........................................................")
 
         new_product = Product(name=name, brand=brandobj, category=catobj, description=description, image=image)
         new_product.save()
