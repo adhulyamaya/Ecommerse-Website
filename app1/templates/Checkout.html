@@ -489,29 +489,34 @@ body{
                   {% endfor %}
               </select>
             </div>
-    </form><br>
+    </form>
+    <br>  
+    <aside class =" col-md-3">
+      <div class = "card mb-3">
+          <div class = " card-body">
+              <form method="POST">
+                  {% csrf_token %}
+                  <div class="form-group">
+                      <label>Have coupon ? </label>
+                      <div class="input-group">
+                          <input type = "text" class ="form-control" name="coupon" placeholder="coupon" value="{{item.coupon}}">
+                          <span class ="input-group-append">
+                              <button type = "submit" class = "btn btn-primary" name="couponbutton">Apply</button>
+                          </span>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
 
-    {% comment %} <form action="{% url 'checkout'  %}" method="POST" class="d-inline" >
-      {% csrf_token %}
-    <div><p>Coupons: </p>
-      <select id="coupon-select" name="coupon">
-          
-          {% for coupon in couponobj %}
-              <option value="{{ coupon.id }}">{{ coupon.name }}</option>
-              {% comment %} <input type="hidden" name="address_id" value="{{ address.id }}">  {% endcomment %}
-          {% comment %} {% endfor %}
-      </select>
-      <button type="submit">Apply</button>
-    </div><br>          {% endcomment %}
-
-          
             <!-- Buttons-->
             <hr class="my-2">
             <div class="row pt-3 pb-5 mb-2">
                 <div class="col-sm-6 mb-3">
                   <a class="btn btn-style-1 btn-secondary btn-block" href="show-cart.html"><i class="fe-icon-refresh-ccw"></i>&nbsp;Update Cart</a></div>
                 <div class="col-sm-6 mb-3">
-                  <button name="checkout" type="submit" class="btn btn-style-1 btn-primary btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;Checkout</button>
+                  <button name="checkout" type="submit" class="btn btn-style-1 btn-primary btn-block" name="orderbutton"><i class="fe-icon-credit-card"></i>&nbsp;Checkout</button>
                 </div>
             </div>
 

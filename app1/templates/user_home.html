@@ -72,6 +72,15 @@
                     <button type="button" style="border: none; background: none; padding: 0; cursor: pointer;">Signup</button>
                 </a>
             </div> {% endcomment %}
+
+
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Orders</a>
+                <div class="dropdown-menu rounded-0 m-0">
+                    <a href="{% url 'view_order' %}" class="dropdown-item">View order</a>
+                    <a href="{% url 'order_history' %}" class="dropdown-item">Order history</a>
+                </div>
+            </div>
             <div class="mr-3">
                 <a href="{% url 'logout' %}" style="text-decoration: none;">
                     <button type="button" style="border: none; background: none; padding: 0; cursor: pointer;">logout</button>

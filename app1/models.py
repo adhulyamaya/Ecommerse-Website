@@ -92,7 +92,7 @@ class Variant(models.Model):
 class Coupon(models.Model):
     coupon_code= models.CharField(max_length=100 ,blank=True,null = True)
     is_expired = models.BooleanField(default=False)
-    discount_price= models.IntegerField(default=100)
+    discount_price= models.DecimalField(max_digits=10,decimal_places=2,default=0)
     minimum_amount = models.IntegerField(default=500)
     
     def __str__(self):
@@ -103,23 +103,17 @@ class Cart(models.Model):
     username = models.ForeignKey(custom_user,on_delete=models.CASCADE)
     variant = models.ForeignKey(Variant,on_delete=models.CASCADE)
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL,null=True,blank= True)
+    discount_price= models.DecimalField(max_digits=10,decimal_places=2,default=0)
     quantity = models.PositiveIntegerField(default=1)
     
-    
-    
-   
-
     def total_cost(self):
-        return self.quantity * self.variant.price 
+        return self.quantity * self.variant.price  
 
 class Wishlist(models.Model):
     username = models.ForeignKey(custom_user,on_delete=models.CASCADE)
     variant = models.ForeignKey(Variant,on_delete=models.CASCADE)
    
-    
-
-
-    
+   
 class Order(models.Model):
     ORDER_STATUS_CHOICES = (
         ('order pending','order pending'),
