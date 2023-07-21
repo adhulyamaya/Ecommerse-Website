@@ -10,12 +10,11 @@
                 <tr>
                     <th>Id</th>
                     <th>customer</th>
-                    <th>address</th>
                     <th>Total</th>
                     <th>payment type</th>
                     <th>order status</th>
-                    <th>Order Details</th>
-                    
+                    <th>Action</th>
+                    <th><th>
                    
                 </tr>
             </thead>
@@ -24,15 +23,12 @@
                 <tr>
                     <td>{{ order.id }}</td>
                     <td>{{ order.customer.username }}</td>
-                    {% comment %} <td><img src="{{ image.url }}" alt="{{ product.name }}" class="product-image"></td> {% endcomment %}
-                    
-                    <td>{{ order.address }}</td>
                     <td>{{ order.total }}</td>
-
                     <td>{{ order.payment_type }}</td>
                     <td>{{order.order_status}}</td>
-                   <td><a href="{% url 'order_items' order.id %}">view order details</a></td>
-                    
+                    <td><button type="button" class="btn btn-danger">Cancel</button></td>
+                   {% comment %} <td><a href="{% url 'order_items' order.id %}">view order details</a></td> {% endcomment %}
+                   <td>Download Invoice<td>
                 </tr>
                 {% endfor %}
             </tbody>

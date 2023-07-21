@@ -457,7 +457,9 @@ body{
                      <div class="count-input">
                        {{ item.quantity }}
                     </div>
-                    <div class="cart-item-label">P:</div>
+                  </div>
+                    <div class="px-3 my-3 text-center">
+                    <div class="cart-item-label">Price:</div>
                     <div class="count-input">
                       {{ item.variant.price }}
                    </div>
@@ -467,60 +469,84 @@ body{
                 {% endfor%}
 
                 <div class="px-3 my-3 text-center">
-                    <div class="cart-item-label">Subtotal :{{total_cost}}</div><span class="text-xl font-weight-medium"></span>
+                    <div class="cart-item-label">Subtotal :</div>
+                    <div class="count-input">
+                      {{total_cost}}
+                   </div>
                 </div>
                 
                 
               
             </div>
-          </div>
+          
+            <div> 
+              <aside class =" col-md-4">
+                <div class = "card mb-3">
+                    <div class = " card-body">
+                        <form method="POST"  action="{% url 'checkout' %}" >
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Have coupon ? </label>
+                                <div class="input-group">
+                                    <input type = "text" class ="form-control" name="coupon" placeholder="coupon" value="{{coupon}}">
+                                    <span class ="input-group-append">
+                                        <button type = "submit" class = "btn btn-primary" name="coupon_post">Apply</button>
+                                    </span>
+                                </div>
+                            </div>
+                        {% comment %} </form> {% endcomment %}
+                    </div>
+                </div>
+            </div> 
 
 
-    <form action="{% url 'checkout'  %}" method="POST" class="d-inline">
-              {% csrf_token %}
+  <aside class =" col-md-7">
+    <div class = "card mb-3">
+        <div class = " card-body">
+    {% comment %} <form action="{% url 'checkout'  %}" method="POST" name="order_post">
+              {% csrf_token %} {% endcomment %}
 
             <div>
-              <p>Address: </p>
-              <select id="address-select" name="address">
+              <p>Choose Address: </p>
+              <select id="addressid" name="address">
                   
                   {% for address in addobj %}
+
                       <option value="{{ address.id }}">{{ address.flat }}, {{ address.locality }}, {{ address.city }}</option>
-                     {% comment %} <input type="hidden" name="address_id" value="{{ address.id }}">  {% endcomment %}
+                     
                   {% endfor %}
               </select>
+              <br><br>
+            <a class  href="{% url 'user_profile' %}">add new address</a> 
             </div>
-    </form>
-    <br>  
-    <aside class =" col-md-3">
-      <div class = "card mb-3">
-          <div class = " card-body">
-              <form method="POST">
-                  {% csrf_token %}
-                  <div class="form-group">
-                      <label>Have coupon ? </label>
-                      <div class="input-group">
-                          <input type = "text" class ="form-control" name="coupon" placeholder="coupon" value="{{item.coupon}}">
-                          <span class ="input-group-append">
-                              <button type = "submit" class = "btn btn-primary" name="couponbutton">Apply</button>
-                          </span>
-                      </div>
-                  </div>
-              </form>
-          </div>
-      </div>
+    
   </div>
+</div> 
+
+    <br> 
+   
+</div>
 
             <!-- Buttons-->
+       
+          
             <hr class="my-2">
             <div class="row pt-3 pb-5 mb-2">
                 <div class="col-sm-6 mb-3">
-                  <a class="btn btn-style-1 btn-secondary btn-block" href="show-cart.html"><i class="fe-icon-refresh-ccw"></i>&nbsp;Update Cart</a></div>
+                  <a class="btn btn-style-1 btn-secondary btn-block" href="shop"><i class="fe-icon-refresh-ccw"></i>&nbsp;Update Cart</a>
+                </div>
+
+
+
+
                 <div class="col-sm-6 mb-3">
-                  <button name="checkout" type="submit" class="btn btn-style-1 btn-primary btn-block" name="orderbutton"><i class="fe-icon-credit-card"></i>&nbsp;Checkout</button>
+                  <button name="order_post" type="submit" class="btn btn-style-1 btn-primary btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;Checkout</button>
                 </div>
             </div>
+        </form> 
 
-    </form> 
+
+    
 
 
 
@@ -544,13 +570,13 @@ body{
 {% endblock main-content %}
 
 
-
-  {% comment %} <!-- Coupon + Subtotal-->
+{% comment %} 
+  <!-- Coupon + Subtotal-->
 <div class="d-sm-flex justify-content-between align-items-center text-center text-sm-left">
-  {% comment %} <form class="form-inline py-2">
+ <form class="form-inline py-2">
       <label class="sr-only">Coupon code</label>
       <input class="form-control form-control-sm my-2 mr-3" type="text" placeholder="Coupon code" required="">
       <button class="btn btn-style-1 btn-secondary btn-sm my-2 mx-auto mx-sm-0" type="submit">Apply Coupon</button>
   </form> 
   <div class="py-2"><span class="d-inline-block align-middle text-sm text-muted font-weight-medium text-uppercase mr-2">Subtotal:</span><span class="d-inline-block align-middle text-xl font-weight-medium">$188.50</span></div>
-</div> {% endcomment %}
+</div>  {% endcomment %}

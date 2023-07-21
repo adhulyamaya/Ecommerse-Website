@@ -27,7 +27,7 @@ class CartAdmin(admin.ModelAdmin):
     list_display = ['id','username','variant','quantity']  
 
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ['username','flat','locality','city'] 
+    list_display = ['id','username','flat','locality','city'] 
 
 class BrandAdmin(admin.ModelAdmin):
     list_display = ['id','brand']  

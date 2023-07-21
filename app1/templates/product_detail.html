@@ -5,98 +5,55 @@
 {% block main-content %}
 <div class="container">
   <div class="row">
-    <div class="row mt-5"></div>
-    <div class="col-md-6">
-      <div class="d-flex flex-column">
+    <div class="col-md-3">
+      <div class="border-bottom mb-4 p-4">
+        <h5 class="font-weight-semi-bold mb-4">Filter by Color</h5>
+        <form method="post">
+          {% csrf_token %}
+          <!-- Color Start -->
+          {% for c in colobj %}
+          <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+            <input type="checkbox" class="custom-control-input" id="color-{{ c.id }}" name="colors" value="{{ c.id }}">
+            <label class="custom-control-label" for="color-{{ c.id }}">{{ c.color }}</label>
+          </div>
+          {% endfor %}
+          <button type="submit" hidden>Submit</button> 
+        </form>
+      </div>
+
+      <div class="border-bottom mb-4 pb-4">
+        <h5 class="font-weight-semi-bold mb-4">Filter by Size</h5>
+        <form method="post">
+          {% csrf_token %}
+          
+          {% for s in sizeobj %}
+          <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+            <input type="checkbox" class="custom-control-input" id="brand-{{ s.id }}" name="size" value="{{ s.id }}">
+            <label class="custom-control-label" for="brand-{{ s.id }}">{{ s.size }}</label>
+          </div>
+          {% endfor %}
+          <button type="submit" hidden>Submit</button> 
+        </form>
+      </div>
+    </div>
+
+    <div class="col-md-9">
+      <div class="row">
         {% for variant in variants %}
-        <div class="variant-item">
-          <a href="{% url 'variant_detail' product_id=product.id variant_id=variant.id %}">
-            <img src="{{ variant.image1.url }}" alt="" class="img-fluid">
-          </a>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="variant-item">
+            <a href="{% url 'variant_detail' product_id=product.id variant_id=variant.id %}">
+              <img src="{{ variant.image1.url }}" alt="" class="img-fluid">
+            </a>
+            <p class="mt-3">{{ variant.variant }}</p>
+            <p class="mb-0">Color: {{ variant.Color.color }}</p>
+            <p>Size: {{ variant.Size.size }}</p>
+            <p>Price: {{ variant.price }}</p>
+          </div>
         </div>
         {% endfor %}
       </div>
     </div>
-    <div class="col-md-6">
-      <div class="product-details">
-        <h1>{{ product.name }}</h1>
-        <p>Brand: {{ product.brand }}</p>
-        <div class="d-flex mb-3">
-          <p class="text-dark font-weight-medium mb-0 mr-3">Size:</p>
-          <div class="sizes-container">
-            {% for size in sizes %}
-            <div class="size">{{ size }}</div>
-            {% endfor %}
-          </div>
-        </div>
-        <div class="d-flex mb-3">
-          <p class="text-dark font-weight-medium mb-0 mr-3">Color:</p>
-          <div class="colors-container">
-            {% for color in colors %}
-            <span class="badge badge-primary">{{ color }}</span>
-            {% endfor %}
-          </div>
-        </div>
-        <p>Category: {{ product.category }}</p>
-        <p>Description: {{ product.description }}</p>
-        <div class="d-flex mb-3">
-          <div class="text-primary mr-2">
-            <small class="fas fa-star"></small>
-            <small class="fas fa-star"></small>
-            <small class="fas fa-star"></small>
-            <small class="fas fa-star-half-alt"></small>
-            <small class="far fa-star"></small>
-          </div>
-          <small class="pt-1">(50 Reviews)</small>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
-
-
-
-
-<div class="col-lg-3 col-md-12">
-  <div class="border-bottom mb-4 pb-4">
-      <h5 class="font-weight-semi-bold mb-4">Filter by Color</h5>
-  <form method="post">
-      {% csrf_token %}
-    <!-- Color Start -->
-    {% for c in colobj %}
-    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-      <input type="checkbox" class="custom-control-input" id="color-{{ c.id }}" name="colors" value="{{ c.id }}">
-
-      <label class="custom-control-label" for="color-{{ c.id }}">{{ c.color }}</label>
-      <span class="badge border font-weight-normal">150</span>
-    </div>
-    {% endfor %}
-    <button type="submit" hidden>Submit</button> <!-- Add a submit button inside the form -->
-  </form>
-</div>
-</div>
-
-
-
-<div class="col-lg-3 col-md-12">
-  <div class="border-bottom mb-4 pb-4">
-      <h5 class="font-weight-semi-bold mb-4">Filter by Size</h5>
-  <form method="post">
-      {% csrf_token %}
-    <!-- Color Start -->
-    {% for s in sizeobj %}
-    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-      <input type="checkbox" class="custom-control-input" id="brand-{{ s.id }}" name="size" value="{{ s.id }}">
-      <label class="custom-control-label" for="brand-{{ s.id }}">{{ s.size }}</label>
-      <span class="badge border font-weight-normal">150</span>
-    </div>
-    {% endfor %}
-    <button type="submit" hidden>Submit</button> <!-- Add a submit button inside the form -->
-  </form>
-</div>
-</div>
-
-
 {% endblock main-content %}
-
-{% block content %}{% endblock content %}

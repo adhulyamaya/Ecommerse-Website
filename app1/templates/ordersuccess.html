@@ -3,15 +3,24 @@
 <head>
     <title>Order Confirmation</title>
     
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
-<body>
-    <h1>Order Confirmation</h1>
+<body class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="container text-center">
+        <h1>Order Confirmation</h1>
 
-    <p>Your order has been successfully placed. Thank you for your purchase!</p>
+        <p>Your order has been successfully placed. Oh Yeah!</p>
 
-    <!-- Rest of your HTML content -->
+        <lottie-player src="https://lottie.host/da369263-66d1-4eca-af1d-b331a380297b/Svw5Kproyb.json" background="#fff" speed="1" style="width: 300px; height: 300px; margin-left: 400px;" loop autoplay direction=“1” mode=“normal”></lottie-player>
 
-    <a href="{% url 'user_profile' %}">Go To user_profile</a>
+
+        <a href="{% url 'user_profile' %}" class="btn btn-primary">Go To user_profile</a>
+    </div>
+
    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </body>
 </html>

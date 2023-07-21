@@ -3,7 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from .models import custom_user,Product
 from django.contrib.auth.models import User
-
+from decimal import Decimal
+ 
 from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
@@ -234,6 +235,34 @@ def shop_before(request):
     return render (request,"shop_before.html",context)
 
 
+def product_detail(request, product_id):
+    product = Product.objects.get(id=product_id)
+    colobj = Color.objects.all()
+    sizeobj = Size.objects.all()
+    variants = Variant.objects.filter(Product=product)
+    sizes = Variant.objects.filter(Product=product).values_list('Size__size', flat=True).distinct()
+    colors = Variant.objects.filter(Product=product).values_list('Color__color', flat=True).distinct()
+
+    # Handle form submission
+    if request.method == 'POST':
+        selected_colors = request.POST.getlist('color')
+        selected_size = request.POST.get('size')
+
+        if selected_colors:
+            variants = variants.filter(Color__id__in=selected_colors)
+
+        if selected_size:
+            variants = variants.filter(Size__id=selected_size)
+
+    context = {
+        'product': product,
+        'sizes': sizes,
+        'colors': colors,
+        'variants': variants,
+        'colobj': colobj,
+        'sizeobj': sizeobj,
+    }
+    return render(request, 'product_detail.html', context)
 
 
 
@@ -351,19 +380,19 @@ def add_to_cart(request):
     cart.save()
     return redirect("show-cart")
 
-# def show_cart(request):
-#   username=custom_user.objects.get(username=request.session["username"])
-#   cart = Cart.objects.filter(username = username)
-#   cart_count = Cart.objects.filter(username = username).count()
-#   amount = 0
-#   quantityobj=0
-#   for i in cart:
-#       value = i.quantity * i.variant.price
-#       amount = amount + value
-#       total = amount +40
-#       quantityobj +=i.quantity
-#   return render (request,'addtocart.html',{'cart': cart,'total':total,'amount':amount,
-#                                            'quantityobj':quantityobj,"cart_count":cart_count})
+def show_cart(request):
+  username=custom_user.objects.get(username=request.session["username"])
+  cart = Cart.objects.filter(username = username)
+  cart_count = Cart.objects.filter(username = username).count()
+  amount = 0
+  quantityobj=0
+  for i in cart:
+      value = i.quantity * i.variant.price
+      amount = amount + value
+      total = amount +40
+      quantityobj +=i.quantity
+  return render (request,'addtocart.html',{'cart': cart,'total':total,'amount':amount,
+                                           'quantityobj':quantityobj,"cart_count":cart_count})
 
 def cart_inc(request,item_id):
     cartobj = Cart.objects.get(id=item_id)
@@ -397,152 +426,169 @@ def cart_remove(request,item_id):
     cartobj = Cart.objects.get(id = item_id)
     cartobj.delete()
     return redirect ("show-cart")
+
 from django.contrib import messages
 
+# org checkout777777777777777
+
+# def checkout(request):
+#   if "username" in request.session:
+#     username=custom_user.objects.get(username=request.session["username"])
+#     cartobj = Cart.objects.filter(username = username)
+#     addobj = Address.objects.filter(username = username)
 
 
-def show_cart(request):
-    username = custom_user.objects.get(username=request.session["username"])
-    cart_items = Cart.objects.filter(username=username)
-    cart_count = cart_items.count()
+#     if request.method == "POST":
+#         username = request.session.get("username")
+#         customer = custom_user.objects.get(username=username)
+#         cartobj = Cart.objects.filter(username = customer)
+#         addobj = Address.objects.filter(username = customer)
+#         if request.method == "POST":
+#             username = request.session.get("username")
+#             customer = custom_user.objects.get(username=username)
+#             cartobj = Cart.objects.filter(username = customer)
+#             addobj = Address.objects.filter(username = customer)
 
-    # couponobj = None
-
-    # if request.method == 'POST':
-    #     coupon = request.POST.get("coupon")
-    #     couponobj = Coupon.objects.filter(coupon_code__icontains=coupon)
-
-    #     if not couponobj.exists():
-    #         messages.warning(request, 'Invalid Coupon')
-    #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-    #     for cart_item in cart_items:
-    #         if cart_item.coupon:
-    #             messages.warning(request, 'Coupon already applied')
-    #             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-    #         cart_item.coupon = couponobj[0]
-    #         print(couponobj[0])
-    #         cart_item.save()
-
-    amount = 0
-    quantityobj = 0
-    for cart_item in cart_items:
-        value = cart_item.quantity * cart_item.variant.price
-        amount += value
-        quantityobj += cart_item.quantity
-
-    return render(request, 'addtocart.html', {
-        'cart': cart_items,
-        'amount': amount,
-        'quantityobj': quantityobj,
-        'cart_count': cart_count
-    })
-
-
-
-
-def checkout(request):
-  if "username" in request.session:
-    username=custom_user.objects.get(username=request.session["username"])
-    cartobj = Cart.objects.filter(username = username)
-    addobj = Address.objects.filter(username = username)
-
-    couponobj = None
-
-    if request.method == "POST":
-        username = request.session.get("username")
-        customer = custom_user.objects.get(username=username)
-        cartobj = Cart.objects.filter(username = customer)
-        addobj = Address.objects.filter(username = customer)
-        
-        coupon = request.POST.get("coupon")
-        couponobj = Coupon.objects.filter(coupon_code__icontains=coupon)
-
-        # if couponobj:
-        
-        if "couponbutton" in request.POST:
-            coupon = request.POST.get("coupon")
-            couponobj = Coupon.objects.filter(coupon_code__icontains=coupon)
-            print(couponobj,"Couponobj!!!!!!!")
-            # coupon_discount=couponobj.discount_price
-
-            if not couponobj.exists():
-                messages.warning(request, 'Invalid Coupon')
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-            # for cart_item in cart_items:
-            #     if cart_item.coupon:
-            #         messages.warning(request, 'Coupon already applied')
-            #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-            # orderobj.coupon = couponobj[0]
-            for item in cartobj:
-                item.coupon=couponobj.first()
-                item.save()
-
-            print(couponobj[0],"couponobj???????????????????")
-
-        if "orderbutton" in request.POST:
-            username = request.session.get("username")
-            customer = custom_user.objects.get(username=username)
-            cartobj = Cart.objects.filter(username = customer)
-            addobj = Address.objects.filter(username = customer)
-
-            addressid = request.POST.get("address")
-            address = Address.objects.get(id=addressid)
-            date_ordered = datetime.date.today()
+#             addressid = request.POST.get("address")
+#             address = Address.objects.get(id=addressid)
+#             date_ordered = datetime.date.today()
             
-            orderobj = Order(customer = customer, address=address, date_ordered=date_ordered, total = 0)
-            orderobj.save()
+#             orderobj = Order(customer = customer, address=address, date_ordered=date_ordered, total = 0)
+#             orderobj.save()
         
-            for item in cartobj:
-                pdtvariant = item.variant
-                price = item.variant.price
-                quantity = item.quantity
-                item_total = quantity*price
+#             for item in cartobj:
+#                 pdtvariant = item.variant
+#                 price = item.variant.price
+#                 quantity = item.quantity
+#                 item_total = quantity*price
 
-                orderitemobj = OrderItems(variant = pdtvariant, order = orderobj,
-                                            quantity=quantity, price=price, total = item_total)
+#                 orderitemobj = OrderItems(variant = pdtvariant, order = orderobj,
+#                                             quantity=quantity, price=price, total = item_total)
                     
-                orderitemobj.save()
+#                 orderitemobj.save()
+#                 print(orderitemobj,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-                pdtvariant.quantity -= quantity
-                pdtvariant.save()
+#                 pdtvariant.quantity -= quantity
+#                 pdtvariant.save()
 
-                orderobj.total += item_total
+#                 orderobj.total += item_total
 
-                item.delete()
+#                 item.delete()
 
-            orderobj.save()
-            return redirect(ordersuccess)
+#             orderobj.save()
+#             return redirect(ordersuccess)
         
         
     
-    total_cost = sum(item.total_cost() for item in cartobj)+40
+#     total_cost = sum(item.total_cost() for item in cartobj)+40
 
  
   
-    context = {
-            'username': username,
-            'cartobj': cartobj,
-            'addobj': addobj,
-            'total_cost':total_cost,
+#     context = {
+#             'username': username,
+#             'cartobj': cartobj,
+#             'addobj': addobj,
+#             'total_cost':total_cost,
             
-            }
-    return render (request,"checkout.html",context)
+#             }
+#     return render (request,"checkout.html",context)
   
 #   return render (request,"checkout.html",context)
 
+def checkout(request):
+    if "username" in request.session:
+        username = request.session.get("username")
+        customer = custom_user.objects.get(username=username)
+        cartobj = Cart.objects.filter(username=customer)
+        addobj = Address.objects.filter(username = customer)
+        print(addobj,"???????????????????????")
+
+        if request.method == "POST":
+            if "coupon_post" in request.POST:
+                coupon_code = request.POST.get("coupon")
+                if coupon_code:
+                    
+                        coupon = Coupon.objects.get(coupon_code=coupon_code, is_expired=False)
+                        print(coupon)
+                        
+                        username = request.session.get("username")
+                        customer = custom_user.objects.get(username=username)
+                        cart_items = Cart.objects.filter(username=customer)
+                        total_cost = calculate_total_cost(cart_items)
+                        print(total_cost)
+                        if total_cost >= coupon.minimum_amount:
+                            total_cost = Decimal(total_cost) - coupon.discount_price
+                            # request.session["total_cost_after_coupon"] = total_cost
+            
+
+                            print(total_cost,">>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<????????????")
+                            
+                return redirect('checkout')
+
+            if "order_post" in request.POST:
+                address_id = request.POST.get('address', None)
+                address = Address.objects.get(id=address_id)
+                date_ordered = datetime.date.today()
+                # coupon_code = request.POST.get("coupon")
+                # if coupon_code:
+                    
+                #     coupon = Coupon.objects.get(coupon_code=coupon_code, is_expired=False)
+                #     print(coupon,"????????????????????????PPPPPPPPPPPPPPIIIIIIIIIIIIIIIIIII")
+                
+                orderobj = Order(customer=customer, date_ordered=date_ordered, total=0,address=address)
+                orderobj.save()
+
+                for item in cartobj:
+                    pdtvariant = item.variant
+                    price = item.variant.price
+                    quantity = item.quantity
+                    item_total = quantity * price
+
+                    orderitemobj = OrderItems(variant=pdtvariant, order=orderobj, quantity=quantity, price=price, total=item_total)
+                    orderitemobj.save()
+
+                    pdtvariant.quantity -= quantity
+                    pdtvariant.save()
+
+                    orderobj.total += item_total
+
+                    item.delete()
+                
+                 
+                orderobj.save()
+                return redirect(ordersuccess)
+            
+
+        total_cost_after_coupon = request.session.get("total_cost_after_coupon", None)
+        if total_cost_after_coupon is not None:
+            total_cost = total_cost_after_coupon
+
+            print(total_cost,"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        else:
+            total_cost = sum(item.total_cost() for item in cartobj) + 40
+            print(total_cost,"++++++++++++")
+
+        context = {
+            'username': username,
+            'cartobj': cartobj,
+            'total_cost': total_cost,
+            'addobj':addobj,
+        }
+        return render(request, "checkout.html", context)
 
 
+def calculate_total_cost(cart_items):
+    total_cost = 0
+    for item in cart_items:
+        total_cost += item.total_cost()
+    return total_cost
 
+
+from .models import Cart, Coupon
 
 
 def ordersuccess(request):
     return render (request,"ordersuccess.html")
-
-
 
 
 
@@ -603,7 +649,11 @@ def search_products(request):
 
 
 def view_order(request):
-    return render(request, 'view_order.html' ) 
+    orderobj = Order.objects.all()
+    context = {
+        "orderobj":orderobj
+    }
+    return render(request, 'view_order.html',context ) 
 
 def order_history(request):
     return render(request, 'order_history.html' ) 

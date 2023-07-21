@@ -56,7 +56,7 @@ urlpatterns = [
     path('wishlist_remove/<int:item_id>',views.wishlist_remove,name = 'wishlist_remove'),
     path('view_order/',views.view_order,name = 'view_order'),
     path('order_history/',views.order_history,name = 'order_history'),
-    
+    path('product/<int:product_id>/variant/<int:variant_id>/', views.variant_detail, name='variant_detail'),
 
 
     
