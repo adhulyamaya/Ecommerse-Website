@@ -129,7 +129,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
-
+RAZORPAY_API_KEY="rzp_test_yHKHQvJtbLtt3P"
+RAZORPAY_API_SECRET_KEY="3rbqbjmg4v7QvemTtwVNAFXL"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

@@ -463,88 +463,105 @@ body{
                 {{total_cost}}
               </div>
           </div>
-          
-          
+        </div>
+
         
-      </div>
-          
-            {% comment %} <div> 
-              <aside class =" col-md-4">
-                <div class = "card mb-3">
-                    <div class = " card-body">
-                        <form method="POST"  action="{% url 'checkout' %}" >
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <label>Have coupon ? </label>
-                                <div class="input-group">
-                                    <input type = "text" class ="form-control" name="coupon" placeholder="coupon" value="{{coupon}}">
-                                    <span class ="input-group-append">
-                                        <button type = "submit" class = "btn btn-primary" name="coupon_post">Apply</button>
-                                    </span>
-                                </div>
-                            </div>
-                        {% comment %} </form> {% endcomment %}
-                    {% comment %} </div>
-                </div>
-            </div>  {% endcomment %} 
-
-
   <aside class =" col-md-7">
     <div class = "card mb-3">
         <div class = " card-body">
-    <form action="{% url 'checkout'  %}" method="POST" name="order_post">
+          <form action="{% url 'checkout'  %}" method="POST" name="order_post">
               {% csrf_token %}
 
-            <div>
-              <p>Choose Address: </p>
-              <select id="addressid" name="address">
-                  
-                  {% for address in addobj %}
+                          <div>
+                                  <p>Choose Address: </p>
+                                  <select id="addressid" name="address"> 
+                                      {% for address in addobj %}
+                                          <option value="{{ address.id }}">{{ address.flat }}, {{ address.locality }}, {{ address.city }}</option>
+                                        
+                                      {% endfor %}
+                                  </select>
+                                  <br><br>
+                                <a class  href="{% url 'user_profile' %}">add new address</a> 
+                          </div>
+                      </div>
+                  </div>
+                  <br>  
+                </div>
+                <hr class="my-2">
+              <div class="row pt-3 pb-5 mb-2">
+              <div class="col-md-3">
+              <a class="btn btn-style-1 btn-primary btn-block" href="shop"><i class="fe-icon-refresh-ccw"></i>&nbsp;Update Cart</a>
+              </div>
 
-                      <option value="{{ address.id }}">{{ address.flat }}, {{ address.locality }}, {{ address.city }}</option>
-                     
-                  {% endfor %}
-              </select>
-              <br><br>
-            <a class  href="{% url 'user_profile' %}">add new address</a> 
-            </div>
-    
-  </div>
-</div> 
+              <div class="col-md-3">
+              <button type="submit" class="btn btn-style-1 btn-success btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;Checkout</button>
+              {% comment %} <button type="submit" class="btn btn-style-1 btn-success btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;pay with razorpay</button> {% endcomment %}
+              </div>
+              <div class="col-md-3">
+                <button type="submit" class="btn btn-style-1 btn-primary btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;pay with razorpay</button>
+              </div>
+              <button id="rzp-button1">Execute with Razorpay</button>
 
-    <br> 
-   
+              </div>
+          </form> 
+
+</div>
+</table>
 </div>
 
-            <!-- Buttons-->
+</div>
+</div>
+</div>
+</div>
        
           
-            <hr class="my-2">
-            <div class="row pt-3 pb-5 mb-2">
-                <div class="col-sm-6 mb-3">
-                  <a class="btn btn-style-1 btn-secondary btn-block" href="shop"><i class="fe-icon-refresh-ccw"></i>&nbsp;Update Cart</a>
-                </div>
 
-
-
-
-                <div class="col-sm-6 mb-3">
-                  <button name="order_post" type="submit" class="btn btn-style-1 btn-primary btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;Checkout</button>
-                </div>
-            </div>
-        </form> 
- 
-            </div>
-
-
-        </table>
-    </div>
-    
-            </div>
-        </div>
-    </div>
-</div>
 <!-- Checkout End -->
+
+{% comment %} RazorPay Script {% endcomment %}
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "{{api_key}}", // Enter the Key ID generated from the Dashboard
+    "amount": "{{amount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "Acme Corp",
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": "{{order_id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+        alert(response.razorpay_payment_id);
+        alert(response.razorpay_order_id);
+        alert(response.razorpay_signature)
+    },
+    "prefill": {
+        "name": "Gaurav Kumar",
+        "email": "gaurav.kumar@example.com",
+        "contact": "9000090000"
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response){
+        alert(response.error.code);
+        alert(response.error.description);
+        alert(response.error.source);
+        alert(response.error.step);
+        alert(response.error.reason);
+        alert(response.error.metadata.order_id);
+        alert(response.error.metadata.payment_id);
+});
+document.getElementById('rzp-button1').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+</script>
 
 {% endblock main-content %}
 

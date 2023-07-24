@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Order</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Additional custom styles */
+        body {
+            padding: 20px;
+        }
+        .status-active {
+            color: green;
+        }
+        .status-blocked {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit order</h1>
+        <form method="POST" action="{% url 'edit_order'  %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <h5>Choose Order Status: </h5>
+                <select id="orderid" name="order"> 
+                        {% for order in orderobj %}
+                            <option value="{{ order.id }}">{{ order.order_status }}</option>
+                        
+                        {% endfor %}
+                </select>
+               
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+</body>
+</html>

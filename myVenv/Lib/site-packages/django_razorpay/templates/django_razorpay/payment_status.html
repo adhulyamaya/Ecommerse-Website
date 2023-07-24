@@ -1,0 +1,31 @@
+{% extends "django_razorpay/base.html" %}
+{% load static %}
+{% block title %}Payment status{% endblock %}
+{% block head %}{% endblock %}
+{% block main %}
+<main>
+    <div class="row g-5 align-items-center justify-content-center">
+      <div class="col-md-7 col-lg-5">
+          <div class="row">
+          <div class="col-12">
+              {% for message in messages %}
+              <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+              <strong>{{ message }}</strong>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+              {% endfor %}
+            </div>
+
+          </div>
+
+      </div>
+    </div>
+  </main>
+{% endblock %}
+{% block js %}
+<script>
+  $(document).ready(function(){
+
+  });
+</script>
+{% endblock %}

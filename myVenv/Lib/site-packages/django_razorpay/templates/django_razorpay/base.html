@@ -1,0 +1,85 @@
+{% load static %}
+{% load dj_razorpay %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.84.0">
+    <title>{% block title %}{% endblock %}</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/checkout/">
+      <!-- Bootstrap core CSS -->
+    <link href="{% static 'django_razorpay/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'django_razorpay/css/bootstrap-select.min.css' %}" rel="stylesheet">
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+
+
+    <!-- Custom styles for this template -->
+    {% block head %}{% endblock %}
+  </head>
+  <body class="bg-light">
+  <div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 border-bottom">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        <img class="bi me-2" width="40" height="40" src="{% organization_logo %}">
+        <span class="fs-4">{% organization_name %}</span>
+      </a>
+
+      <ul class="nav nav-pills">
+        {% nav_links as nav_links_list %}
+        {% for links in nav_links_list|slice:":2" %}
+        <li class="nav-item"><a href="{{links.1}}" class="nav-link pe-0">{{links.0}}</a></li>
+        {% endfor %}
+        <li class="nav-item dropdown">
+          <a class="nav-link pe-0 dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            More
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {% for links in nav_links_list|slice:"2:" %}
+            <li><a class="dropdown-item" href="{{links.1}}">{{links.0}}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+      </ul>
+    </header>
+  </div>
+<div class="container">
+  {% block main %}{% endblock %}
+
+  <footer class="my-5 pt-5 text-muted text-center text-small">
+    <p class="mb-1">&copy; 2017–2021 {% organization_name %}</p>
+<!--    <ul class="list-inline">-->
+<!--      <li class="list-inline-item"><a href="#">Privacy</a></li>-->
+<!--      <li class="list-inline-item"><a href="#">Terms</a></li>-->
+<!--      <li class="list-inline-item"><a href="#">Support</a></li>-->
+<!--    </ul>-->
+  </footer>
+</div>
+
+
+<script src="{% static 'django_razorpay/js/bootstrap.bundle.min.js' %}"></script>
+
+<script src="{% static 'django_razorpay/js/jquery.min.js' %}"></script>
+<script src="{% static 'django_razorpay/js/bootstrap-select.min.js' %}"></script>
+{% block js %}{% endblock %}
+
+  </body>
+</html>

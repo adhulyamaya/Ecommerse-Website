@@ -138,6 +138,7 @@ class Order(models.Model):
     def __str__(self):
         return f"Order #{self.id} - {self.order_status}"
 
+
 class OrderItems(models.Model):
     variant = models.ForeignKey(Variant,on_delete=models.SET_NULL,blank=True,null=True)
     order = models.ForeignKey(Order,on_delete=models.SET_NULL,blank=True,null=True)

@@ -14,7 +14,10 @@
                     <th>Total</th>
                     <th>payment type</th>
                     <th>order status</th>
+                    
+                    <th>Order Date</th>
                     <th>Order Details</th>
+                    <th>edit</th>
                     
                    
                 </tr>
@@ -24,15 +27,16 @@
                 <tr>
                     <td>{{ order.id }}</td>
                     <td>{{ order.customer.username }}</td>
-                    {% comment %} <td><img src="{{ image.url }}" alt="{{ product.name }}" class="product-image"></td> {% endcomment %}
-                    
                     <td>{{ order.address }}</td>
                     <td>{{ order.total }}</td>
-
                     <td>{{ order.payment_type }}</td>
-                    <td>{{order.order_status}}</td>
-                   <td><a href="{% url 'order_items' order.id %}">view order details</a></td>
+                    <th>{{order.order_status}}</th>
                     
+                    <td>{{order.date_ordered}}</td>
+                   <td><a href="{% url 'order_items' order.id  %}">view order details</a></td>
+                   {% comment %} <td><a href="{% url 'edit_order'  order.id  %}" class="btn btn-sm btn-primary">Edit</a></td> {% endcomment %}
+                   <td><a href="{% url 'edit_order' order.id  %}" class="btn btn-sm btn-primary">Edit</a></td>
+
                 </tr>
                 {% endfor %}
             </tbody>

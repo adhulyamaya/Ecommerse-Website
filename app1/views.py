@@ -21,6 +21,9 @@ import random,vonage
 from vonage import Sms
 from django.shortcuts import render, get_object_or_404
 from .models import Product
+import razorpay
+from PINKVILLA.settings import RAZORPAY_API_SECRET_KEY,RAZORPAY_API_KEY
+
 
 client=vonage.Client(key="23594a08",secret="asBI3u5U6nnRnMd6")
 sms=vonage.Sms(client)
@@ -500,8 +503,12 @@ from django.contrib import messages
 # org checkout777777777777777
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+import razorpay
+from razorpay import Client
+
 def checkout(request):
   if "username" in request.session:
+    print(RAZORPAY_API_SECRET_KEY,"####################")
     username=custom_user.objects.get(username=request.session["username"])
     cartobj = Cart.objects.filter(username = username)
     addobj = Address.objects.filter(username = username)
@@ -551,109 +558,32 @@ def checkout(request):
     
     total_cost = sum(item.total_cost() for item in cartobj)+40
 
+
+
+    client = razorpay.Client(
+    auth=(RAZORPAY_API_KEY, RAZORPAY_API_SECRET_KEY))
+    amount=int(2000*100)
+
+    currency='INR'
+    data = dict(amount=amount,currency=currency,payment_capture=1)
+                
+    payment_order = client.order.create(data=data)
+    payment_order_id=payment_order['id']
   
     context = {
             'username': username,
             'cartobj': cartobj,
             'addobj': addobj,
             'total_cost':total_cost,
+            "api_key":RAZORPAY_API_KEY,
+            "amount":400,
+            "order_id":payment_order_id,
+
+
             }
     return render (request,"checkout.html",context)
- 
-
   
-#   return render (request,"checkout.html",context)
-
-# def checkout(request):
-#     if "username" in request.session:
-#         username = request.session.get("username")
-#         customer = custom_user.objects.get(username=username)
-#         cartobj = Cart.objects.filter(username=customer)
-#         addobj = Address.objects.filter(username = customer)
-#         print(addobj,"???????????????????????")
-
-#         if request.method == "POST":
-#             if "coupon_post" in request.POST:
-#                 coupon_code = request.POST.get("coupon")
-#                 if coupon_code:
-                    
-#                         coupon = Coupon.objects.get(coupon_code=coupon_code, is_expired=False)
-#                         print(coupon)
-                        
-#                         username = request.session.get("username")
-#                         customer = custom_user.objects.get(username=username)
-#                         cart_items = Cart.objects.filter(username=customer)
-#                         total_cost = calculate_total_cost(cart_items)
-#                         print(total_cost)
-#                         if total_cost >= coupon.minimum_amount:
-#                             total_cost = Decimal(total_cost) - coupon.discount_price
-#                             # request.session["total_cost_after_coupon"] = total_cost
-            
-
-#                             print(total_cost,">>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<????????????")
-                            
-#                 return redirect('checkout')
-
-#             if "order_post" in request.POST:
-#                 address_id = request.POST.get('address', None)
-#                 address = Address.objects.get(id=address_id)
-#                 date_ordered = datetime.date.today()
-#                 # coupon_code = request.POST.get("coupon")
-#                 # if coupon_code:
-                    
-#                 #     coupon = Coupon.objects.get(coupon_code=coupon_code, is_expired=False)
-#                 #     print(coupon,"????????????????????????PPPPPPPPPPPPPPIIIIIIIIIIIIIIIIIII")
-                
-#                 orderobj = Order(customer=customer, date_ordered=date_ordered, total=0,address=address)
-#                 orderobj.save()
-
-#                 for item in cartobj:
-#                     pdtvariant = item.variant
-#                     price = item.variant.price
-#                     quantity = item.quantity
-#                     item_total = quantity * price
-
-#                     orderitemobj = OrderItems(variant=pdtvariant, order=orderobj, quantity=quantity, price=price, total=item_total)
-#                     orderitemobj.save()
-
-#                     pdtvariant.quantity -= quantity
-#                     pdtvariant.save()
-
-#                     orderobj.total += item_total
-
-#                     item.delete()
-                
-                 
-#                 orderobj.save()
-#                 return redirect(ordersuccess)
-            
-
-#         total_cost_after_coupon = request.session.get("total_cost_after_coupon", None)
-#         if total_cost_after_coupon is not None:
-#             total_cost = total_cost_after_coupon
-
-#             print(total_cost,"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-#         else:
-#             total_cost = sum(item.total_cost() for item in cartobj) + 40
-#             print(total_cost,"++++++++++++")
-
-#         context = {
-#             'username': username,
-#             'cartobj': cartobj,
-#             'total_cost': total_cost,
-#             'addobj':addobj,
-#         }
-#         return render(request, "checkout.html", context)
-
-
-# def calculate_total_cost(cart_items):
-#     total_cost = 0
-#     for item in cart_items:
-#         total_cost += item.total_cost()
-#     return total_cost
-
-
-# from .models import Cart, Coupon
+ 
 
 
 def ordersuccess(request):
@@ -964,13 +894,30 @@ def delete_category(request, category_id):
         return redirect('category')
     return render(request, 'delete_category.html', {'category': categoryobj})
 
+def edit_order(request,order_id):
+    orderobj=Order.objects.all()
+    order_obj = Order.objects.get(id= order_id)
+    if request.method == 'POST':  
+        name = request.POST.get("order_status") 
+        order_obj.order_status = name
+        print(name,">>>>>>>>")
+        # new_order = Order(id=order_id, order_status=name)
+        
+        order_obj.save()
 
-def orderadmin(request):
+        return redirect('orderadmin')
+    
+    return render(request, 'edit_order.html',{'orderobj':orderobj})
+
+def orderadmin(request,):
     orderobj = Order.objects.all()
     context = {
         "orderobj":orderobj
     }
     return render (request,"orderadmin.html",context)
+
+
+
 
 def order_items(request, order_id):
     orderobj = Order.objects.get(id=order_id)
