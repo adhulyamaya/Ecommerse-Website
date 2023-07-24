@@ -41,11 +41,18 @@
                 <tr>
                     <td>{{ product.id }}</td>
                     <td>{{ product.name }}</td>
-                    <td><img src="{{product.image.url}}" alt="{{ product.name }}" class="product-image"></td>
+                    {% if product.image %}
+                    <td><img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image"></td>
+                {% else %}
+                    <p>No image available</p>
+                {% endif %}
                     <td>{{ product.brand }}</td>
                     
                     <td>{{ product.category }}</td>
-                    <td>{{ product.description }}</td>
+                    <td style="    max-width: 200px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;">{{ product.description }}</td>
                     <td>
                         <a href="{% url 'edit_product' product.id %}" class="btn btn-sm btn-primary">Edit</a>
                     </td>

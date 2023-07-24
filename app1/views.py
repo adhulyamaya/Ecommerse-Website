@@ -13,6 +13,9 @@ from django.views.decorators.cache import never_cache
 from .models import *
 from .models import Wishlist
 import re
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib.auth.hashers import check_password
 
 import random,vonage
 from vonage import Sms
@@ -313,6 +316,27 @@ def user_profile(request):
 
     return render(request, "user_profile.html", context)
 
+def user_address(request):
+    if "username" in request.session:
+        if request.method == 'POST':
+            # user_id = request.POST.get("user_id")
+            # username = custom_user.objects.filter(id=user_id).first()
+            username = request.session["username"]
+            userobj = custom_user.objects.get(username=username)
+            print(username,"???????????????hi",userobj)
+            flat = request.POST.get("flat")
+            locality = request.POST.get("locality")
+            city = request.POST.get("city")
+            pincode = request.POST.get("pincode")
+            state = request.POST.get("state")
+        
+            
+            address = Address(username=userobj,flat=flat,locality=locality, city=city,pincode=pincode, state=state,
+            )
+            address.save()
+            print("Address saved:>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", address) 
+            return redirect('user_profile')
+
 
 
 
@@ -344,55 +368,99 @@ def user_proeditadd(request,address_id):
 
 
 
-def user_address(request):
-    if "username" in request.session:
-        if request.method == 'POST':
-            # user_id = request.POST.get("user_id")
-            # username = custom_user.objects.filter(id=user_id).first()
-            username = request.session["username"]
-            userobj = custom_user.objects.get(username=username)
-            print(username,"???????????????hi",userobj)
-            flat = request.POST.get("flat")
-            locality = request.POST.get("locality")
-            city = request.POST.get("city")
-            pincode = request.POST.get("pincode")
-            state = request.POST.get("state")
-        
-            
-            address = Address(username=userobj,flat=flat,locality=locality, city=city,pincode=pincode, state=state,
-            )
-            address.save()
-            print("Address saved:>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", address) 
-            return redirect('user_profile')
-        # return render(request, "user_profile.html",{"address":address})
-
-
-
-
 
 
 def add_to_cart(request):
     username=custom_user.objects.get(username=request.session["username"])
     variant_id = request.POST.get("variant_id")
     variant = Variant.objects.get(id=variant_id)
-    cart = Cart(username=username, variant=variant,quantity = 1)
-    
-    cart.save()
+    try:
+        cart_item = Cart.objects.get(username=username, variant=variant)
+        # If the variant exists, increment the quantity
+        cart_item.quantity += 1
+        cart_item.save()
+    except Cart.DoesNotExist:
+        # If the variant does not exist, create a new cart item
+        cart_item = Cart(username=username, variant=variant, quantity=1)
+        cart_item.save()
+
+        print(cart_item,"achuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
+    # cart = Cart(username=username, variant=variant,quantity = 1)
+    # cart.save()
     return redirect("show-cart")
 
+
+
+
+# def show_cart(request):
+#   username=custom_user.objects.get(username=request.session["username"])
+#   cart = Cart.objects.filter(username = username)
+#   cart_count = Cart.objects.filter(username = username).count()
+#   amount = 0
+#   quantityobj=0
+#   for i in cart:
+#       value = i.quantity * i.variant.price
+#       amount = amount + value
+#       total = amount +40
+#       quantityobj +=i.quantity
+#   return render (request,'addtocart.html',{'cart': cart,'total':total,'amount':amount,
+#                                            'quantityobj':quantityobj,"cart_count":cart_count})
+
+
+
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+
 def show_cart(request):
-  username=custom_user.objects.get(username=request.session["username"])
-  cart = Cart.objects.filter(username = username)
-  cart_count = Cart.objects.filter(username = username).count()
-  amount = 0
-  quantityobj=0
-  for i in cart:
-      value = i.quantity * i.variant.price
-      amount = amount + value
-      total = amount +40
-      quantityobj +=i.quantity
-  return render (request,'addtocart.html',{'cart': cart,'total':total,'amount':amount,
-                                           'quantityobj':quantityobj,"cart_count":cart_count})
+    username = custom_user.objects.get(username=request.session["username"])
+    cart_items = Cart.objects.filter(username=username)
+    cart_count = cart_items.count()
+    couponobj = None
+    if request.method == 'POST':
+        coupon = request.POST.get("coupon")
+        couponobj = Coupon.objects.filter(coupon_code__icontains=coupon)
+
+        if not couponobj.exists():
+            messages.warning(request, 'Invalid Coupon')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        for cart_item in cart_items:
+            if cart_item.coupon:
+                messages.warning(request, 'Coupon already applied')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            cart_item.coupon = couponobj[0]
+            cart_item.save()
+            messages.success(request, 'Coupon applied successfully!')
+    amount = 0
+    quantityobj = 0
+    for cart_item in cart_items:
+        value = cart_item.quantity * cart_item.variant.price
+        amount += value
+        quantityobj += cart_item.quantity
+
+    coupon_discount = 0
+    if couponobj and couponobj.exists(): 
+        print(couponobj)
+        coupon_discount = couponobj[0].discount_price
+        print(coupon_discount)
+        amount =Decimal(amount) - coupon_discount
+        print (amount)
+
+    total = amount + 40
+    print(total,">>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+    context = {'cart': cart_items,
+        'total': total,
+        'amount': amount,
+        'quantityobj': quantityobj,
+        'coupon_discount': coupon_discount,
+        'cart_count': cart_count }
+
+    return render(request, 'addtocart.html',context)
+
+
+
+
 
 def cart_inc(request,item_id):
     cartobj = Cart.objects.get(id=item_id)
@@ -430,14 +498,13 @@ def cart_remove(request,item_id):
 from django.contrib import messages
 
 # org checkout777777777777777
-
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 def checkout(request):
   if "username" in request.session:
     username=custom_user.objects.get(username=request.session["username"])
     cartobj = Cart.objects.filter(username = username)
     addobj = Address.objects.filter(username = username)
-
-
     if request.method == "POST":
         username = request.session.get("username")
         customer = custom_user.objects.get(username=username)
@@ -476,22 +543,24 @@ def checkout(request):
                 item.delete()
 
             orderobj.save()
+            print("Order successfully processed!")
+
             return redirect(ordersuccess)
         
         
     
     total_cost = sum(item.total_cost() for item in cartobj)+40
 
- 
   
     context = {
             'username': username,
             'cartobj': cartobj,
             'addobj': addobj,
             'total_cost':total_cost,
-            
             }
     return render (request,"checkout.html",context)
+ 
+
   
 #   return render (request,"checkout.html",context)
 
@@ -618,16 +687,27 @@ def add_to_wishlist(request):
     username=custom_user.objects.get(username=request.session["username"])
     variant_id = request.POST.get("variant_id")
     variant = Variant.objects.get(id=variant_id)
-    wishlist = Wishlist(username=username, variant=variant)
-    wishlist.save()
+    
+
+    if not Wishlist.objects.filter(username=username, variant=variant).exists():
+            wishlist_item = Wishlist(username=username, variant=variant)
+            wishlist_item.save()
+            messages.success(request, "Product added to wishlist successfully.")
+    else:
+        messages.info(request, "Product is already in your wishlist.")
+
+       
+    # wishlist = Wishlist(username=username, variant=variant)
+    # wishlist.save()
     return redirect("wishlist")
+
 
 def wishlist(request):
     username=custom_user.objects.get(username=request.session["username"])
-    wishlistobj = Wishlist.objects.filter(username = username)
-    wishlist_count = Wishlist.objects.filter(username = username).count()   
-    # return render (request,"wishlist.html",{'wishlistobj': wishlistobj})
-    return render(request, "wishlist.html", {'wishlistobj': wishlistobj, 'wishlist_count': wishlist_count})
+    wishlistobj = Wishlist.objects.filter(username = username)   
+    return render (request,"wishlist.html",{'wishlistobj': wishlistobj})
+    # wishlist_count = Wishlist.objects.filter(username = username).count()   
+    # return render(request, "wishlist.html", {'wishlistobj': wishlistobj, 'wishlist_count': wishlist_count})
 
 
 def wishlist_remove(request,item_id):
@@ -658,12 +738,36 @@ def view_order(request):
 def order_history(request):
     return render(request, 'order_history.html' ) 
 
-    
+
+
+
+
+
+
+def changepassword(request):
+    if "username" in request.session:
+        userobj=custom_user.objects.get(username=request.session["username"])
+        if request.method == "POST":
+            old_password = request.POST.get('old_password')
+            if userobj.password!=old_password:
+                return render(request, 'changepassword.html', {'error_message': 'Old Password is not correct'})
+            
+            new_pass1 = request.POST.get("new_password1")
+            print(new_pass1)
+            new_pass2 = request.POST.get("new_password2")
+            print(new_pass2)
+
+            if new_pass1 != new_pass2:
+                return render(request, 'changepassword.html', {'error_message': 'New passwords do not match'})
+            userobj.password=new_pass1
+            userobj.save()
+            return redirect(user_profile)
+        return render(request, 'changepassword.html')
 
 
 
     
-    # <_____________________________________ADMIN PART____________________________>
+# <_____________________________________ADMIN PART____________________________>
 
 @never_cache
 def admin_login(request):
@@ -737,22 +841,32 @@ from .models import Product
 def edit_product(request, product_id):
     product = Product.objects.get(id=product_id)
     categoryobjs = category.objects.all()
+    brandobjs = Brand.objects.all()
+    existing_image = product.image if product.image else None
     if request.method == "POST":
         name = request.POST.get('name')
         brand = request.POST.get('brand')
         cat = request.POST.get('category')
-        image = request.POST.get('image')
+        image = request.FILES.get('image')
+        description = request.POST.get('description')
 
         catobj = category.objects.filter(name=cat).first()
-        print(catobj,">>>>>>>",name,brand)
+        
+        brandobj = Brand.objects.get(brand=brand)
+        
+        print(catobj,">>>>>>>",name,brandobj)
         product.name=name
-        product.brand=brand
+        product.brand=brandobj
         product.category=catobj
-        product.image = image
+        product.description=description
+        if image:
+            product.image=image
+        else:
+            product.image=existing_image
         product.save()
         return redirect(products)
 
-    return render(request, 'edit_product.html', {'product': product,'categoryobjs':categoryobjs})
+    return render(request, 'edit_product.html', {'product': product,'categoryobjs':categoryobjs,'brandobjs':brandobjs})
 
 
 

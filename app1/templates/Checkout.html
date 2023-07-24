@@ -408,9 +408,9 @@ body{
     margin-bottom: 20px;
     overflow: auto;
 }
-
-
 </style>
+
+
 <!-- Page Header Start -->
  <div class="container-fluid bg-secondary mb-5">
     <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
@@ -424,62 +424,51 @@ body{
 </div>
 <!-- Page Header End -->
 
-
-
-
-
-
-
 <!-- Checkout Start -->
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
-        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-
-
-
-
-  <div class="container pb-5 mb-2">
-    
-            <div class="cart-item d-md-flex justify-content-between"><span class="remove-item"><i class="fa fa-times"></i></span>
-                {% for item in cartobj %}
-                <div class="px-3 my-3">
-                        <div class="cart-item-product-thumb"><img src="{{ item.variant.image1.url }}" alt="" class="img-fluid">
-                        </div>
-                        
-                        <div class="cart-item-product-info">
-                            <h4 class="cart-item-product-title"> </h4><span><strong>{{ item.variant.variant }}</strong> </span>
-                            <span><strong>Color:</strong> {{item.variant.Color}}</span>
-                            <span><strong>Size:</strong> {{item.variant.Size}}</span>
-                        </div>
-                        
-                </div>
-                <div class="px-3 my-3 text-center">
-                    <div class="cart-item-label">Quantity:</div>
-                     <div class="count-input">
-                       {{ item.quantity }}
+  <div class="container pb-5 mb-2">    
+      <div class="cart-item d-md-flex justify-content-between"><span class="remove-item"><i class="fa fa-times"></i></span>
+          {% for item in cartobj %}
+            <div class="px-3 my-3">
+                    <div class="cart-item-product-thumb">
+                      <img src="{{ item.variant.image1.url }}" alt="" class="img-fluid">
                     </div>
-                  </div>
-                    <div class="px-3 my-3 text-center">
-                    <div class="cart-item-label">Price:</div>
-                    <div class="count-input">
-                      {{ item.variant.price }}
-                   </div>
-                   
-                </div>
-              
-                {% endfor%}
-
-                <div class="px-3 my-3 text-center">
-                    <div class="cart-item-label">Subtotal :</div>
-                    <div class="count-input">
-                      {{total_cost}}
-                   </div>
-                </div>
-                
-                
-              
+                    <div class="cart-item-product-info">
+                        <h4 class="cart-item-product-title"> </h4>
+                        <span><strong>{{ item.variant.variant }}</strong> </span>
+                        <span><strong>Color:</strong> {{item.variant.Color}}</span>
+                        <span><strong>Size:</strong> {{item.variant.Size}}</span>
+                    </div>
             </div>
+          <div class="px-3 my-3 text-center">
+              <div class="cart-item-label">Quantity:</div>
+                <div class="count-input">
+                  {{ item.quantity }}
+              </div>
+            </div>
+              <div class="px-3 my-3 text-center">
+              <div class="cart-item-label">Price:</div>
+              <div class="count-input">
+                {{ item.variant.price }}
+              </div>
+              
+          </div>
+        
+          {% endfor%}
+
+          <div class="px-3 my-3 text-center">
+              <div class="cart-item-label">Subtotal :</div>
+              <div class="count-input">
+                {{total_cost}}
+              </div>
+          </div>
           
-            <div> 
+          
+        
+      </div>
+          
+            {% comment %} <div> 
               <aside class =" col-md-4">
                 <div class = "card mb-3">
                     <div class = " card-body">
@@ -495,16 +484,16 @@ body{
                                 </div>
                             </div>
                         {% comment %} </form> {% endcomment %}
-                    </div>
+                    {% comment %} </div>
                 </div>
-            </div> 
+            </div>  {% endcomment %} 
 
 
   <aside class =" col-md-7">
     <div class = "card mb-3">
         <div class = " card-body">
-    {% comment %} <form action="{% url 'checkout'  %}" method="POST" name="order_post">
-              {% csrf_token %} {% endcomment %}
+    <form action="{% url 'checkout'  %}" method="POST" name="order_post">
+              {% csrf_token %}
 
             <div>
               <p>Choose Address: </p>
@@ -544,17 +533,7 @@ body{
                 </div>
             </div>
         </form> 
-
-
-    
-
-
-
-
-          
-            
-        
-               
+ 
             </div>
 
 
@@ -569,14 +548,3 @@ body{
 
 {% endblock main-content %}
 
-
-{% comment %} 
-  <!-- Coupon + Subtotal-->
-<div class="d-sm-flex justify-content-between align-items-center text-center text-sm-left">
- <form class="form-inline py-2">
-      <label class="sr-only">Coupon code</label>
-      <input class="form-control form-control-sm my-2 mr-3" type="text" placeholder="Coupon code" required="">
-      <button class="btn btn-style-1 btn-secondary btn-sm my-2 mx-auto mx-sm-0" type="submit">Apply Coupon</button>
-  </form> 
-  <div class="py-2"><span class="d-inline-block align-middle text-sm text-muted font-weight-medium text-uppercase mr-2">Subtotal:</span><span class="d-inline-block align-middle text-xl font-weight-medium">$188.50</span></div>
-</div>  {% endcomment %}

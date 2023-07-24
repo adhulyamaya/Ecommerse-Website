@@ -51,7 +51,11 @@
 
             <div class="form-group">
                 <label for="brand">Brand</label>
-                <input value="{{ product.brand }}" name="brand" type="text" placeholder="Product brand">
+                <select id="dropdown" name="brand">
+                    {% for item in brandobjs %}
+                        <option value="{{ item.brand }}">{{ item.brand }}</option>
+                    {% endfor %}
+                </select> 
             </div>
     
             <span class="error-message">{{ error_message.brand }}</span>
@@ -66,23 +70,20 @@
                 
             </div>
 
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input value="{{ product.description }}" name="description" type="text" placeholder="Product description">
+            </div>
+    
+            <span class="error-message">{{ error_message.description }}</span>
+
             <div>
                 <label>Images</label>
                 <br>
-                {% comment %} {% for image in images %}
-                    <img src="{{ image.image.url }}" alt="{{ image.product.name }}" width="80" height="80">
-                {% endfor %} {% endcomment %}
-                <img src="{{ image.url }}" alt="{{ image.product.name }}" width="80" height="80" name="image">
+              
+                <img src="{{ product.image.url }}" value="{{product.image.url}}" alt="{{ image.product.name }}" width="80" height="80" name="image">
             </div>
-            {% comment %} <br>
-            <div class="form-group">
-                <label for="condition">Condition</label>
-                <select name="condition">
-                    <option value="Old" {% if content.condition == 'Old' %}selected{% endif %}>Old</option>
-                    <option value="New" {% if content.condition == 'New' %}selected{% endif %}>New</option>
-                </select>
-            </div>
-            <br>   {% endcomment %}
+            
   
             <div class="form-group mt-2">
                 <label for="newImages">Add New Images</label>

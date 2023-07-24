@@ -37,7 +37,7 @@
                 <a href="" class="text-decoration-none">
                     <h1 class="mb-3 display-5 font-weight-semi-bold">
                       
-                             <img src="{% static "app/img/product/logo2.jpg" %}" alt="Logo" class="img-fluid"  style="width: 90px; height: auto; ">
+                             <img src="{% static "app/img/product/logo2.png" %}" alt="Logo" class="img-fluid"  style="width: 100px; height: auto; ">
                     </h1>
                 </a>
             </div>
@@ -81,11 +81,11 @@
                     <a href="{% url 'order_history' %}" class="dropdown-item">Order history</a>
                 </div>
             </div>
-            <div class="mr-3">
+            {% comment %} <div class="mr-3">
                 <a href="{% url 'logout' %}" style="text-decoration: none;">
                     <button type="button" style="border: none; background: none; padding: 0; cursor: pointer;">logout</button>
                 </a>
-            </div>
+            </div> {% endcomment %}
 
 
     
@@ -112,6 +112,16 @@
 
                     
                 </form>
+                <div class="nav-item dropdown mr-3">
+                    <a href="#" class="nav-link dropdown-toggle " data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true"></i></a>
+                    <div class="dropdown-menu rounded-0 m-0">
+                        <a href="{% url 'user_profile' %}" class="dropdown-item">profile</a>
+                        <a href="{% url 'changepassword' %}" class="dropdown-item">change password</a>
+                        <a href="{% url 'logout' %}">
+                            <button type="button">logout</button>
+                        </a>
+                    </div>
+                </div>
     
                 <a href="{% url 'wishlist' %}" class="btn border ml-3">
                     <i class="fas fa-heart">({{ wishlist_count }})</i>
@@ -121,9 +131,7 @@
                 <a href="{% url 'show-cart' %}" class="btn border ml-1">
                     <i class="fas fa-shopping-cart">({{ cart_count }})</i>
                 </a>
-                <a href="{% url 'user_profile' %}" class="btn border ml-1">
-                    <i class="fa fa-user" aria-hidden="true"></i>
-                </a>
+
             </div>
         </div>
     </div>

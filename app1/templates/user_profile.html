@@ -140,18 +140,18 @@ color:#69707a;
     
                     <h1>Profile</h1>
                     <div id="profile">
-                       
-
                         <p>Username : {{username}}</p>
                         <p>phonenum: {{phone_number}}</p>
                         <p>Address : {{phonenumber}}</p>
                         {% for addr in addresses %}
                         <li>
+                            <div class="col-md-4 mb-4">
                             <p>Flat: {{ addr.flat }}</p>
                             <p>Locality: {{ addr.locality }}</p>
                             <p>City: {{ addr.city }}</p>
                             <p>Pincode: {{ addr.pincode }}</p>
                             <p>State: {{ addr.state }}</p>
+                            </div>
                         </li>
                         <div style="display:inline-block;">
                             
@@ -168,6 +168,7 @@ color:#69707a;
                       
                         <form  action="{% url 'user_address' %}"  method="POST" class="d-inline" >
                             {%csrf_token%}
+                            
                             <input type="hidden" name="user_id" value="{{ username.id }}" >
                             <div class="form-group">
                                 <label for="flat">Username:</label>
