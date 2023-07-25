@@ -16,6 +16,8 @@ import re
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import check_password
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Product
 
 import random,vonage
 from vonage import Sms
@@ -28,22 +30,19 @@ from PINKVILLA.settings import RAZORPAY_API_SECRET_KEY,RAZORPAY_API_KEY
 client=vonage.Client(key="23594a08",secret="asBI3u5U6nnRnMd6")
 sms=vonage.Sms(client)
 
+from django.contrib import messages
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+import razorpay
+from razorpay import Client
+
 
 
 @never_cache
 def user_login(request):
     if 'username' in request.session:
-        # username = request.session['username']
-        # user = custom_user.objects.get(username=username)
-
-        # if not user.is_superuser:
-        #     return redirect('userhome')
-        # else:
-        #     return redirect('adminhome')
         return redirect(user_home)
     else:
-    
-
         if request.method == 'POST':
             username = request.POST.get('username')
             password = request.POST.get('password')
@@ -68,12 +67,6 @@ def user_login(request):
                 return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
 
     return render(request, 'user_login.html')
-
-
-
-
-
-
 
 
 # USER_HOME AFTER LOGIN
@@ -129,11 +122,9 @@ def user_logout(request):
 def signup(request):
     if 'name' in request.session:
         return render(request, 'user_home.html')
-    # if request.user.is_authenticated:
-    #  return redirect('adminhome')
+
     if request.method == 'POST':
-        print("haiiiiiiiiii")
-        # Retrieve form data
+        
         name = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -216,7 +207,7 @@ def shop(request):
     products = Product.objects.all()
     brands = Brand.objects.all()
     
-    selected_brands = request.POST.getlist('brands')  # Get the selected brands from the form
+    selected_brands = request.POST.getlist('brands') 
     if selected_brands:
         # Filter the products based on the selected brands
         products = products.filter(brand__id__in=selected_brands)
@@ -463,34 +454,25 @@ def show_cart(request):
 
 
 
-
-
 def cart_inc(request,item_id):
     cartobj = Cart.objects.get(id=item_id)
     username = cartobj.username
     variant = cartobj.variant
-
     cart_item = Cart.objects.filter(username = username , variant = variant).first()
-
     if cart_item :
         cart_item.quantity+=1
         cart_item.save()
-
     return redirect("show-cart")
 
 def cart_dec(request,item_id):
     cartobj = Cart.objects.get(id=item_id)
     username = cartobj.username
     variant = cartobj.variant
-
     cart_item = Cart.objects.filter(username = username , variant = variant).first()
-
     if cart_item :
         cart_item.quantity-=1
         cart_item.save()
-
     return redirect("show-cart")
-
 
 
 def cart_remove(request,item_id):
@@ -498,13 +480,6 @@ def cart_remove(request,item_id):
     cartobj.delete()
     return redirect ("show-cart")
 
-from django.contrib import messages
-
-# org checkout777777777777777
-from django.urls import reverse
-from django.http import HttpResponseRedirect
-import razorpay
-from razorpay import Client
 
 def checkout(request):
   if "username" in request.session:
@@ -548,28 +523,18 @@ def checkout(request):
                 orderobj.total += item_total
 
                 item.delete()
-
             orderobj.save()
             print("Order successfully processed!")
-
-            return redirect(ordersuccess)
-        
-        
-    
+            return redirect(ordersuccess) 
+          
     total_cost = sum(item.total_cost() for item in cartobj)+40
-
-
-
     client = razorpay.Client(
     auth=(RAZORPAY_API_KEY, RAZORPAY_API_SECRET_KEY))
     amount=int(2000*100)
-
     currency='INR'
-    data = dict(amount=amount,currency=currency,payment_capture=1)
-                
+    data = dict(amount=amount,currency=currency,payment_capture=1)            
     payment_order = client.order.create(data=data)
-    payment_order_id=payment_order['id']
-  
+    payment_order_id=payment_order['id']  
     context = {
             'username': username,
             'cartobj': cartobj,
@@ -578,18 +543,11 @@ def checkout(request):
             "api_key":RAZORPAY_API_KEY,
             "amount":400,
             "order_id":payment_order_id,
-
-
             }
     return render (request,"checkout.html",context)
   
- 
-
-
 def ordersuccess(request):
     return render (request,"ordersuccess.html")
-
-
 
 def user_product(request, Category_id):
     categoryobj=category.objects.get(id=Category_id)
@@ -598,17 +556,10 @@ def user_product(request, Category_id):
         'products': products,
        
     }
-
     return render(request, 'user_product.html', context)
-
-
-
-
 
 def contact(request):
     return render(request,"contact.html")
-
-
 
 def about(request):
     return render(request,"about.html")
@@ -617,18 +568,12 @@ def add_to_wishlist(request):
     username=custom_user.objects.get(username=request.session["username"])
     variant_id = request.POST.get("variant_id")
     variant = Variant.objects.get(id=variant_id)
-    
-
     if not Wishlist.objects.filter(username=username, variant=variant).exists():
             wishlist_item = Wishlist(username=username, variant=variant)
             wishlist_item.save()
             messages.success(request, "Product added to wishlist successfully.")
     else:
         messages.info(request, "Product is already in your wishlist.")
-
-       
-    # wishlist = Wishlist(username=username, variant=variant)
-    # wishlist.save()
     return redirect("wishlist")
 
 
@@ -636,8 +581,6 @@ def wishlist(request):
     username=custom_user.objects.get(username=request.session["username"])
     wishlistobj = Wishlist.objects.filter(username = username)   
     return render (request,"wishlist.html",{'wishlistobj': wishlistobj})
-    # wishlist_count = Wishlist.objects.filter(username = username).count()   
-    # return render(request, "wishlist.html", {'wishlistobj': wishlistobj, 'wishlist_count': wishlist_count})
 
 
 def wishlist_remove(request,item_id):
@@ -645,34 +588,14 @@ def wishlist_remove(request,item_id):
     wishlistobj.delete()
     return redirect ("wishlist")
 
-# def search_products(request):
-#     pass
-def search_products(request):
-    query = request.GET.get('q')  # Retrieve the search query from the request parameters
-    results = []
 
+def search_products(request):
+    query = request.GET.get('q')  
+    results = []
     if query:
-        # Query the database for products matching the search query
         results = Product.objects.filter(name__icontains=query)
 
     return render(request, 'search_results.html', {'results': results, 'query': query})  
-
-
-def view_order(request):
-    orderobj = Order.objects.all()
-    context = {
-        "orderobj":orderobj
-    }
-    return render(request, 'view_order.html',context ) 
-
-def order_history(request):
-    return render(request, 'order_history.html' ) 
-
-
-
-
-
-
 
 def changepassword(request):
     if "username" in request.session:
@@ -695,7 +618,36 @@ def changepassword(request):
         return render(request, 'changepassword.html')
 
 
+def cancel_order(request, order_id):
+        order = Order.objects.get(id=order_id)
 
+        order.delete()
+        order.order_status = 'cancelled'
+        order.save()
+        return redirect('view_orders') 
+
+def view_order(request):
+    orderobj = Order.objects.all()
+    context = {
+        "orderobj":orderobj
+    }
+    return render(request, 'view_order.html',context )
+
+
+
+
+def userorder_items(request, order_id):
+    orderobj = Order.objects.get(id=order_id)
+    items = OrderItems.objects.filter(order=orderobj)
+    context = {
+        "itemobj": items,
+       
+    }
+    
+    return render(request, 'userorder_items.html', context) 
+
+def order_history(request):
+    return render(request, 'order_history.html' ) 
     
 # <_____________________________________ADMIN PART____________________________>
 
@@ -800,28 +752,19 @@ def edit_product(request, product_id):
 
 
 
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Product
+
 
 def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-
-    if request.method == 'POST':
-       
+    if request.method == 'POST':       
         product.delete()
-
-     
         return redirect('products')
-
     return render(request, 'delete_product.html', {'product': product})
 
-# 3category________________________________________________________________
 
 def category_view(request):
-    categories = category.objects.all()  # Retrieve all categories
+    categories = category.objects.all()
     return render(request, 'category.html', {'categories': categories})
-
-
 
 def user_proeditadd(request,address_id):    
     address = Address.objects.get(id=address_id)
@@ -838,8 +781,7 @@ def user_proeditadd(request,address_id):
         address.pincode = pincode
         address.state = state
         address.save()
-        return redirect(user_profile)
-   
+        return redirect(user_profile)   
     return render(request, 'user_proeditadd.html', {'address': address, })
 
 def add_category(request):
@@ -863,10 +805,8 @@ def add_product(request):
         description = request.POST.get('description')
         image = request.FILES.get('image')
         print(image,"...........................................................")
-
         new_product = Product(name=name, brand=brandobj, category=catobj, description=description, image=image)
         new_product.save()
-
         return redirect(products)
     return render(request, 'add_product.html',context)
 
@@ -878,36 +818,30 @@ def edit_category(request, category_id):
         name = request.POST.get("category_name") 
         category_obj.name = name
         print(name,">>>>>>>>")
-        new_category = category(id=category_id, name=name)
-        
+        new_category = category(id=category_id, name=name)       
         new_category.save()
-
         return redirect('category')
     return render(request, 'edit_category.html', {'category': category_obj})
 
 
-
 def delete_category(request, category_id):
-   
     categoryobj = category.objects.get(id=category_id)
     if request.method == 'POST':       
         return redirect('category')
     return render(request, 'delete_category.html', {'category': categoryobj})
 
+
 def edit_order(request,order_id):
     orderobj=Order.objects.all()
     order_obj = Order.objects.get(id= order_id)
+    order_status_choices = Order.ORDER_STATUS_CHOICES
     if request.method == 'POST':  
         name = request.POST.get("order_status") 
-        order_obj.order_status = name
-        print(name,">>>>>>>>")
-        # new_order = Order(id=order_id, order_status=name)
-        
+        order_obj.order_status = name        
         order_obj.save()
+        return redirect('orderadmin')    
+    return render(request, 'edit_order.html',{'orderobj':orderobj ,"order_status_choices":order_status_choices })
 
-        return redirect('orderadmin')
-    
-    return render(request, 'edit_order.html',{'orderobj':orderobj})
 
 def orderadmin(request,):
     orderobj = Order.objects.all()
@@ -917,24 +851,28 @@ def orderadmin(request,):
     return render (request,"orderadmin.html",context)
 
 
-
-
 def order_items(request, order_id):
     orderobj = Order.objects.get(id=order_id)
-    print(orderobj, ">>>>>>>>>>in=vdeeeeeeeeeeeeeeeeee")
-    
-    items = OrderItems.objects.filter(order=orderobj)  # Filter items based on the order object
-    
-    
+    items = OrderItems.objects.filter(order=orderobj)  
     context = {
-        "itemobj": items
+        "itemobj": items,   
     }
-    
     return render(request, 'order_items.html', context)
+
+
+def userorder_items(request, order_id):
+    orderobj = Order.objects.get(id=order_id)
+    items = OrderItems.objects.filter(order=orderobj)  
+    context = {
+        "itemobj": items,   
+    } 
+    return render(request, 'userorder_items.html', context)
+
 
 def admin_variant(request):
     variantobj = Variant.objects.all()
     return render(request, 'admin_variant.html',{ "variantobj":variantobj })
+
 
 def color_admin(request):
     color = Color.objects.all()

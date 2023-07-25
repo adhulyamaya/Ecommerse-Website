@@ -19,16 +19,26 @@
 <body>
     <div class="container">
         <h1>Edit order</h1>
-        <form method="POST" action="{% url 'edit_order'  %}">
+        <form method="POST" >
             {% csrf_token %}
             <div class="form-group">
                 <h5>Choose Order Status: </h5>
-                <select id="orderid" name="order"> 
+                {% comment %} <select id="orderid" name="order"> 
                         {% for order in orderobj %}
                             <option value="{{ order.id }}">{{ order.order_status }}</option>
                         
                         {% endfor %}
+                </select> {% endcomment %}
+                <!-- Display the order status choices as options in a select dropdown -->
+                <select name="order_status">
+                    {% for status_choice in order_status_choices %}
+                    <option value="{{ status_choice.1 }}" {% if status_choice.1 == order.order_status %}selected{% endif %}>
+                        {{ status_choice.1 }}
+                    </option>
+                    {% endfor %}
                 </select>
+  
+
                
             </div>
             <button type="submit" class="btn btn-primary">Update</button>

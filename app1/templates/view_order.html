@@ -8,13 +8,17 @@
         <table class="table table-bordered">
             <thead class="thead-dark">
                 <tr>
-                    <th>Id</th>
+                     <th>Id</th>
                     <th>customer</th>
+                    <th>address</th>
                     <th>Total</th>
                     <th>payment type</th>
                     <th>order status</th>
-                    <th>Action</th>
-                    <th><th>
+                    <th>Order Date</th>
+                    <th>Order Details</th>
+                    <th>Cancel order</th>
+                    <th>invoice</th>
+                    
                    
                 </tr>
             </thead>
@@ -23,15 +27,28 @@
                 <tr>
                     <td>{{ order.id }}</td>
                     <td>{{ order.customer.username }}</td>
+                    <td>{{ order.address }}</td>
                     <td>{{ order.total }}</td>
                     <td>{{ order.payment_type }}</td>
                     <td>{{order.order_status}}</td>
-                    <td><button type="button" class="btn btn-danger">Cancel</button></td>
-                   {% comment %} <td><a href="{% url 'order_items' order.id %}">view order details</a></td> {% endcomment %}
+                    <td>{{order.date_ordered }}</td>
+ 
+
+                   <td><a href="{% url 'userorder_items' order.id %}">view order details</a></td>
+                   <td> <button type="button" onclick="cancelOrder({{ order.id }})" class="btn btn-danger">Cancel  </button></td>
                    <td>Download Invoice<td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+
+        <script>
+            function cancelOrder(orderId) {
+                const confirmation = confirm('Are you sure you want to cancel this order?');
+                if (confirmation) {
+                    window.location.href = `/cancel_order/${orderId}/`;
+                }
+            }
+        </script>
     </div>
     {% endblock main-content %}

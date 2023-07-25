@@ -1,8 +1,9 @@
 
-{% extends 'admin_home.html' %}
+
+{% extends 'user_product.html' %}
 {% load static %}
-    <title>Orders</title>
-    {% block content %}
+    <title>View Orders</title>
+    {% block main-content %}
     <div class="container">
         <h1>Order items</h1>
         <table class="table table-bordered">
@@ -33,4 +34,4 @@
             </tbody>
         </table>
     </div>
-    {% endblock content %}
+    {% endblock main-content %}
