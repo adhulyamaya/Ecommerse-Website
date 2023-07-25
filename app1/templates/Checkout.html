@@ -464,14 +464,12 @@ body{
               </div>
           </div>
         </div>
-
-        
+    
   <aside class =" col-md-7">
     <div class = "card mb-3">
         <div class = " card-body">
           <form action="{% url 'checkout'  %}" method="POST" name="order_post">
               {% csrf_token %}
-
                           <div>
                                   <p>Choose Address: </p>
                                   <select id="addressid" name="address"> 

@@ -227,8 +227,7 @@ def shop_before(request):
     context = {
             "products":products,
             
-        }
-       
+        }   
     return render (request,"shop_before.html",context)
 
 
@@ -405,6 +404,8 @@ def add_to_cart(request):
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 
+
+
 def show_cart(request):
     username = custom_user.objects.get(username=request.session["username"])
     cart_items = Cart.objects.filter(username=username)
@@ -451,6 +452,9 @@ def show_cart(request):
         'cart_count': cart_count }
 
     return render(request, 'addtocart.html',context)
+
+
+
 
 
 
@@ -526,7 +530,7 @@ def checkout(request):
             orderobj.save()
             print("Order successfully processed!")
             return redirect(ordersuccess) 
-          
+             
     total_cost = sum(item.total_cost() for item in cartobj)+40
     client = razorpay.Client(
     auth=(RAZORPAY_API_KEY, RAZORPAY_API_SECRET_KEY))
@@ -546,6 +550,7 @@ def checkout(request):
             }
     return render (request,"checkout.html",context)
   
+
 def ordersuccess(request):
     return render (request,"ordersuccess.html")
 
@@ -888,3 +893,10 @@ def size_admin(request):
         "size":size
     }
     return render (request,'size_admin.html',context)
+
+def admin_coupon(request):
+    couponobj = Coupon.objects.all()
+    context = {
+        "couponobj":couponobj
+    }
+    return render (request,'admincoupon.html',context)
