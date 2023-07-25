@@ -36,6 +36,9 @@ from django.http import HttpResponseRedirect
 import razorpay
 from razorpay import Client
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+from django.http import JsonResponse
 
 
 @never_cache
@@ -211,6 +214,19 @@ def shop(request):
     if selected_brands:
         # Filter the products based on the selected brands
         products = products.filter(brand__id__in=selected_brands)
+
+
+    # Add pagination to the products queryset
+    paginator = Paginator(products, 12)  # Show 12 products per page
+    page = request.GET.get('page')
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        # If the page parameter is not an integer, deliver the first page.
+        products = paginator.page(1)
+    except EmptyPage:
+        # If the page is out of range, deliver the last page of results.
+        products = paginator.page(paginator.num_pages)    
     
     context = {
         "products": products,
@@ -426,6 +442,7 @@ def show_cart(request):
             cart_item.coupon = couponobj[0]
             cart_item.save()
             messages.success(request, 'Coupon applied successfully!')
+
     amount = 0
     quantityobj = 0
     for cart_item in cart_items:
@@ -435,9 +452,9 @@ def show_cart(request):
 
     coupon_discount = 0
     if couponobj and couponobj.exists(): 
-        print(couponobj)
+        print(couponobj,",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")
         coupon_discount = couponobj[0].discount_price
-        print(coupon_discount)
+        print(coupon_discount,"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
         amount =Decimal(amount) - coupon_discount
         print (amount)
 
@@ -452,9 +469,6 @@ def show_cart(request):
         'cart_count': cart_count }
 
     return render(request, 'addtocart.html',context)
-
-
-
 
 
 
@@ -532,9 +546,14 @@ def checkout(request):
             return redirect(ordersuccess) 
              
     total_cost = sum(item.total_cost() for item in cartobj)+40
+
+    coupon_discount = sum(item.coupon.discount_price for item in cartobj if item.coupon)
+
+    total_cost =Decimal(total_cost) - coupon_discount
+
     client = razorpay.Client(
     auth=(RAZORPAY_API_KEY, RAZORPAY_API_SECRET_KEY))
-    amount=int(2000*100)
+    amount=int(total_cost*100)
     currency='INR'
     data = dict(amount=amount,currency=currency,payment_capture=1)            
     payment_order = client.order.create(data=data)
@@ -648,7 +667,6 @@ def userorder_items(request, order_id):
         "itemobj": items,
        
     }
-    
     return render(request, 'userorder_items.html', context) 
 
 def order_history(request):
@@ -900,3 +918,7 @@ def admin_coupon(request):
         "couponobj":couponobj
     }
     return render (request,'admincoupon.html',context)
+
+def razorupdateorder(request):
+    
+    return JsonResponse({"message":"Done"})

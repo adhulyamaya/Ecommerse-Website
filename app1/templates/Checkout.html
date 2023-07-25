@@ -529,9 +529,38 @@ var options = {
     "image": "https://example.com/your_logo",
     "order_id": "{{order_id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
     "handler": function (response){
-        alert(response.razorpay_payment_id);
-        alert(response.razorpay_order_id);
-        alert(response.razorpay_signature)
+      //var addressval=$("#addressdropdown").val()
+  
+      $.ajax({
+        url: '/razorupdateorder/', // Replace with the URL of your update order view
+        method: 'GET',
+        //data: {
+          //paymentId: response.razorpay_payment_id,
+          //orderId: response.razorpay_order_id,
+          //addressval:$("#addressdropdown").val(),
+          //finalprice:$("#totalamount").text(),
+  
+  
+          
+        //},
+        success: function(data) {
+          // Handle the response from the server
+          // For example, you can display a success message or redirect to a new page
+          //alert('Order updated successfully!');
+          window.location.href = '../ordersuccess/';
+        },
+        error: function(error) {
+          // Handle the error, if any
+          // For example, you can display an error message or perform alternative actions
+          alert('Error updating order: ' + error.message);
+        }
+      });
+  
+  
+  
+      //alert(response.razorpay_payment_id);
+      //alert(response.razorpay_order_id);
+      //alert(response.razorpay_signature)
     },
     "prefill": {
         "name": "Gaurav Kumar",

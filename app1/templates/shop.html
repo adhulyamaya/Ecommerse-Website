@@ -1,72 +1,87 @@
 {% extends 'user_home.html' %}
 {% load static %}
-{% block tittle%} cart {% endblock tittle %}
+{% block title %} Cart {% endblock title %}
 
-
-{%block main-content%}
-<br>
-<!-- Page Header Start -->
-        <div class="container-fluid bg-secondary mb-5">
-            <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 200px">
-                <h1 class="font-weight-semi-bold text-uppercase mb-3">Our Shop</h1>
-                <div class="d-inline-flex">
-                </div>
-            </div>
-        </div>
-        <!-- Page Header End -->
-        
+{% block main-content %}
 <div class="container-fluid pt-5">
-    <div class="row px-xl-5 pb-3 ">
-        {% for product in products  %}
-        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-            <div class="card product-item border-0 mb-4" >
-                <a href="{% url 'product_detail' product.id %}" >
-                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                  
-                    <img class="img-fluid w-100 " src="{{ product.image.url}}" alt="" style="height: 500px;">
-                </a>
-                </div>
-                    <div class="d-flex p-1 pt-0 pb-2" style="justify-content: space-between;">
-                    <h6 class="text-truncate mb-2 mt-2">{{ product.name }}</h6>
-                    
-                    
-                       <a href="#" class="btn btn-sm text-dark p-0  mb-2 mt-2">
-                        <i class="fa fa-heart" aria-hidden="true"></i>
-                    </a> 
-                </div>
-                
-               
+    <div class="row px-xl-2 pb-3">
+        <div class="col-lg-3 col-md-4 col-sm-12 pb-1">
+            <div class="border-bottom mb-4 pb-4">
+                <h5 class="font-weight-semi-bold mb-4">Filter by Brand</h5>
+                <form method="post">
+                    {% csrf_token %}
+                    <!-- Color Start -->
+                    {% for b in brand %}
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                        <input type="checkbox" class="custom-control-input" id="brand-{{ b.id }}" name="brands" value="{{ b.id }}">
+                        <label class="custom-control-label" for="brand-{{ b.id }}">{{ b.brand }}</label>
+                        <span class="badge border font-weight-normal">150</span>
+                    </div>
+                    {% endfor %}
+                    <button type="submit" hidden>Submit</button> <!-- Add a submit button inside the form -->
+                </form>
             </div>
         </div>
-        {% endfor %}
-    </div>
-    <div class="col-lg-3 col-md-12">
-        <div class="border-bottom mb-4 pb-4">
-            <h5 class="font-weight-semi-bold mb-4">Filter by Brand</h5>
-        <form method="post">
-            {% csrf_token %}
-          <!-- Color Start -->
-          {% for b in brand %}
-          <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-            <input type="checkbox" class="custom-control-input" id="brand-{{ b.id }}" name="brands" value="{{ b.id }}">
-            <label class="custom-control-label" for="brand-{{ b.id }}">{{ b.brand }}</label>
-            <span class="badge border font-weight-normal">150</span>
-          </div>
-          {% endfor %}
-          <button type="submit" hidden>Submit</button> <!-- Add a submit button inside the form -->
-        </form>
-      </div>
-      
-</div>
 
-{%endblock main-content%}
+        <div class="col-lg-9 col-md-8 col-sm-12">
+            <div class="container-fluid bg-secondary mb-2">
+                <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 0px">
+                    
+                    <div class="d-inline-flex">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                {% for product in products %}
+                <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                    <div class="card product-item border-0 mb-4">
+                        <a href="{% url 'product_detail' product.id %}">
+                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                                <img class="img-fluid w-100" src="{{ product.image.url }}" alt=""
+                                    style="height: 300px;">
+                            </div>
+                        </a>
+                        <div class="d-flex p-1 pt-0 pb-2" style="justify-content: space-between;">
+                            <h6 class="text-truncate mb-2 mt-2">{{ product.name }}</h6>
+                            <h6 class="text-truncate mb-2 mt-2">560/-</h6>
+                            <a href="#" class="btn btn-sm text-dark p-0  mb-2 mt-2">
+                                <i class="fa fa-heart" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <nav aria-label="Products Pagination" class="d-flex justify-content-center">
+                <ul class="pagination">
+                    {% if products.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+                    {% for num in products.paginator.page_range %}
+                    <li class="page-item {% if num == products.number %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+                    {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.paginator.num_pages }}">Last</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock main-content %}
 
 {% block content %}{% endblock content %}
-
-
-
-
-
-
-
-                

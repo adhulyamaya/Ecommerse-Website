@@ -84,6 +84,10 @@ urlpatterns = [
     path('color_admin',views.color_admin, name='color_admin'),
     path('size_admin',views.size_admin, name='size_admin'),
 
+
+    path('razorupdateorder/',views.razorupdateorder, name='razorupdateorder'),
+    
+
     
     
 
