@@ -1,0 +1,160 @@
+{% extends 'admin_home.html' %}
+{% load static %}
+<title>sales report</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+     <style>
+        /* Additional custom styles */
+        body {
+            padding: 20px;
+        }
+        .status-active {
+            color: green;
+        }
+        .status-blocked {
+            color: red;
+        }
+    </style>
+    {% block content %}
+    <div class="container-fluid">
+        <div class="row justify-content-center mt-4">
+            <h4>
+                Sales Report
+            </h4>
+        </div>
+        
+    
+      <div class="row justify-content-center border mt-2  ">
+          <form action="" method="POST">
+            {% csrf_token %}
+              <label class="mt-5" for="start_date">Start Date:</label>
+              <input class="form-control" type="date" id="start_date" name="start_date" required>
+              <br>
+              <label for="end_date">End Date:</label>
+              <input  class="form-control" type="date" id="end_date" name="end_date" required>
+              <br>
+             
+              <div class="row mb-5">
+                <button name="show" type="submit" class="btn add-product-btn btn-secondary mt-2">Show Report</button>
+                <button name="download"  type="submit" class="btn add-product-btn btn-secondary mt-2 ml-4 ">Download</button>
+                <button name="downloadinexcel"  type="submit" class="btn add-product-btn btn-secondary mt-2 ml-4 ">Download In Excel</button>
+                  
+      
+              </div>
+              <div>
+    
+              </div>
+    
+          </form>
+    
+      </div>
+      {% if orderobjs %}
+        <div class="row">
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Ordered By</th>
+                    <th>Payment Type</th>
+                    <th>Quantity</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Address</th>
+                    
+                
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for item in orderobjs %}
+                    <tr>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.customer.name }}</td>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.address.house }}</td>
+                        <td>{{ item.date_ordered }}</td>
+                        <td>{{ item.order_status }}</td>
+                        <td>{{ item.quantity }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+    
+        </div>
+        
+        
+        {% endif %}
+        {% if message %}
+        <div class="text-center mt-4 text-danger">
+          {{message}}
+    
+    
+        </div>
+        {% endif %}
+    
+    
+        
+        <br><br><br><br>
+    </div>
+    
+    {% endblock content %}
+    
+            
+       
+    
+    
+    
+    
+    
+    
+    
+    {% comment %} <div class="-col-md-5 ml-5 mt-4">
+        
+    
+    </div> {% endcomment %}
+    {% comment %} <div class="container">
+        <h1>Admin Users</h1>
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.phone_number }}</td>
+                    <td class="{% if user.status %}status-active{% else %}status-blocked{% endif %}">
+                        {% if user.status %}
+                            Active
+                        {% else %}
+                            Blocked
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="{% url 'block_unblock_user' user.id %}">
+
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm {% if user.status %}btn-danger{% else %}btn-success{% endif %}">
+                                {% if user.status %}
+                                    Block
+                                {% else %}
+                                    Unblock
+                                {% endif %}
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div> {% endcomment %}
+   

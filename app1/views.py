@@ -41,6 +41,32 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 
 
+
+from django.http import FileResponse
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.platypus import Table, TableStyle
+from reportlab.lib.pagesizes import letter
+from datetime import datetime
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+import xlsxwriter
+# import io
+# from datetime import datetime
+# from django.shortcuts import render
+# from django.http import FileResponse
+# import xlsxwriter
+# from reportlab.lib.pagesizes import letter
+# from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+# from reportlab.lib import colors
+# from .models import Order
+
+
+
 @never_cache
 def user_login(request):
     if 'username' in request.session:
@@ -499,6 +525,7 @@ def cart_remove(request,item_id):
     return redirect ("show-cart")
 
 
+
 def checkout(request):
   if "username" in request.session:
     print(RAZORPAY_API_SECRET_KEY,"####################")
@@ -671,6 +698,141 @@ def userorder_items(request, order_id):
 
 def order_history(request):
     return render(request, 'order_history.html' ) 
+import datetime
+from django.shortcuts import redirect
+
+import datetime
+from django.shortcuts import redirect
+
+def razorupdateorder(request):
+    if "username" in request.session:
+        username = request.session["username"]
+        customer = custom_user.objects.get(username=username)
+        cartobj = Cart.objects.filter(username=customer)
+        addobj = Address.objects.filter(username=customer)
+
+        if request.method == "POST":
+            addressid = request.POST.get("address")
+            address = Address.objects.get(id=addressid)
+            date_ordered = datetime.date.today()
+            
+            orderobj = Order(customer=customer, address=address, date_ordered=date_ordered, total=0)
+            orderobj.save()
+        
+            for item in cartobj:
+                pdtvariant = item.variant
+                price = pdtvariant.price
+                quantity = item.quantity
+                item_total = quantity * price
+
+                orderitemobj = OrderItems(variant=pdtvariant, order=orderobj,
+                                          quantity=quantity, price=price, total=item_total)
+                orderitemobj.save()
+
+                pdtvariant.quantity -= quantity
+                pdtvariant.save()
+
+                orderobj.total += item_total
+
+            orderobj.save()
+            print("Order successfully processed!")
+            # cartobj.delete()  # Remove this line if you want to retain cart items
+            return redirect(ordersuccess)  # Make sure you have defined the ordersuccess view
+
+    print("Order processing failed!")
+    return JsonResponse({"message": "Done"})
+
+
+
+
+# def razorupdateorder(request):
+#  if "username" in request.session:
+#     username=custom_user.objects.get(username=request.session["username"])
+#     cartobj = Cart.objects.filter(username = username)
+#     addobj = Address.objects.filter(username = username)
+#     if request.method == "POST":
+#         username = request.session.get("username")
+#         customer = custom_user.objects.get(username=username)
+#         cartobj = Cart.objects.filter(username = customer)
+#         addobj = Address.objects.filter(username = customer)
+#         if request.method == "POST":
+#             username = request.session.get("username")
+#             customer = custom_user.objects.get(username=username)
+#             cartobj = Cart.objects.filter(username = customer)
+#             addobj = Address.objects.filter(username = customer)
+
+#             addressid = request.POST.get("address")
+#             address = Address.objects.get(id=addressid)
+#             date_ordered = datetime.date.today()
+            
+#             orderobj = Order(customer = customer, address=address, date_ordered=date_ordered, total = 0)
+#             orderobj.save()
+        
+#             for item in cartobj:
+#                 pdtvariant = item.variant
+#                 price = item.variant.price
+#                 quantity = item.quantity
+#                 item_total = quantity*price
+
+#                 orderitemobj = OrderItems(variant = pdtvariant, order = orderobj,
+#                                             quantity=quantity, price=price, total = item_total)
+                    
+#                 orderitemobj.save()
+#                 print(orderitemobj,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+#                 pdtvariant.quantity -= quantity
+#                 pdtvariant.save()
+
+#                 orderobj.total += item_total
+
+#                 item.delete()
+#             orderobj.save()
+#             print("Order successfully processed!")
+#             return redirect(ordersuccess) 
+#     return JsonResponse({"message":"Done"})
+
+
+# def razorupdateorder(request):
+#     username=custom_user.objects.get(username=request.session["username"])
+#     cartobj = Cart.objects.filter(username = username)
+#     addobj = Address.objects.filter(username = username)
+#     if request.method == "POST":
+#         username = request.session.get("username")
+#         customer = custom_user.objects.get(username=username)
+#         cartobj = Cart.objects.filter(username = customer)
+#         addobj = Address.objects.filter(username = customer)
+#         if request.method == "POST":
+#             username = request.session.get("username")
+#             customer = custom_user.objects.get(username=username)
+#             cartobj = Cart.objects.filter(username = customer)
+#             addobj = Address.objects.filter(username = customer)
+
+#         if cartobj.exists():
+#             addressid = request.POST.get("address")
+#             address = Address.objects.get(id=addressid)
+            
+#             date_ordered = datetime.date.today()
+#             orderobj = Order(customer=customer, address=address, date_ordered=date_ordered, total=0)
+#             orderobj.save()
+
+#             for item in cartobj:
+#                pdtvariant = item.variant
+#                price = item.variant.price
+#                quantity = item.quantity
+#                item_total = quantity * price
+
+            
+#                orderitemobj = OrderItems(variant=pdtvariant, order=orderobj,
+#                                         quantity=quantity, price=price, total=item_total)
+
+#             orderobj.save()
+
+#             return JsonResponse({"message": "Order successfully processed!"})
+
+    return JsonResponse({"message": "Invalid request or cart is empty."}, status=400)
+
+
+
     
 # <_____________________________________ADMIN PART____________________________>
 
@@ -919,6 +1081,122 @@ def admin_coupon(request):
     }
     return render (request,'admincoupon.html',context)
 
-def razorupdateorder(request):
-    
-    return JsonResponse({"message":"Done"})
+
+
+
+# def salesreport(request):
+#     return render (request,'salesreport.html')
+
+
+def salesreport(request):
+    if request.method=="POST":
+        if "show" in request.POST:
+            start_date=request.POST.get("start_date")
+            end_date=request.POST.get("end_date")
+            orderobjs = Order.objects.filter(date_ordered__range=[start_date, end_date])
+            if orderobjs.count()==0:
+                message="Sorry! No orders in this particular date range"
+                context={"orderobjs":orderobjs,"message":message}
+            else:
+
+                context={"orderobjs":orderobjs}
+            return render(request,"salesreport.html",context)
+        elif "download" in request.POST:
+            start_date_str = request.POST.get('start_date')
+            end_date_str = request.POST.get('end_date')
+
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+            buf = io.BytesIO()
+            doc = SimpleDocTemplate(buf, pagesize=letter)
+            elements = []
+
+            # Add heading
+            styles = getSampleStyleSheet()
+            heading_style = styles['Heading1']
+            heading = "Sales Report"
+            heading_paragraph = Paragraph(heading, heading_style)
+            elements.append(heading_paragraph)
+            elements.append(Spacer(1, 12))  # Add space after heading
+
+            ords = Order.objects.filter(orderdate__range=[start_date, end_date])
+            
+
+            if ords:
+                data = [['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']]
+                slno = 0
+                for ord in ords:
+                    slno += 1
+                    row = [slno, ord.user.name, ord.product.name, ord.address.house, ord.orderdate, ord.orderstatus, ord.quantity]
+                    data.append(row)
+
+                table = Table(data)
+                table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                    ('FONTSIZE', (0, 0), (-1, 0), 12),
+                    ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                    ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
+                    ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+                    ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                    ('FONTSIZE', (0, 1), (-1, -1), 10),
+                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ]))
+
+                elements.append(table)
+            else:
+                elements.append(Paragraph("No orders", styles['Normal']))
+            if elements:
+
+                doc.build(elements)
+                buf.seek(0)
+                return FileResponse(buf, as_attachment=True, filename='Orders.pdf')
+        
+        elif "downloadinexcel" in request.POST:
+
+            start_date_str = request.POST.get('start_date')
+            end_date_str = request.POST.get('end_date')
+
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+
+
+            ords = Order.objects.filter(orderdate__range=[start_date, end_date])
+
+            # Create Excel workbook and worksheet
+            workbook = xlsxwriter.Workbook("Sales_Report.xlsx")
+            worksheet = workbook.add_worksheet('Sales Report')
+
+            # Write the table headers
+            headers = ['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']
+            for col, header in enumerate(headers):
+                worksheet.write(0, col, header)
+
+            # Write the data rows
+            row = 1
+            for slno, ord in enumerate(ords, start=1):
+                worksheet.write(row, 0, slno)
+                worksheet.write(row, 1, ord.user.name)
+                worksheet.write(row, 2, ord.product.name)
+                worksheet.write(row, 3, ord.address.house)
+                worksheet.write(row, 4, str(ord.orderdate))
+                worksheet.write(row, 5, ord.orderstatus)
+                worksheet.write(row, 6, ord.quantity)
+                row += 1
+
+            workbook.close()
+
+            # Create a file-like buffer to receive the workbook data
+            buf = io.BytesIO()
+            
+            buf.seek(0)
+            
+
+            # Return the Excel file as a FileResponse
+            return FileResponse(buf, as_attachment=True, filename='Sales_Report.xlsx', content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+    return render (request,'salesreport.html')
