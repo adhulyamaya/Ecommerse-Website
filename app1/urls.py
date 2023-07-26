@@ -87,8 +87,6 @@ urlpatterns = [
     path('color_adminadd/',views.color_adminadd, name='color_adminadd'),
     path('size_admin',views.size_admin, name='size_admin'),
     path('edit_color/<int:color_id>/',views.edit_color, name='edit_color'),
-
-
     path('razorupdateorder/',views.razorupdateorder, name='razorupdateorder'),
     
 

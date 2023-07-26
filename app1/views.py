@@ -1162,20 +1162,14 @@ def color_adminadd(request):
 #     return render(request, 'edit_color.html')
 
 def edit_color(request, color_id):
-    try:
-        color_obj = Color.objects.get(id=color_id)
-    except Color.DoesNotExist:
-        return HttpResponse("Color not found.", status=404)
-
+    color_obj = Color.objects.get(id=color_id)
     if request.method == 'POST':
         new_color = request.POST.get('color')
         color_obj.color = new_color
         color_obj.save()
-        return redirect('color_list')  # Redirect to the list of colors or any other page.
+        return redirect('color_admin') 
 
     return render(request, 'edit_color.html', {'color': color_obj})
-
-
 
 
 def size_admin(request):

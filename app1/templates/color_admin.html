@@ -23,9 +23,8 @@
                 <tr>
                     <th>ID</th>
                     <th>Color</th>
-                    <td>
-                        <a href="{% url 'edit_color' color.id %}" class="btn btn-sm btn-primary">Edit</a>
-                    </td>
+                    <th>EDIT</th>
+                    
                 </tr>
                 <a href="{% url 'color_adminadd' %}" class="btn btn-sm btn-primary">ADD</a>
                 <br>
@@ -37,6 +36,9 @@
                 <tr>
                     <td>{{ c.id }}</td>
                     <td>{{ c.color }}</td>
+                    <td>
+                        <a href="{% url 'edit_color' c.id %}" class="btn btn-sm btn-primary">Edit</a>
+                    </td>
                     
                 </tr>
                 {% endfor %}
