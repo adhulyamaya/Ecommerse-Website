@@ -1197,9 +1197,6 @@ def edit_size(request,size_id):
     return render(request, 'edit_size.html', {'size': size_obj})
    
 
-
-
-
 def admin_coupon(request):
     couponobj = Coupon.objects.all()
     context = {
