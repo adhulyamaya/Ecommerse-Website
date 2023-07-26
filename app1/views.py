@@ -17,11 +17,11 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import check_password
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Product
+from .models import Product ,OrderItems
 
 import random,vonage
 from vonage import Sms
-from django.shortcuts import render, get_object_or_404
+
 from .models import Product
 import razorpay
 from PINKVILLA.settings import RAZORPAY_API_SECRET_KEY,RAZORPAY_API_KEY
@@ -701,139 +701,41 @@ def order_history(request):
 import datetime
 from django.shortcuts import redirect
 
-import datetime
-from django.shortcuts import redirect
-
 def razorupdateorder(request):
-    if "username" in request.session:
-        username = request.session["username"]
-        customer = custom_user.objects.get(username=username)
-        cartobj = Cart.objects.filter(username=customer)
-        addobj = Address.objects.filter(username=customer)
+     
+    username = request.session.get("username")
+    customer = custom_user.objects.get(username=username)
+    cartobj = Cart.objects.filter(username = customer)
 
-        if request.method == "POST":
-            addressid = request.POST.get("address")
-            address = Address.objects.get(id=addressid)
-            date_ordered = datetime.date.today()
+    addressval=request.GET.get("addressval")
+    print(addressval,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+    finalprice =request.GET.get("finalprice")
+    
+    address = Address.objects.get(username = customer,flat = addressval)
+    date_ordered = datetime.date.today()
+    
+    orderobj = Order(customer = customer, address=address, date_ordered=date_ordered, total = finalprice,payment_type="razor pay")
+    orderobj.save()
+    for item in cartobj:
+
+        pdtvariant = item.variant
+        price = item.variant.price
+        quantity = item.quantity
+        item_total = quantity*price
+
+        orderitemobj = OrderItems(variant = pdtvariant, order = orderobj,
+                                    quantity=quantity, price=price, total = item_total)
             
-            orderobj = Order(customer=customer, address=address, date_ordered=date_ordered, total=0)
-            orderobj.save()
-        
-            for item in cartobj:
-                pdtvariant = item.variant
-                price = pdtvariant.price
-                quantity = item.quantity
-                item_total = quantity * price
+        orderitemobj.save()
+        print(orderitemobj,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-                orderitemobj = OrderItems(variant=pdtvariant, order=orderobj,
-                                          quantity=quantity, price=price, total=item_total)
-                orderitemobj.save()
+        pdtvariant.quantity -= quantity
+        pdtvariant.save()
+        item.delete()
 
-                pdtvariant.quantity -= quantity
-                pdtvariant.save()
-
-                orderobj.total += item_total
-
-            orderobj.save()
-            print("Order successfully processed!")
-            # cartobj.delete()  # Remove this line if you want to retain cart items
-            return redirect(ordersuccess)  # Make sure you have defined the ordersuccess view
-
-    print("Order processing failed!")
     return JsonResponse({"message": "Done"})
 
 
-
-
-# def razorupdateorder(request):
-#  if "username" in request.session:
-#     username=custom_user.objects.get(username=request.session["username"])
-#     cartobj = Cart.objects.filter(username = username)
-#     addobj = Address.objects.filter(username = username)
-#     if request.method == "POST":
-#         username = request.session.get("username")
-#         customer = custom_user.objects.get(username=username)
-#         cartobj = Cart.objects.filter(username = customer)
-#         addobj = Address.objects.filter(username = customer)
-#         if request.method == "POST":
-#             username = request.session.get("username")
-#             customer = custom_user.objects.get(username=username)
-#             cartobj = Cart.objects.filter(username = customer)
-#             addobj = Address.objects.filter(username = customer)
-
-#             addressid = request.POST.get("address")
-#             address = Address.objects.get(id=addressid)
-#             date_ordered = datetime.date.today()
-            
-#             orderobj = Order(customer = customer, address=address, date_ordered=date_ordered, total = 0)
-#             orderobj.save()
-        
-#             for item in cartobj:
-#                 pdtvariant = item.variant
-#                 price = item.variant.price
-#                 quantity = item.quantity
-#                 item_total = quantity*price
-
-#                 orderitemobj = OrderItems(variant = pdtvariant, order = orderobj,
-#                                             quantity=quantity, price=price, total = item_total)
-                    
-#                 orderitemobj.save()
-#                 print(orderitemobj,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
-#                 pdtvariant.quantity -= quantity
-#                 pdtvariant.save()
-
-#                 orderobj.total += item_total
-
-#                 item.delete()
-#             orderobj.save()
-#             print("Order successfully processed!")
-#             return redirect(ordersuccess) 
-#     return JsonResponse({"message":"Done"})
-
-
-# def razorupdateorder(request):
-#     username=custom_user.objects.get(username=request.session["username"])
-#     cartobj = Cart.objects.filter(username = username)
-#     addobj = Address.objects.filter(username = username)
-#     if request.method == "POST":
-#         username = request.session.get("username")
-#         customer = custom_user.objects.get(username=username)
-#         cartobj = Cart.objects.filter(username = customer)
-#         addobj = Address.objects.filter(username = customer)
-#         if request.method == "POST":
-#             username = request.session.get("username")
-#             customer = custom_user.objects.get(username=username)
-#             cartobj = Cart.objects.filter(username = customer)
-#             addobj = Address.objects.filter(username = customer)
-
-#         if cartobj.exists():
-#             addressid = request.POST.get("address")
-#             address = Address.objects.get(id=addressid)
-            
-#             date_ordered = datetime.date.today()
-#             orderobj = Order(customer=customer, address=address, date_ordered=date_ordered, total=0)
-#             orderobj.save()
-
-#             for item in cartobj:
-#                pdtvariant = item.variant
-#                price = item.variant.price
-#                quantity = item.quantity
-#                item_total = quantity * price
-
-            
-#                orderitemobj = OrderItems(variant=pdtvariant, order=orderobj,
-#                                         quantity=quantity, price=price, total=item_total)
-
-#             orderobj.save()
-
-#             return JsonResponse({"message": "Order successfully processed!"})
-
-    return JsonResponse({"message": "Invalid request or cart is empty."}, status=400)
-
-
-
-    
 # <_____________________________________ADMIN PART____________________________>
 
 @never_cache
@@ -841,11 +743,9 @@ def admin_login(request):
     if 'username' in request.session:
         return redirect(admin_home)
     else:
-
         if request.method == 'POST':
             username = request.POST.get('username')
-            password = request.POST.get('password')
-            
+            password = request.POST.get('password')            
             try:
                 user = custom_user.objects.get(username = username, password = password)
                 

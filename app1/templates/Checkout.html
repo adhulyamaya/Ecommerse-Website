@@ -459,7 +459,7 @@ body{
 
           <div class="px-3 my-3 text-center">
               <div class="cart-item-label">Subtotal :</div>
-              <div class="count-input">
+              <div id="total_cost" class="count-input">
                 {{total_cost}}
               </div>
           </div>
@@ -474,7 +474,7 @@ body{
                                   <p>Choose Address: </p>
                                   <select id="addressid" name="address"> 
                                       {% for address in addobj %}
-                                          <option value="{{ address.id }}">{{ address.flat }}, {{ address.locality }}, {{ address.city }}</option>
+                                          <option value="{{ address.flat }}">{{ address.flat }}, {{ address.locality }}, {{ address.city }}</option>
                                         
                                       {% endfor %}
                                   </select>
@@ -495,9 +495,9 @@ body{
               <button type="submit" class="btn btn-style-1 btn-success btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;Checkout</button>
               {% comment %} <button type="submit" class="btn btn-style-1 btn-success btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;pay with razorpay</button> {% endcomment %}
               </div>
-              <div class="col-md-3">
+              {% comment %} <div class="col-md-3">
                 <button type="submit" class="btn btn-style-1 btn-primary btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;pay with razorpay</button>
-              </div>
+              </div> {% endcomment %}
               <button id="rzp-button1">Execute with Razorpay</button>
 
               </div>
@@ -534,15 +534,15 @@ var options = {
       $.ajax({
         url: '/razorupdateorder/', // Replace with the URL of your update order view
         method: 'GET',
-        //data: {
+        data: {
           //paymentId: response.razorpay_payment_id,
           //orderId: response.razorpay_order_id,
-          //addressval:$("#addressdropdown").val(),
-          //finalprice:$("#totalamount").text(),
+          addressval:$("#addressid").val(),
+          finalprice:$("#total_cost").text(),
   
   
           
-        //},
+        },
         success: function(data) {
           // Handle the response from the server
           // For example, you can display a success message or redirect to a new page
