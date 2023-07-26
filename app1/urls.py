@@ -85,8 +85,10 @@ urlpatterns = [
     path('delete/<int:product_id>/',views.delete_product, name='delete_product'),
     path('color_admin',views.color_admin, name='color_admin'),
     path('color_adminadd/',views.color_adminadd, name='color_adminadd'),
-    path('size_admin',views.size_admin, name='size_admin'),
     path('edit_color/<int:color_id>/',views.edit_color, name='edit_color'),
+    path('size_admin',views.size_admin, name='size_admin'),
+    path('size_adminadd',views.size_adminadd, name='size_adminadd'),
+    path('edit_size/<int:size_id>/',views.edit_size, name='edit_size'),
     path('razorupdateorder/',views.razorupdateorder, name='razorupdateorder'),
     
 

@@ -3,7 +3,7 @@
     <title>SIZE</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        /* Additional custom styles */
+      
         body {
             padding: 20px;
         }
@@ -24,9 +24,10 @@
                 <tr>
                     <th>ID</th>
                     <th>Size</th>
-                    {% comment %} <th>Edit</th>
-                    <th>Delete</th> {% endcomment %}
+                     <th>Edit</th>
+                    
                 </tr>
+                <a href="{% url 'size_adminadd' %}" class="btn btn-sm btn-primary">ADD</a>
             </thead>
             <tbody>
                 <!-- category.html -->
@@ -36,20 +37,11 @@
                 <tr>
                     <td>{{ s.id }}</td>
                     <td>{{ s.size }}</td>
-                    {% comment %} <td>
-                        <a href="{% url 'edit_category' category.id %}" class="btn btn-sm btn-primary">Edit</a>
-                    </td>
                     <td>
-                        <form method="POST" action="{% url 'delete_category' category.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
-                    </td> {% endcomment %}
+                        <a href="{% url 'edit_size' s.id %}" class="btn btn-sm btn-primary">Edit</a>
+                    </td>
                 </tr>
                 {% endfor %}
-            </tbody>
-            <!-- ... -->
-
             </tbody>
         </table>
     </div>

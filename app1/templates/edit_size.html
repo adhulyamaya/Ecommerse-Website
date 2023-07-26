@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Size</title>
+</head>
+<body>
+    <h1>Edit Size</h1>
+    <form action="{% url 'edit_size' size.id %}" method="post">
+        {% csrf_token %}
+        <label for="color">Size:</label>
+        <input type="text" id="size" name="size"  value="{{ size.size }}" required>
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>

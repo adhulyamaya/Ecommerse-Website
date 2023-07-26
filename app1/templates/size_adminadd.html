@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add SIZE</title>
+</head>
+<body>
+    <h1>Add Size</h1>
+    <form action="{% url 'size_adminadd' %}" method="post">
+        {% csrf_token %}
+        <label for="color">Size </label>
+        <input type="text" id="size" name="size" required>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

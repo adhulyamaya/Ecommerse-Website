@@ -1157,9 +1157,7 @@ def color_adminadd(request):
     else:
         return render(request, 'color_adminadd.html')
     
-# def edit_color(request,color_id):
 
-#     return render(request, 'edit_color.html')
 
 def edit_color(request, color_id):
     color_obj = Color.objects.get(id=color_id)
@@ -1178,6 +1176,29 @@ def size_admin(request):
         "size":size
     }
     return render (request,'size_admin.html',context)
+
+def size_adminadd(request):
+    if request.method == 'POST':
+        size = request.POST.get('size')
+        new_color = Size (size= size)
+        new_color.save()
+        return redirect('size_admin')  
+    else:
+        return render (request,'size_adminadd.html')
+    
+def edit_size(request,size_id):
+    size_obj = Size.objects.get(id=size_id)
+    if request.method == 'POST':
+        new_size = request.POST.get('size')
+        size_obj.size = new_size
+        size_obj.save()
+        return redirect('size_admin') 
+
+    return render(request, 'edit_size.html', {'size': size_obj})
+   
+
+
+
 
 def admin_coupon(request):
     couponobj = Coupon.objects.all()
