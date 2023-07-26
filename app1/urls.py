@@ -74,7 +74,8 @@ urlpatterns = [
     path("add_category/",views.add_category,name = 'add_category'),
     path("add_product/",views.add_product,name = 'add_product'),
     path("salesreport/",views.salesreport,name = 'salesreport'),
-    
+    path('generate_invoice/<int:order_id>/', views.generate_invoice, name='generate_invoice'),
+    path('download_invoice/<int:order_id>/', views.download_invoice, name='download_invoice'),
     path('edit_category/<int:category_id>/', views.edit_category, name='edit_category'),
     # path('update_category/<int:category_id>/', views.update_category, name='update_category'),
     path('delete_category/<int:category_id>/', views.delete_category, name='delete_category'),

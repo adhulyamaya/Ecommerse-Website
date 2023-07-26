@@ -736,6 +736,85 @@ def razorupdateorder(request):
     return JsonResponse({"message": "Done"})
 
 
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
+
+def generate_invoice(request, order_id):
+    # Fetch the order details from the database using the order_id
+    order = Order.objects.get(id=order_id)
+    order_items = OrderItems.objects.filter(order=order)
+
+    # Create a response object with PDF content type
+    response = HttpResponse(content_type='application/pdf')
+
+    # Set the Content-Disposition header to force download
+    response['Content-Disposition'] = f'attachment; filename="invoice_{order_id}.pdf"'
+
+    # Create a PDF canvas using reportlab
+    p = canvas.Canvas(response, pagesize=letter)
+
+    # Write the invoice details to the PDF
+    p.drawString(100, 800, f'Invoice for Order #{order_id}')
+    p.drawString(100, 780, f'Customer: {order.customer.username}')
+    p.drawString(100, 760, 'Order Items:')
+    
+    y = 740
+    for item in order_items:
+        p.drawString(120, y, f'{item.variant.product.name} x {item.quantity} - ${item.total}')
+        y -= 20
+
+    # Calculate the total amount for the order
+    total_amount = sum(item.total for item in order_items)
+    p.drawString(100, y, f'Total Amount: ${total_amount}')
+
+    # Save the PDF content
+    p.showPage()
+    p.save()
+
+    return response
+
+
+
+# views.py
+from io import BytesIO 
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
+def download_invoice(request, order_id):
+    # Retrieve the order and other relevant data based on the order_id
+    # (You may need to adjust this part based on your data model)
+    try:
+        from app1.models import Order
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return HttpResponse("Order not found.", status=404)
+
+    # Generate the PDF content using reportlab
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+
+    # Customize the content of the invoice based on your requirements
+    pdf.drawString(100, 800, f"Invoice for Order #{order_id}")
+    pdf.drawString(100, 780, f"Customer: {order.customer.username}")
+    pdf.drawString(100, 760, f"Address: {order.address}")
+    pdf.drawString(100, 740, f"Total Amount: {order.total}")
+    # Add more relevant information as needed
+
+    pdf.save()
+
+    # Set the buffer position to the start to ensure the entire content is written to the response
+    buffer.seek(0)
+
+    # Create a response with PDF content
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="invoice_order_{order_id}.pdf"'
+    return response
+
+
+
 # <_____________________________________ADMIN PART____________________________>
 
 @never_cache
