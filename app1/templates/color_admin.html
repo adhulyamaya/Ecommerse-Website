@@ -3,7 +3,6 @@
     <title>COLOR</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        /* Additional custom styles */
         body {
             padding: 20px;
         }
@@ -24,32 +23,23 @@
                 <tr>
                     <th>ID</th>
                     <th>Color</th>
-                    {% comment %} <th>Edit</th>
-                    <th>Delete</th> {% endcomment %}
+                    <td>
+                        <a href="{% url 'edit_color' color.id %}" class="btn btn-sm btn-primary">Edit</a>
+                    </td>
                 </tr>
+                <a href="{% url 'color_adminadd' %}" class="btn btn-sm btn-primary">ADD</a>
+                <br>
             </thead>
             <tbody>
-                <!-- category.html -->
-            <!-- ... -->
+            
             <tbody>
                 {% for c in color %}
                 <tr>
                     <td>{{ c.id }}</td>
                     <td>{{ c.color }}</td>
-                    {% comment %} <td>
-                        <a href="{% url 'edit_category' category.id %}" class="btn btn-sm btn-primary">Edit</a>
-                    </td>
-                    <td>
-                        <form method="POST" action="{% url 'delete_category' category.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
-                    </td> {% endcomment %}
+                    
                 </tr>
                 {% endfor %}
-            </tbody>
-            <!-- ... -->
-
             </tbody>
         </table>
     </div>

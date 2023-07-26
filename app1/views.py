@@ -735,11 +735,11 @@ def razorupdateorder(request):
 
     return JsonResponse({"message": "Done"})
 
-
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
 
 def generate_invoice(request, order_id):
     # Fetch the order details from the database using the order_id
@@ -752,28 +752,127 @@ def generate_invoice(request, order_id):
     # Set the Content-Disposition header to force download
     response['Content-Disposition'] = f'attachment; filename="invoice_{order_id}.pdf"'
 
-    # Create a PDF canvas using reportlab
-    p = canvas.Canvas(response, pagesize=letter)
+    # Create a PDF document using reportlab
+    doc = SimpleDocTemplate(response, pagesize=letter)
+    elements = []
 
     # Write the invoice details to the PDF
-    p.drawString(100, 800, f'Invoice for Order #{order_id}')
-    p.drawString(100, 780, f'Customer: {order.customer.username}')
-    p.drawString(100, 760, 'Order Items:')
-    
-    y = 740
-    for item in order_items:
-        p.drawString(120, y, f'{item.variant.product.name} x {item.quantity} - ${item.total}')
-        y -= 20
+    styles = getSampleStyleSheet()
+    heading_style = styles['Heading1']
+    heading = f'Invoice for Order #{order_id}'
+    heading_paragraph = Paragraph(heading, heading_style)
+    elements.append(heading_paragraph)
+    elements.append(Spacer(1, 12))  # Add space after heading
 
-    # Calculate the total amount for the order
+    customer_info = f'Customer: {order.customer.username}'
+    customer_info_paragraph = Paragraph(customer_info, styles['Normal'])
+    elements.append(customer_info_paragraph)
+    elements.append(Spacer(1, 12))  # Add space after customer info
+
+    order_items_data = [['Product', 'Price', 'Quantity', 'Total']]
+    for order_item in order_items:
+        item_data = [
+            order_item.variant.name,
+            f"${order_item.price:.2f}",
+            order_item.quantity,
+            f"${order_item.total:.2f}"
+        ]
+        order_items_data.append(item_data)
+    order_items_table = Table(order_items_data)
+    order_items_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
+        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 10),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    elements.append(order_items_table)
+
     total_amount = sum(item.total for item in order_items)
-    p.drawString(100, y, f'Total Amount: ${total_amount}')
+    total_info = f'Total Amount: ${total_amount:.2f}'
+    total_info_paragraph = Paragraph(total_info, styles['Normal'])
+    elements.append(Spacer(1, 12))  # Add space before total info
+    elements.append(total_info_paragraph)
 
-    # Save the PDF content
-    p.showPage()
-    p.save()
+    # Build the PDF document with elements
+    doc.build(elements)
 
     return response
+
+
+
+
+
+# from django.http import HttpResponse
+# from reportlab.lib.pagesizes import letter
+# from reportlab.pdfgen import canvas
+
+
+# def generate_invoice(request, order_id):
+#     # Fetch the order details from the database using the order_id
+#     order = Order.objects.get(id=order_id)
+#     order_items = OrderItems.objects.filter(order=order)
+
+#     # Create a response object with PDF content type
+#     response = HttpResponse(content_type='application/pdf')
+
+#     # Set the Content-Disposition header to force download
+#     response['Content-Disposition'] = f'attachment; filename="invoice_{order_id}.pdf"'
+
+#     # Create a PDF canvas using reportlab
+#     p = canvas.Canvas(response, pagesize=letter)
+
+#     # Write the invoice details to the PDF
+#     p.drawString(100, 800, f'Invoice for Order #{order_id}')
+#     p.drawString(100, 780, f'Customer: {order.customer.username}')
+#     p.drawString(100, 760, 'Order Items:')
+#     # Add table with order items
+#     order_items_data = [['Product', 'Price', 'Quantity', 'Total']]
+#     for order_item in OrderItems.objects.filter(order=order):
+#             item_data = [
+#                 order_item.variant.name,
+#                 f"${order_item.price:.2f}",
+#                 order_item.quantity,
+#                 f"${order_item.total:.2f}"
+#             ]
+#             order_items_data.append(item_data)
+
+#     order_items_table = Table(order_items_data)
+#     order_items_table.setStyle(TableStyle([
+#             ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+#             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+#             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+#             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+#             ('FONTSIZE', (0, 0), (-1, 0), 12),
+#             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+#             ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
+#             ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+#             ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+#             ('FONTSIZE', (0, 1), (-1, -1), 10),
+#             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+#         ]))
+#     elements.extend([Spacer(1, 12), order_items_table])
+
+#     y = 740
+#     for item in order_items:
+#         p.drawString(120, y, f'{item.variant.product.name} x {item.quantity} - ${item.total}')
+#         y -= 20
+
+#     # Calculate the total amount for the order
+#     total_amount = sum(item.total for item in order_items)
+#     p.drawString(100, y, f'Total Amount: ${total_amount}')
+
+#     # Save the PDF content
+#     p.showPage()
+#     p.save()
+
+#     return response
 
 
 
@@ -800,7 +899,11 @@ def download_invoice(request, order_id):
     pdf.drawString(100, 800, f"Invoice for Order #{order_id}")
     pdf.drawString(100, 780, f"Customer: {order.customer.username}")
     pdf.drawString(100, 760, f"Address: {order.address}")
-    pdf.drawString(100, 740, f"Total Amount: {order.total}")
+    pdf.drawString(100, 740, f"Payment type: {order.payment_type}")
+    pdf.drawString(100, 720, f"Total Amount: {order.total}")
+    pdf.drawString(100, 700, f"Order status: {order.order_status}")
+    pdf.drawString(100, 680, f" Applied coupon: {order.coupon}")
+    pdf.drawString(100, 600, f"Ordered date with time: {order.date_ordered}")
     # Add more relevant information as needed
 
     pdf.save()
@@ -1044,6 +1147,35 @@ def color_admin(request):
         "color":color
     }
     return render(request, 'color_admin.html',context)
+
+def color_adminadd(request):
+    if request.method == 'POST':
+        color = request.POST.get('color')
+        new_color = Color(color= color)
+        new_color.save()
+        return redirect('color_admin')  
+    else:
+        return render(request, 'color_adminadd.html')
+    
+# def edit_color(request,color_id):
+
+#     return render(request, 'edit_color.html')
+
+def edit_color(request, color_id):
+    try:
+        color_obj = Color.objects.get(id=color_id)
+    except Color.DoesNotExist:
+        return HttpResponse("Color not found.", status=404)
+
+    if request.method == 'POST':
+        new_color = request.POST.get('color')
+        color_obj.color = new_color
+        color_obj.save()
+        return redirect('color_list')  # Redirect to the list of colors or any other page.
+
+    return render(request, 'edit_color.html', {'color': color_obj})
+
+
 
 
 def size_admin(request):

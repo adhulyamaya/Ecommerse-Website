@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Color</title>
+</head>
+<body>
+    <h1>Add Color</h1>
+    <form action="{% url 'color_adminadd' %}" method="post">
+        {% csrf_token %}
+        <label for="color">Color:</label>
+        <input type="text" id="color" name="color" required>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
