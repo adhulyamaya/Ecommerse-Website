@@ -50,7 +50,8 @@ urlpatterns = [
     path('contact/',views.contact,name ='contact'),
     path('about/',views.about,name ='about'),
     path('wishlist/',views.wishlist,name ='wishlist'),
-    path('search_products/', views.search_products, name='search_products'),
+    path('search/', views.search, name='search'),
+    path("wallet/",views.wallet,name="wallet"),
 
     path('add_to_wishlist/',views.add_to_wishlist,name ='add_to_wishlist'),
     path('wishlist_remove/<int:item_id>',views.wishlist_remove,name = 'wishlist_remove'),

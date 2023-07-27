@@ -78,6 +78,7 @@
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Orders</a>
                 <div class="dropdown-menu rounded-0 m-0">
                     <a href="{% url 'view_order' %}" class="dropdown-item">View order</a>
+                    <a href="{% url 'wallet' %}" class="dropdown-item">wallet</a>
                     <a href="{% url 'order_history' %}" class="dropdown-item">Order history</a>
                 </div>
             </div>
@@ -87,21 +88,10 @@
                 </a>
             </div> {% endcomment %}
 
-
-    
-            {% comment %} <div class="ml-auto d-flex align-items-center">
-                <form action="" class="flex-grow-1">
-                    <div class="input-group" style="width: 300px;">
-                        <input type="text" class="form-control" placeholder="Search for products">
-                        <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
-                                <i class="fa fa-search"></i>
-                            </span>
-                        </div>
-                    </div> {% endcomment %}
-                    <form action="{% url 'search_products' %}" method="GET" class="flex-grow-1">
+                    <form action="{% url 'search' %}" method="GET" class="flex-grow-1">
+                        {% csrf_token %}
                         <div class="input-group" style="width: 300px;">
-                            <input type="text" class="form-control" name="q" placeholder="Search for products">
+                            <input type="text" class="form-control" name="search" placeholder="Search">
                             <div class="input-group-append">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fa fa-search"></i>
@@ -110,8 +100,6 @@
                         </div>
                     </form>
 
-                    
-                </form>
                 <div class="nav-item dropdown mr-3">
                     <a href="#" class="nav-link dropdown-toggle " data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true"></i></a>
                     <div class="dropdown-menu rounded-0 m-0">

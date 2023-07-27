@@ -20,9 +20,7 @@
             <h4>
                 Sales Report
             </h4>
-        </div>
-        
-    
+        </div>  
       <div class="row justify-content-center border mt-2  ">
         <form action="" method="POST">
             {% csrf_token %}
@@ -31,16 +29,14 @@
               <br>
               <label for="end_date">End Date:</label>
               <input  class="form-control" type="date" id="end_date" name="end_date" required>
-              <br>
-             
+              <br>             
               <div class="row mb-5">
                 <button name="show" type="submit" class="btn add-product-btn btn-secondary mt-2">Show Report</button>
                 <button name="download"  type="submit" class="btn add-product-btn btn-secondary mt-2 ml-4 ">Download</button>
               </div>
             </div>
               <div>
-        </form>
-    
+        </form>    
       </div>
       {% if orderobjs %}
         <div class="row">
@@ -53,9 +49,7 @@
                     <th>Date</th>
                     <th>Status</th>
                     <th>Payment Type</th>
-                    <th>Total</th>
-                    
-       
+                    <th>Total</th>       
                   </tr>
                 </thead>
                 <tbody>

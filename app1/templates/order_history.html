@@ -12,25 +12,27 @@
                     <th>variant</th>
                     <th>price</th>
                     <th>quantity </th>
-                    <th>Total</th>
-                    
-                    
+                    <th>Total</th> 
                    
                 </tr>
             </thead>
             <tbody>
-                {% for item in itemobj %}
+                {% for order in delivered_orders %}
                 <tr>
                     <td>{{ item.order.id }}</td>
                     <td>{{ item.variant }}</td>
-                    {% comment %} <td><img src="{{ image.url }}" alt="{{ product.name }}" class="product-image"></td> {% endcomment %}
-                    {% comment %} <td>{{ product.brand }}</td> {% endcomment %}
-                    
                     <td>{{ item.price }}</td>
-                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.date_ordered }}</td>
                     <td>{{item.total}}</td>
                    {% comment %} <td><a href="{% url 'order_items' order.id %}">view order details</a></td> {% endcomment %}
-                    
+                   <h2>Order ID: {{ order.id }}</h2>
+                   <p>Order Date: {{ order.date_ordered }}</p>
+                   <ul>
+                       {% for item in orderobj %}
+                           <li>
+                               <strong>{{ item.order.date_ordered }}</strong> - Quantity: {{ item.quantity }} - Price: ${{ item.price }}
+                           </li>
+                       {% endfor %}
                 </tr>
                 {% endfor %}
             </tbody>

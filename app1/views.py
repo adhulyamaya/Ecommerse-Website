@@ -78,6 +78,17 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib import colors
 from .models import Order
 
+import io
+from datetime import datetime
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from django.shortcuts import render
+from .models import Order
+import datetime
+from django.shortcuts import redirect
 
 
 @never_cache
@@ -387,8 +398,6 @@ def user_address(request):
 
 
 
-
-
 def user_proeditadd(request,address_id):    
     
     if request.method == 'POST':
@@ -410,11 +419,6 @@ def user_proeditadd(request,address_id):
         return redirect(user_profile)
     
     return render(request, 'user_proeditadd.html', {'address': addressobj})
-
-
-
-
-
 
 
 
@@ -653,13 +657,22 @@ def wishlist_remove(request,item_id):
     return redirect ("wishlist")
 
 
-def search_products(request):
+def search(request):
     query = request.GET.get('q')  
     results = []
     if query:
         results = Product.objects.filter(name__icontains=query)
 
-    return render(request, 'search_results.html', {'results': results, 'query': query})  
+    return render(request, 'search_results.html')  
+
+def wallet(request):
+    orderobj= Order.objects.filter(order_status='returned')
+    context = {
+        "orderobj":orderobj
+    }
+    return render(request, 'wallet.html',context) 
+
+
 
 def changepassword(request):
     if "username" in request.session:
@@ -684,11 +697,9 @@ def changepassword(request):
 
 def cancel_order(request, order_id):
         order = Order.objects.get(id=order_id)
-
         order.delete()
-        order.order_status = 'cancelled'
-        order.save()
-        return redirect('view_orders') 
+        return redirect('view_order') 
+
 
 def view_order(request):
     orderobj = Order.objects.all()
@@ -710,9 +721,11 @@ def userorder_items(request, order_id):
     return render(request, 'userorder_items.html', context) 
 
 def order_history(request):
-    return render(request, 'order_history.html' ) 
-import datetime
-from django.shortcuts import redirect
+    orederobj = Order.objects.all()
+    delivered_orders = Order.objects.filter(order_status='delivered')
+    return render(request, 'order_history.html', {'delivered_orders': delivered_orders,"orederobj":orederobj})
+   
+
 
 def razorupdateorder(request):
      
@@ -819,77 +832,6 @@ def generate_invoice(request, order_id):
     return response
 
 
-
-
-
-# from django.http import HttpResponse
-# from reportlab.lib.pagesizes import letter
-# from reportlab.pdfgen import canvas
-
-
-# def generate_invoice(request, order_id):
-#     # Fetch the order details from the database using the order_id
-#     order = Order.objects.get(id=order_id)
-#     order_items = OrderItems.objects.filter(order=order)
-
-#     # Create a response object with PDF content type
-#     response = HttpResponse(content_type='application/pdf')
-
-#     # Set the Content-Disposition header to force download
-#     response['Content-Disposition'] = f'attachment; filename="invoice_{order_id}.pdf"'
-
-#     # Create a PDF canvas using reportlab
-#     p = canvas.Canvas(response, pagesize=letter)
-
-#     # Write the invoice details to the PDF
-#     p.drawString(100, 800, f'Invoice for Order #{order_id}')
-#     p.drawString(100, 780, f'Customer: {order.customer.username}')
-#     p.drawString(100, 760, 'Order Items:')
-#     # Add table with order items
-#     order_items_data = [['Product', 'Price', 'Quantity', 'Total']]
-#     for order_item in OrderItems.objects.filter(order=order):
-#             item_data = [
-#                 order_item.variant.name,
-#                 f"${order_item.price:.2f}",
-#                 order_item.quantity,
-#                 f"${order_item.total:.2f}"
-#             ]
-#             order_items_data.append(item_data)
-
-#     order_items_table = Table(order_items_data)
-#     order_items_table.setStyle(TableStyle([
-#             ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
-#             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-#             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-#             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-#             ('FONTSIZE', (0, 0), (-1, 0), 12),
-#             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-#             ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
-#             ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-#             ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-#             ('FONTSIZE', (0, 1), (-1, -1), 10),
-#             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-#         ]))
-#     elements.extend([Spacer(1, 12), order_items_table])
-
-#     y = 740
-#     for item in order_items:
-#         p.drawString(120, y, f'{item.variant.product.name} x {item.quantity} - ${item.total}')
-#         y -= 20
-
-#     # Calculate the total amount for the order
-#     total_amount = sum(item.total for item in order_items)
-#     p.drawString(100, y, f'Total Amount: ${total_amount}')
-
-#     # Save the PDF content
-#     p.showPage()
-#     p.save()
-
-#     return response
-
-
-
-# views.py
 from io import BytesIO 
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
@@ -1220,20 +1162,6 @@ def admin_coupon(request):
 
 
 
-# def salesreport(request):
-#     return render (request,'salesreport.html')
-
-
-import io
-from datetime import datetime
-from django.http import HttpResponse
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet
-from django.shortcuts import render
-from .models import Order
-
 def salesreport(request):
     if request.method == "POST":
         if "show" in request.POST:
@@ -1299,132 +1227,6 @@ def salesreport(request):
     return render(request, 'salesreport.html')
 
 
-import io
-from datetime import datetime  # Explicitly import datetime from the datetime module
-from django.http import HttpResponse
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet
-from django.shortcuts import render
-from .models import Order
 
-
-# def salesreport(request):
-#     if request.method=="POST":
-#         if "show" in request.POST:
-#             start_date=request.POST.get("start_date")
-#             end_date=request.POST.get("end_date")
-#             orderobjs = Order.objects.filter(date_ordered__range=[start_date, end_date])
-#             variantobj = Variant.objects.all()
-#             if orderobjs.count()==0:
-#                 message="Sorry! No orders"
-#                 context={"orderobjs":orderobjs,"message":message}
-#             else:
-
-#                 context={"orderobjs":orderobjs,
-#                          "variantobj":variantobj,
-#                          }
-                
-#             return render(request,"salesreport.html",context)
-#         elif "download" in request.POST:
-#             start_date_str = request.POST.get('start_date')
-#             end_date_str = request.POST.get('end_date')
-
-#             start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-#             end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
-
-#             buf = io.BytesIO()
-#             doc = SimpleDocTemplate(buf, pagesize=letter)
-#             elements = []
-
-#             # Add heading
-#             styles = getSampleStyleSheet()
-#             heading_style = styles['Heading1']
-#             heading = "Sales Report"
-#             heading_paragraph = Paragraph(heading, heading_style)
-#             elements.append(heading_paragraph)
-#             elements.append(Spacer(1, 10))  # Add space after heading
-
-#             ords = Order.objects.filter(orderdate__range=[start_date, end_date])
-            
-
-#             if ords:
-#                 data = [['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']]
-#                 slno = 0
-#                 for ord in ords:
-#                     slno += 1
-#                     row = [slno, ord.custom_user.name, ord.product.name, ord.address.house, ord.orderdate, ord.orderstatus, ord.quantity]
-#                     data.append(row)
-
-#                 table = Table(data)
-#                 table.setStyle(TableStyle([
-#                     ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
-#                     ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-#                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-#                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-#                     ('FONTSIZE', (0, 0), (-1, 0), 12),
-#                     ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-#                     ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
-#                     ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-#                     ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-#                     ('FONTSIZE', (0, 1), (-1, -1), 10),
-#                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-#                 ]))
-
-#                 elements.append(table)
-#             else:
-#                 elements.append(Paragraph("No orders", styles['Normal']))
-#             if elements:
-
-#                 doc.build(elements)
-#                 buf.seek(0)
-#                 return FileResponse(buf, as_attachment=True, filename='Orders.pdf')
-        
-        # elif "downloadinexcel" in request.POST:
-
-        #     start_date_str = request.POST.get('start_date')
-        #     end_date_str = request.POST.get('end_date')
-
-        #     start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-        #     end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
-
-
-
-        #     ords = Order.objects.filter(orderdate__range=[start_date, end_date])
-
-        #     # Create Excel workbook and worksheet
-        #     workbook = xlsxwriter.Workbook("Sales_Report.xlsx")
-        #     worksheet = workbook.add_worksheet('Sales Report')
-
-        #     # Write the table headers
-        #     headers = ['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']
-        #     for col, header in enumerate(headers):
-        #         worksheet.write(0, col, header)
-
-        #     # Write the data rows
-        #     row = 1
-        #     for slno, ord in enumerate(ords, start=1):
-        #         worksheet.write(row, 0, slno)
-        #         worksheet.write(row, 1, ord.user.name)
-        #         worksheet.write(row, 2, ord.product.name)
-        #         worksheet.write(row, 3, ord.address.house)
-        #         worksheet.write(row, 4, str(ord.orderdate))
-        #         worksheet.write(row, 5, ord.orderstatus)
-        #         worksheet.write(row, 6, ord.quantity)
-        #         row += 1
-
-        #     workbook.close()
-
-            # Create a file-like buffer to receive the workbook data
-    #         buf = io.BytesIO()
-            
-    #         buf.seek(0)
-            
-
-    #         # Return the Excel file as a FileResponse
-    #         return FileResponse(buf, as_attachment=True, filename='Sales_Report.xlsx', content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-
-    # return render (request,'salesreport.html')
 
 

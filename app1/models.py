@@ -149,5 +149,13 @@ class OrderItems(models.Model):
 
     def __str__(self):
         return f"OrderItem #{self.id}"
+    
+
+class Wallet(models.Model):
+    user=models.ForeignKey(custom_user,on_delete=models.CASCADE)
+    amount=models.DecimalField(max_digits=10, decimal_places=2) 
+
+    def __str__(self):  
+        return self.user 
 
 

@@ -1,0 +1,34 @@
+
+{% extends 'user_product.html' %}
+{% load static %}
+    <title>Orders</title>
+    {% block main-content %}
+    <div class="container">
+        <h4> WELCOME TO YOUR WALLET</h4>
+        <BR>
+            <br>
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>order</th>
+                    <th>transaction date</th>
+                    <th>amount</th>
+                    <th>purchased item </th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in orderobj %}
+                <tr>
+                    <td>{{ item.order.id }}</td>
+                    <td>{{ item.variant }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{item.total}}</td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endblock main-content %}
