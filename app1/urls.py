@@ -80,6 +80,7 @@ urlpatterns = [
     path('generate_invoice/<int:order_id>/', views.generate_invoice, name='generate_invoice'),
     path('download_invoice/<int:order_id>/', views.download_invoice, name='download_invoice'),
     path('edit_category/<int:category_id>/', views.edit_category, name='edit_category'),
+    path('edit_coupon/<int:coupon_id>/', views.edit_coupon, name='edit_coupon'),
     # path('update_category/<int:category_id>/', views.update_category, name='update_category'),
     path('delete_category/<int:category_id>/', views.delete_category, name='delete_category'),
     path('admin_user/<int:user_id>/', views.block_unblock_user, name='block_unblock_user'),

@@ -20,7 +20,7 @@
 
 {% block content %}
     <div class="container">
-        <h1>Products</h1>
+        <h1>Coupon</h1>
         <table class="table table-bordered">
             <thead class="thead-dark">
                 <tr>
@@ -42,6 +42,7 @@
                 <th>{{c.is_expired}}</th>
                 <th>{{c.discount_price}}</th>
                 <th>{{c.minimum_amount }}</th>
+                <th><a href="{% url 'edit_coupon' c.id %}" class="btn btn-sm btn-primary">Edit</a></th>
 
                 {% endfor %}
                 </tr>

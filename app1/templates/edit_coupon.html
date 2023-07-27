@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Size</title>
+</head>
+<body>
+    <h1>Edit Size</h1>
+    <form action="{% url 'edit_coupon' coupon.id %}" method="post">
+        {% csrf_token %}
+        <label for="color">coupon:</label>
+        <input type="text" id="coupon" name="coupon"  value="{{ coupon.coupon }}" required>
+        <BR>
+        <BR>
+        <label for="coupon">discount_price</label>
+        <input type="text" id="discount_price" name="discount_price" value="{{ coupon.discount_price}}" required>
+        <BR>
+        <BR>
+        <label for="coupon">minimum_amount</label>
+        <input type="text" id="minimum_amount" name="minimum_amount"  vallue = "{{coupon.minimum_amount}}" required>
+        <BR>
+        <BR>
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>

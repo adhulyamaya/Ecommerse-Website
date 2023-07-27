@@ -23,13 +23,7 @@
             {% csrf_token %}
             <div class="form-group">
                 <h5>Choose Order Status: </h5>
-                {% comment %} <select id="orderid" name="order"> 
-                        {% for order in orderobj %}
-                            <option value="{{ order.id }}">{{ order.order_status }}</option>
-                        
-                        {% endfor %}
-                </select> {% endcomment %}
-                <!-- Display the order status choices as options in a select dropdown -->
+                
                 <select name="order_status">
                     {% for status_choice in order_status_choices %}
                     <option value="{{ status_choice.1 }}" {% if status_choice.1 == order.order_status %}selected{% endif %}>

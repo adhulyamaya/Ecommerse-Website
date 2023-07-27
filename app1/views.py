@@ -286,7 +286,7 @@ def shop(request):
 
 
     # Add pagination to the products queryset
-    paginator = Paginator(products, 12)  # Show 12 products per page
+    paginator = Paginator(products, 8)  # Show 12 products per page
     page = request.GET.get('page')
     try:
         products = paginator.page(page)
@@ -748,9 +748,9 @@ def userorder_items(request, order_id):
     return render(request, 'userorder_items.html', context) 
 
 def order_history(request):
-    orederobj = Order.objects.all()
+    # orederobj = Order.objects.all()
     delivered_orders = Order.objects.filter(order_status='delivered')
-    return render(request, 'order_history.html', {'delivered_orders': delivered_orders,"orederobj":orederobj})
+    return render(request, 'order_history.html', {'delivered_orders': delivered_orders})
    
 
 
@@ -1035,25 +1035,25 @@ def add_category(request):
     
       
 def add_product(request):
-    # brands=Brand.objects.all()
-    # catobj=category.objects.all()
-    # context={
-    #     "brands":brands,
-    #     "category":catobj
-    # }
-    # if request.method == 'POST':
-    #     name = request.POST.get('name')
-    #     brand = request.POST.get('brand')
-    #     brandobj=Brand.objects.get(brand=brand)
-    #     category_name = request.POST.get('category')
-    #     catobj=category.objects.get(name=category_name)
-    #     description = request.POST.get('description')
-    #     image = request.FILES.get('image')
-    #     print(image,"...........................................................")
-    #     new_product = Product(name=name, brand=brandobj, category=catobj, description=description, image=image)
-    #     new_product.save()
-    #     return redirect(products)
-    # return render(request, 'add_product.html',context)
+    brands=Brand.objects.all()
+    catobj=category.objects.all()
+    context={
+        "brands":brands,
+        "category":catobj
+    }
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        brand = request.POST.get('brand')
+        brandobj=Brand.objects.get(brand=brand)
+        category_name = request.POST.get('category')
+        catobj=category.objects.get(name=category_name)
+        description = request.POST.get('description')
+        image = request.FILES.get('image')
+        print(image,"...........................................................")
+        new_product = Product(name=name, brand=brandobj, category=catobj, description=description, image=image)
+        new_product.save()
+        return redirect(products)
+    return render(request, 'add_product.html',context)
     return render(request, 'add_product.html')
 
 
@@ -1187,11 +1187,27 @@ def admin_coupon(request):
 def coupon_adminadd(request):
     if request.method == 'POST':
         coupon = request.POST.get('coupon')
-        new_coupon = Coupon (coupon_code = coupon)
+        discount_price= request.POST.get('discount_price')
+        minimum_amount = request.POST.get('minimum_amount')
+        new_coupon = Coupon (coupon_code = coupon,discount_price=discount_price,minimum_amount=minimum_amount)
         new_coupon.save()
         return redirect('admin_coupon')  
     else:
         return render (request,'coupon_adminadd.html')
+def edit_coupon(request,coupon_id):
+    coupon_obj = Coupon.objects.get(id=coupon_id)
+    if request.method == 'POST':
+        new_coupon = request.POST.get('coupon')
+        discount_price = request.POST.get('discount_price')
+        minimum_amount = request.POST.get('minimum_amount')
+        
+        coupon_obj.coupon = new_coupon
+        coupon_obj.discount_price = discount_price
+        coupon_obj.minimum_amount = minimum_amount
+        coupon_obj.save()
+        return redirect('admin_coupon') 
+
+    return render(request, 'edit_coupon.html', {'coupon': coupon_obj})
 
 
 
