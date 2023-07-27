@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add coupon</title>
+</head>
+<body>
+    <h1>Add COUPON</h1>
+    <form action="{% url 'coupon_adminadd' %}" method="post">
+        {% csrf_token %}
+        <label for="coupon">Coupon</label>
+        <input type="text" id="coupon" name="coupon" required>
+        {% comment %} <label for="coupon">discount_price</label>
+        <input type="text" id="discount_price" name="discount_price" required>
+        <label for="coupon">minimum_amount</label>
+        <input type="text" id="minimum_amount" name="minimum_amount" required>
+        <button type="submit">Submit</button> {% endcomment %}
+    </form>
+</body>
+</html>

@@ -656,10 +656,8 @@ def wishlist_remove(request,item_id):
     wishlistobj.delete()
     return redirect ("wishlist")
 
-
 def search(request):
     search_query = request.GET.get('search', '')
-    search = request.GET.get('search')  
     categories = category.objects.filter(name__istartswith=search_query)
     products = Product.objects.filter(name__istartswith=search_query)
     context = {
@@ -736,7 +734,6 @@ def order_history(request):
 
 
 def razorupdateorder(request):
-     
     username = request.session.get("username")
     customer = custom_user.objects.get(username=username)
     cartobj = Cart.objects.filter(username = customer)
@@ -981,9 +978,6 @@ def edit_product(request, product_id):
     return render(request, 'edit_product.html', {'product': product,'categoryobjs':categoryobjs,'brandobjs':brandobjs})
 
 
-
-
-
 def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     if request.method == 'POST':       
@@ -1166,6 +1160,16 @@ def admin_coupon(request):
         "couponobj":couponobj
     }
     return render (request,'admincoupon.html',context)
+
+
+def coupon_adminadd(request):
+    if request.method == 'POST':
+        coupon = request.POST.get('coupon')
+        new_coupon = Coupon (coupon_code = coupon)
+        new_coupon.save()
+        return redirect('admin_coupon')  
+    else:
+        return render (request,'coupon_adminadd.html')
 
 
 

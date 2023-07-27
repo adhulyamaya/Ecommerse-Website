@@ -30,7 +30,10 @@
                     <th>Discount price</th>
                     <th>Minimum amount</th>   
                 </tr>
+
+                <a href="{% url 'coupon_adminadd' %}" class="btn btn-sm btn-primary">ADD</a>
             </thead>
+
             <tbody>
                 {% for c in couponobj%}
                 <tr>
