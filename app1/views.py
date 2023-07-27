@@ -658,12 +658,18 @@ def wishlist_remove(request,item_id):
 
 
 def search(request):
-    query = request.GET.get('q')  
-    results = []
-    if query:
-        results = Product.objects.filter(name__icontains=query)
+    search_query = request.GET.get('search', '')
+    search = request.GET.get('search')  
+    categories = category.objects.filter(name__istartswith=search_query)
+    products = Product.objects.filter(name__istartswith=search_query)
+    context = {
+        'categories': categories,
+        'products': products,
+        'search_query': search_query,
+    }
+    return render(request, '.html',context)  
 
-    return render(request, 'search_results.html')  
+
 
 def wallet(request):
     orderobj= Order.objects.filter(order_status='returned')
@@ -691,6 +697,8 @@ def changepassword(request):
                 return render(request, 'changepassword.html', {'error_message': 'New passwords do not match'})
             userobj.password=new_pass1
             userobj.save()
+            messages.success(request, 'password changed successfully!')
+
             return redirect(user_profile)
         return render(request, 'changepassword.html')
 
