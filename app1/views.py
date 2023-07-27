@@ -584,8 +584,11 @@ def checkout(request):
             cartobj = Cart.objects.filter(username = customer)
             addobj = Address.objects.filter(username = customer)
 
-            addressid = request.POST.get("address")
-            address = Address.objects.get(id=addressid)
+            addressflat = request.POST.get("address")
+            address = Address.objects.get(flat=addressflat,username=customer)
+       
+            date_ordered = datetime.date.today()
+    
             date_ordered = datetime.date.today()
             
             orderobj = Order(customer = customer, address=address, date_ordered=date_ordered, total = 0)
@@ -1210,7 +1213,7 @@ def edit_coupon(request,coupon_id):
     return render(request, 'edit_coupon.html', {'coupon': coupon_obj})
 
 
-
+from datetime import datetime 
 
 def salesreport(request):
     if request.method == "POST":
