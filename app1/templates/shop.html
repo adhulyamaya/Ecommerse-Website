@@ -1,7 +1,19 @@
 {% extends 'user_home.html' %}
 {% load static %}
-{% block title %} Cart {% endblock title %}
-
+{% block title %} shop {% endblock title %}
+{% block search %} 
+                    <form action="" method="POST" class="flex-grow-1">
+                        {% csrf_token %}
+                        <div class="input-group" style="width: 300px;">
+                            <input type="text" class="form-control" name="search" placeholder="Search product">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+            {% endblock search %}
 {% block main-content %}
 <div class="container-fluid pt-5">
     <div class="row px-xl-2 pb-3">

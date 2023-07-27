@@ -88,7 +88,9 @@
                 </a>
             </div> {% endcomment %}
 
-                    <form action="{% url 'search' %}" method="GET" class="flex-grow-1">
+
+            {% block search %} 
+                    <form action="" method="POST" class="flex-grow-1">
                         {% csrf_token %}
                         <div class="input-group" style="width: 300px;">
                             <input type="text" class="form-control" name="search" placeholder="Search...">
@@ -99,6 +101,9 @@
                             </div>
                         </div>
                     </form>
+            {% endblock search %} 
+
+
 
                 <div class="nav-item dropdown mr-3">
                     <a href="#" class="nav-link dropdown-toggle " data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true"></i></a>

@@ -138,17 +138,36 @@ def user_home(request):
         cart = Cart.objects.filter(username = user)
         cart_count = cart.count()
 
-
         categories = category.objects.all()
         best_selling_products = Product.objects.order_by('-sales_count')[:4]
-        wardrobe_essentials = Product.objects.filter(wardrobe_essential=True)[:4]    
+        wardrobe_essentials = Product.objects.filter(wardrobe_essential=True)[:4]
+
+        if request.method=="POST":    
+            search_query = request.POST.get('search')
+            categories = category.objects.filter(name__istartswith=search_query)
+            # products = Product.objects.filter(name__istartswith=search_query)
+            return render(request, 'user_home.html', {
+            'categories': categories,
+            'best_selling_products': best_selling_products,
+            'wardrobe_essentials': wardrobe_essentials,
+            'wishlist_count':wishlist_count,
+            "cart":cart,
+            "cart_count":cart_count,
+            'search_query': search_query,
+                   
+        })
+
+
         return render(request, 'user_home.html', {
             'categories': categories,
             'best_selling_products': best_selling_products,
             'wardrobe_essentials': wardrobe_essentials,
             'wishlist_count':wishlist_count,
             "cart":cart,
-            "cart_count":cart_count
+            "cart_count":cart_count,
+         
+           
+           
                    
         })
     else:
@@ -276,14 +295,19 @@ def shop(request):
         products = paginator.page(1)
     except EmptyPage:
         # If the page is out of range, deliver the last page of results.
-        products = paginator.page(paginator.num_pages)    
-    
-    context = {
-        "products": products,
+        products = paginator.page(paginator.num_pages)
+
+
+    if request.method == "POST" :   
+            search_query = request.POST.get('search')
+            products = Product.objects.filter(name__istartswith=search_query)
+            return render(request,'shop.html',{ "products": products,
+                            "brand": brands,
+                            "wishlist_count":wishlist_count,})  
+  
+    return render(request,'shop.html',{ "products": products,
         "brand": brands,
-        "wishlist_count":wishlist_count
-    }
-    return render(request,'shop.html',context)
+        "wishlist_count":wishlist_count,})
 
 
 
@@ -660,15 +684,7 @@ def wishlist_remove(request,item_id):
 
 
 def search(request):
-    search_query = request.GET.get('search', '')
-    categories = category.objects.filter(name__istartswith=search_query)
-    products = Product.objects.filter(name__istartswith=search_query)
-    context = {
-        'categories': categories,
-        'products': products,
-        'search_query': search_query,
-    }
-    return render(request, '.html',context)  
+    pass
 
 
 
