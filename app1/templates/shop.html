@@ -1,6 +1,7 @@
 {% extends 'user_home.html' %}
 {% load static %}
 {% block title %} shop {% endblock title %}
+
 {% block search %} 
                     <form action="" method="POST" class="flex-grow-1">
                         {% csrf_token %}
@@ -13,7 +14,9 @@
                             </div>
                         </div>
                     </form>
-            {% endblock search %}
+{% endblock search %}
+
+
 {% block main-content %}
 <div class="container-fluid pt-5">
     <div class="row px-xl-2 pb-3">
@@ -27,11 +30,9 @@
                     <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                         <input type="checkbox" class="custom-control-input" id="brand-{{ b.id }}" name="brands" value="{{ b.id }}">
                         <label class="custom-control-label" for="brand-{{ b.id }}">{{ b.brand }}</label>
-                        <span class="badge border font-weight-normal">150</span>
                     </div>
                     {% endfor %}
-                    <button type="submit" hidden>Submit</button> <!-- Add a submit button inside the form -->
-                </form>
+                    <button type="submit" hidden>Submit</button>
             </div>
         </div>
 
