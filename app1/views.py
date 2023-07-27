@@ -656,6 +656,9 @@ def wishlist_remove(request,item_id):
     wishlistobj.delete()
     return redirect ("wishlist")
 
+
+
+
 def search(request):
     search_query = request.GET.get('search', '')
     categories = category.objects.filter(name__istartswith=search_query)
@@ -666,6 +669,8 @@ def search(request):
         'search_query': search_query,
     }
     return render(request, '.html',context)  
+
+
 
 
 
@@ -1014,25 +1019,26 @@ def add_category(request):
     
       
 def add_product(request):
-    brands=Brand.objects.all()
-    catobj=category.objects.all()
-    context={
-        "brands":brands,
-        "category":catobj
-    }
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        brand = request.POST.get('brand')
-        brandobj=Brand.objects.get(brand=brand)
-        category_name = request.POST.get('category')
-        catobj=category.objects.get(name=category_name)
-        description = request.POST.get('description')
-        image = request.FILES.get('image')
-        print(image,"...........................................................")
-        new_product = Product(name=name, brand=brandobj, category=catobj, description=description, image=image)
-        new_product.save()
-        return redirect(products)
-    return render(request, 'add_product.html',context)
+    # brands=Brand.objects.all()
+    # catobj=category.objects.all()
+    # context={
+    #     "brands":brands,
+    #     "category":catobj
+    # }
+    # if request.method == 'POST':
+    #     name = request.POST.get('name')
+    #     brand = request.POST.get('brand')
+    #     brandobj=Brand.objects.get(brand=brand)
+    #     category_name = request.POST.get('category')
+    #     catobj=category.objects.get(name=category_name)
+    #     description = request.POST.get('description')
+    #     image = request.FILES.get('image')
+    #     print(image,"...........................................................")
+    #     new_product = Product(name=name, brand=brandobj, category=catobj, description=description, image=image)
+    #     new_product.save()
+    #     return redirect(products)
+    # return render(request, 'add_product.html',context)
+    return render(request, 'add_product.html')
 
 
 def edit_category(request, category_id):

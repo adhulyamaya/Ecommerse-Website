@@ -487,18 +487,21 @@ body{
                 </div>
                 <hr class="my-2">
               <div class="row pt-3 pb-5 mb-2">
-              <div class="col-md-3">
+              <div class="col-md-2">
               <a class="btn btn-style-1 btn-primary btn-block" href="shop"><i class="fe-icon-refresh-ccw"></i>&nbsp;Update Cart</a>
               </div>
 
-              <div class="col-md-3">
+              <div class="col-md-2">
               <button type="submit" class="btn btn-style-1 btn-success btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;Checkout</button>
               {% comment %} <button type="submit" class="btn btn-style-1 btn-success btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;pay with razorpay</button> {% endcomment %}
               </div>
               {% comment %} <div class="col-md-3">
                 <button type="submit" class="btn btn-style-1 btn-primary btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;pay with razorpay</button>
               </div> {% endcomment %}
-              <button id="rzp-button1">Execute with Razorpay</button>
+              <br>
+              <br>
+              <div class="col-md-2">
+              <button type="submit" class="btn btn-style-1 btn-primary btn-block" id="rzp-button1">Execute with Razorpay</button>
 
               </div>
           </form> 
@@ -511,12 +514,7 @@ body{
 </div>
 </div>
 </div>
-       
-          
 
-<!-- Checkout End -->
-
-{% comment %} RazorPay Script {% endcomment %}
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
