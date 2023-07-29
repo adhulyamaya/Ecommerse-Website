@@ -64,10 +64,7 @@ urlpatterns = [
     path('coupon/', views.admin_coupon, name='admin_coupon'),
     path('coupon_adminadd/', views.coupon_adminadd, name='coupon_adminadd'),
     
-    
 
-
-    
     path('admin_user/', views.admin_user, name='admin_user'),
     path('products/',views.products, name='products'),
     path('admin_variant/',views.admin_variant, name='admin_variant'),

@@ -964,9 +964,29 @@ def block_unblock_user(request, user_id):
     return redirect('admin_user')
 
 # 2 PRODUCTS_______________________________________________________________
+
 def products(request):
-    product = Product.objects.all()
-    return render(request,'products.html',{"prdts":product})
+    products_list = Product.objects.all()  # Fetch the queryset of products
+    # Number of products to display per page
+    products_per_page = 3 # Adjust this value as needed
+    
+    paginator = Paginator(products_list, products_per_page)
+    page = request.GET.get('page')
+
+    try:
+        prdts = paginator.page(page)
+    except PageNotAnInteger:
+        # If the page parameter is not an integer, display the first page.
+        prdts = paginator.page(1)
+    except EmptyPage:
+        # If the page is out of range (e.g., 9999), display the last page.
+        prdts = paginator.page(paginator.num_pages)
+
+    return render(request, 'products.html', {"prdts": prdts})
+
+
+
+
 
 from django.shortcuts import render, get_object_or_404
 from .models import Product
@@ -1012,7 +1032,25 @@ def delete_product(request, product_id):
 
 def category_view(request):
     categories = category.objects.all()
+
+    # Number of categories to display per page
+    categories_per_page = 1
+    
+    paginator = Paginator(categories, categories_per_page)
+    page = request.GET.get('page')
+
+    try:
+        categories = paginator.page(page)
+    except PageNotAnInteger:
+        # If the page parameter is not an integer, display the first page.
+        categories = paginator.page(1)
+    except EmptyPage:
+        # If the page is out of range (e.g., 9999), display the last page.
+        categories = paginator.page(paginator.num_pages)
     return render(request, 'category.html', {'categories': categories})
+
+
+
 
 def user_proeditadd(request,address_id):    
     address = Address.objects.get(id=address_id)
@@ -1130,6 +1168,7 @@ def color_admin(request):
     }
     return render(request, 'color_admin.html',context)
 
+
 def color_adminadd(request):
     if request.method == 'POST':
         color = request.POST.get('color')
@@ -1197,6 +1236,8 @@ def coupon_adminadd(request):
         return redirect('admin_coupon')  
     else:
         return render (request,'coupon_adminadd.html')
+    
+
 def edit_coupon(request,coupon_id):
     coupon_obj = Coupon.objects.get(id=coupon_id)
     if request.method == 'POST':

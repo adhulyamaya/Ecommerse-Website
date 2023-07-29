@@ -13,8 +13,7 @@ class custom_user(models.Model):
     password = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     status =  models.BooleanField(default=True)
-
-
+    
     def __str__(self):
         return self.username
     
