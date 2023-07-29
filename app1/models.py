@@ -63,17 +63,13 @@ class Product(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     brand = models.ForeignKey(Brand,on_delete=models.CASCADE)
-    
     category = models.ForeignKey(category,on_delete=models.CASCADE)
     description = models.TextField()
     sales_count = models.PositiveIntegerField(default=0)
     wardrobe_essential = models.BooleanField(default=False)
-    image = models.ImageField(blank=True, upload_to='images/') 
- 
+    image = models.ImageField(blank=True, upload_to='images/')  
     def __str__(self):
         return self.name
-
-
 class Variant(models.Model):
     id = models.AutoField(primary_key=True)
     variant = models.CharField(max_length=100,blank= True,null= True)
