@@ -33,6 +33,7 @@
               <div class="row mb-5">
                 <button name="show" type="submit" class="btn add-product-btn btn-secondary mt-2">Show Report</button>
                 <button name="download"  type="submit" class="btn add-product-btn btn-secondary mt-2 ml-4 ">Download</button>
+                <button name="downloadexcel"  type="submit" class="btn add-product-btn btn-success mt-2 ml-4 ">EXCEL Download </button>
               </div>
             </div>
               <div>
@@ -57,7 +58,6 @@
                     <tr>
                         <td>{{ item.id }}</td>
                         <td>{{ item.customer }}</td>
-                        {% comment %} <td>{{ item.product.name }}</td> {% endcomment %}
                         <td>{{ item.address }}</td>
                         <td>{{ item.date_ordered }}</td>
                         <td>{{ item.order_status }}</td>
@@ -100,55 +100,3 @@
     
     
     
-    {% comment %} <div class="-col-md-5 ml-5 mt-4">
-        
-    
-    </div> {% endcomment %}
-    {% comment %} <div class="container">
-        <h1>Admin Users</h1>
-        <table class="table table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th>ID</th>
-                    
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Phone Number</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user.id }}</td>
-                    
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.phone_number }}</td>
-                    <td class="{% if user.status %}status-active{% else %}status-blocked{% endif %}">
-                        {% if user.status %}
-                            Active
-                        {% else %}
-                            Blocked
-                        {% endif %}
-                    </td>
-                    <td>
-                        <form method="POST" action="{% url 'block_unblock_user' user.id %}">
-
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm {% if user.status %}btn-danger{% else %}btn-success{% endif %}">
-                                {% if user.status %}
-                                    Block
-                                {% else %}
-                                    Unblock
-                                {% endif %}
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div> {% endcomment %}
-   

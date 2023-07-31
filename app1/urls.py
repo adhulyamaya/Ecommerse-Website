@@ -50,7 +50,7 @@ urlpatterns = [
     path('contact/',views.contact,name ='contact'),
     path('about/',views.about,name ='about'),
     path('wishlist/',views.wishlist,name ='wishlist'),
-    path('search/', views.search, name='search'),
+    # path('search/', views.search, name='search'),
     path("wallet/",views.wallet,name="wallet"),
 
     path('add_to_wishlist/',views.add_to_wishlist,name ='add_to_wishlist'),
@@ -63,6 +63,10 @@ urlpatterns = [
     path('cancel_order/<int:order_id>/', views.cancel_order, name='cancel_order'),
     path('coupon/', views.admin_coupon, name='admin_coupon'),
     path('coupon_adminadd/', views.coupon_adminadd, name='coupon_adminadd'),
+
+    path('category/', views.category_view, name='category_view'),
+    path('edit_category/<int:category_id>/', views.edit_category, name='edit_category'),
+    
     
 
     path('admin_user/', views.admin_user, name='admin_user'),
@@ -74,6 +78,9 @@ urlpatterns = [
     path("add_category/",views.add_category,name = 'add_category'),
     path("add_product/",views.add_product,name = 'add_product'),
     path("salesreport/",views.salesreport,name = 'salesreport'),
+    path("cancelreport/",views.cancelreport,name = 'cancelreport'),
+
+
     path('generate_invoice/<int:order_id>/', views.generate_invoice, name='generate_invoice'),
     path('download_invoice/<int:order_id>/', views.download_invoice, name='download_invoice'),
     path('edit_category/<int:category_id>/', views.edit_category, name='edit_category'),

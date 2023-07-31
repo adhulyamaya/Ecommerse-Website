@@ -1,0 +1,193 @@
+{% extends 'admin_home.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <h4>Cancelled Order Report</h4>
+    </div>
+
+    
+    <div class="row justify-content-center border mt-2">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <label class="mt-5" for="start_date">Start Date:</label>
+            <input class="form-control" type="date" id="start_date" name="start_date" required>
+            <br>
+            <label for="end_date">End Date:</label>
+            <input class="form-control" type="date" id="end_date" name="end_date" required>
+            <br>
+            <div class="row mb-5">
+                <button name="show" type="submit" class="btn add-product-btn btn-secondary mt-2">Show Report</button>
+            </div>
+        </form>
+    </div>
+
+    {% if cancelled_orders %}
+    <div class="row justify-content-center mt-4">
+        <h4>Cancelled Orders</h4>
+    </div>
+    <div class="row justify-content-center border mt-2">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Address</th>
+                    <th>Order Date</th>
+                    <!-- Add other fields you want to display in the report -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in cancelled_orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.customer }}</td>
+                    <td>{{ order.address }}</td>
+                    <td>{{ order.date_cancelled }}</td>
+                    <!-- Add other fields you want to display in the report -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends 'admin_home.html' %}
+{% load static %}
+<title>cancelreport</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+     <style>
+        /* Additional custom styles */
+        body {
+            padding: 20px;
+        }
+        .status-active {
+            color: green;
+        }
+        .status-blocked {
+            color: red;
+        }
+    </style>
+    {% block content %}
+    <div class="container-fluid">
+        <div class="row justify-content-center mt-4">
+            <h4>
+               cancel Report
+            </h4>
+        </div>  
+      <div class="row justify-content-center border mt-2  ">
+        <form action="" method="POST">
+            {% csrf_token %}
+              <label class="mt-5" for="start_date">Start Date:</label>
+              <input class="form-control" type="date" id="start_date" name="start_date" required>
+              <br>
+              <label for="end_date">End Date:</label>
+              <input  class="form-control" type="date" id="end_date" name="end_date" required>
+              <br>             
+              <div class="row mb-5">
+                <button name="show" type="submit" class="btn add-product-btn btn-secondary mt-2">Show Report</button>
+                <button name="download"  type="submit" class="btn add-product-btn btn-secondary mt-2 ml-4 ">Download</button>
+                <button name="downloadexcel"  type="submit" class="btn add-product-btn btn-primary mt-2 ml-4 ">EXCEL Download </button>
+              </div>
+            </div>
+              <div>
+        </form>    
+      </div> {% endcomment %}
+      {% comment %} {% if orderobjs %}
+        <div class="row">
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Product </th>
+                    <th>Ordered By</th>
+                    <th>Address</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Payment Type</th>
+                    <th>Total</th>       
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for item in orderobjs %}
+                    <tr>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.customer }}</td>
+                        {% comment %} <td>{{ item.product.name }}</td> {% endcomment %}
+                        {% comment %} <td>{{ item.address }}</td>
+                        <td>{{ item.date_ordered }}</td>
+                        <td>{{ item.order_status }}</td>
+                        <td>{{ item.payment_type }}</td>
+                        <td>{{ item.total }}</td>
+                        <td>{{ item.variant.Color.name }}</td>
+                        <td>{{ item.variant.Size.name }}</td>
+                        <td>{{ item.product.brand.name }}</td> 
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+    
+        </div>
+        
+        
+        {% endif %}
+        {% if message %}
+        <div class="text-center mt-4 text-danger">
+          {{message}}
+    
+    
+        </div>
+        {% endif %}
+    
+    
+        
+        <br><br><br><br>
+    </div> {% endcomment %} 
+    
+
+    

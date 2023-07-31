@@ -18,6 +18,32 @@
             }     
     </style>
 <br>
+
+
+
+
+{% block search %} 
+
+<ul class="navbar-nav w-100">
+  <li class="nav-item w-100">
+     <form method ="POST" class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+      {% csrf_token %}
+      <input type="text" class="form-control" name = "search" placeholder="Search products">
+
+      <div class="input-group-append">
+        <button type="submit" class="btn btn-success">
+            <i class="fa fa-search"></i>
+        </button>
+      </div>
+     </form>
+  </li>
+</ul>
+
+{% endblock search %}
+
+
+
+
 {% block content %}
     <div class="container">
         <h1>Products</h1>

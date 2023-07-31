@@ -1,21 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Category</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        /* Additional custom styles */
-        body {
-            padding: 20px;
-        }
-        .status-active {
-            color: green;
-        }
-        .status-blocked {
-            color: red;
-        }
-    </style>
-</head>
+{% extends 'admin_home.html' %}
+{% load static %}
+{% block content %}
+
+
 <body>
     <div class="container">
         <h1>Edit Category</h1>
@@ -25,8 +12,16 @@
                 <label for="category-name">Category Name</label>
                 <input type="text" name="category_name" class="form-control" value="{{ category.name }}">
             </div>
+            <div class="form-row field-category_image">                    
+                <div>    
+                        <label class="required" for="id_product_image">Category image:</label>
+                        
+                            <input type="file" name="image" accept="image/*" id="id_category_image">    
+                </div>
+            
+        </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
     </div>
 </body>
-</html>
+{% endblock content %}

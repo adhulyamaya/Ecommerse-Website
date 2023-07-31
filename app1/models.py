@@ -1,4 +1,4 @@
-   
+
 from django.db import models
 from django.utils.safestring import mark_safe
 from django.db import models
@@ -132,6 +132,7 @@ class Order(models.Model):
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL,null=True,blank= True)
     def __str__(self):
         return f"Order #{self.id} - {self.order_status}"
+   
 
 
 class OrderItems(models.Model):

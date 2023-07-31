@@ -174,6 +174,15 @@
           </li>
 
           <li class="nav-item menu-items">
+            <a class="nav-link" href="{% url 'cancelreport' %}">
+              <span class="menu-icon">
+                <i class="mdi mdi-playlist-play"></i>
+              </span>
+              <span class="menu-title">cancel report</span>
+            </a>
+          </li>
+
+          <li class="nav-item menu-items">
             <a class="nav-link" href="{% url 'admin_coupon' %}">
               <span class="menu-icon">
                 <i class="mdi mdi-playlist-play"></i>
@@ -195,13 +204,26 @@
             <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
               <span class="mdi mdi-menu"></span>
             </button>
+
+            {% block search %} 
+            
             <ul class="navbar-nav w-100">
               <li class="nav-item w-100">
-                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                  <input type="text" class="form-control" placeholder="Search products">
-                </form>
+                 <form method ="POST" class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                  {% csrf_token %}
+                  <input type="text" class="form-control" name = "search" placeholder="Search products">
+
+                  <div class="input-group-append">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa fa-search"></i>
+                    </button>
+                  </div>
+                 </form>
               </li>
             </ul>
+
+            {% endblock search %}
+
             <ul class="navbar-nav navbar-nav-right">
               <li class="nav-item dropdown d-none d-lg-block">
                 <a class="btn btn-primary btn-lg" href="{% url 'admin_logout' %}">Log out</a>

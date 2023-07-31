@@ -686,9 +686,6 @@ def wishlist_remove(request,item_id):
 
 
 
-def search(request):
-    pass
-
 
 
 
@@ -955,7 +952,27 @@ def admin_logout(request):
 # 1 USER________________________________________________________________________
 def admin_user(request):
     users = custom_user.objects.all()
+    # users_list = custom_user.objects.all()  # Fetch the queryset of users
+    # Number of users to display per page
+    users_per_page = 5 # Adjust this value as needed
+    
+    paginator = Paginator(users, users_per_page)
+    page = request.GET.get('page')
+
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        # If the page parameter is not an integer, display the first page.
+        users = paginator.page(1)
+    except EmptyPage:
+        # If the page is out of range (e.g., 9999), display the last page.
+        users = paginator.page(paginator.num_pages)
+
     return render(request, 'admin_user.html', {'users': users})
+
+
+
+
 
 def block_unblock_user(request, user_id):
     user = custom_user.objects.get(id=user_id)
@@ -965,23 +982,29 @@ def block_unblock_user(request, user_id):
 
 # 2 PRODUCTS_______________________________________________________________
 
+
+
+
 def products(request):
-    products_list = Product.objects.all()  # Fetch the queryset of products
-    # Number of products to display per page
-    products_per_page = 3 # Adjust this value as needed
-    
-    paginator = Paginator(products_list, products_per_page)
+    prdts = Product.objects.all()  
+    products_per_page = 3    
+    paginator = Paginator(prdts, products_per_page)
     page = request.GET.get('page')
 
     try:
         prdts = paginator.page(page)
     except PageNotAnInteger:
-        # If the page parameter is not an integer, display the first page.
+        
         prdts = paginator.page(1)
     except EmptyPage:
-        # If the page is out of range (e.g., 9999), display the last page.
         prdts = paginator.page(paginator.num_pages)
-
+    if request.method == "POST":
+            search = request.POST.get('search')
+            print( search,"//////")
+            products = Product.objects.filter(name__istartswith=search)
+            print(products)
+            return render(request, 'products.html', {"prdts": products })
+        
     return render(request, 'products.html', {"prdts": prdts})
 
 
@@ -1032,21 +1055,22 @@ def delete_product(request, product_id):
 
 def category_view(request):
     categories = category.objects.all()
-
-    # Number of categories to display per page
-    categories_per_page = 1
-    
+    categories_per_page = 3    
     paginator = Paginator(categories, categories_per_page)
     page = request.GET.get('page')
-
     try:
         categories = paginator.page(page)
     except PageNotAnInteger:
-        # If the page parameter is not an integer, display the first page.
         categories = paginator.page(1)
     except EmptyPage:
-        # If the page is out of range (e.g., 9999), display the last page.
         categories = paginator.page(paginator.num_pages)
+    if request.method == "POST":
+            search = request.POST.get('search')
+            print( search,"+++++++++++++++++++++++++++++++++++++++++++")
+            categories = category.objects.filter(name__istartswith=search)
+            print(categories)
+            return render(request, 'category.html', {"categories": categories })
+        
     return render(request, 'category.html', {'categories': categories})
 
 
@@ -1071,6 +1095,16 @@ def user_proeditadd(request,address_id):
     return render(request, 'user_proeditadd.html', {'address': address, })
 
 def add_category(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        print(name)
+        image = request.FILES.get('image')
+        print(image)
+        new_category = category(name=name, category_image=image)
+        print(new_category)
+        new_category.save()
+        print(new_category)
+        return redirect(category_view)
     return render(request, 'add_category.html')
 
     
@@ -1103,19 +1137,34 @@ def edit_category(request, category_id):
     print(category_obj,"?????????????")
     if request.method == 'POST':  
         name = request.POST.get("category_name") 
+        image = request.FILES.get("image")
+
         category_obj.name = name
+
+        # if image: 
+        #     category_obj.category_image = image
+        # print(image)
         print(name,">>>>>>>>")
-        new_category = category(id=category_id, name=name)       
-        new_category.save()
-        return redirect('category')
+        print(image,"__________________________________")
+
+        new_category = category(id=category_id, name=name,category_image = image )  
+
+        new_category.save() 
+            
+        return redirect('category_view')
     return render(request, 'edit_category.html', {'category': category_obj})
 
 
 def delete_category(request, category_id):
     categoryobj = category.objects.get(id=category_id)
-    if request.method == 'POST':       
+    if request.method == 'POST':  
+        categoryobj.delete()     
         return redirect('category')
     return render(request, 'delete_category.html', {'category': categoryobj})
+
+
+
+
 
 
 def edit_order(request,order_id):
@@ -1254,26 +1303,25 @@ def edit_coupon(request,coupon_id):
     return render(request, 'edit_coupon.html', {'coupon': coupon_obj})
 
 
-from datetime import datetime 
+from datetime import datetime, timedelta
+from openpyxl import Workbook
+from openpyxl.utils.datetime import to_excel
+import pytz
 
 def salesreport(request):
     if request.method == "POST":
         if "show" in request.POST:
-            start_date=request.POST.get("start_date")
-            end_date=request.POST.get("end_date")
+            start_date = request.POST.get("start_date")
+            end_date = request.POST.get("end_date")
             orderobjs = Order.objects.filter(date_ordered__range=[start_date, end_date])
             variantobj = Variant.objects.all()
-            if orderobjs.count()==0:
-                message="Sorry! No orders"
-                context={"orderobjs":orderobjs,"message":message}
+            if orderobjs.count() == 0:
+                message = "Sorry! No orders"
+                context = {"orderobjs": orderobjs, "message": message}
             else:
+                context = {"orderobjs": orderobjs, "variantobj": variantobj}
+                return render(request, "salesreport.html", context)
 
-                context={"orderobjs":orderobjs,
-                         "variantobj":variantobj,
-                         }
-                
-            return render(request,"salesreport.html",context)
-            
         elif "download" in request.POST:
             start_date_str = request.POST.get('start_date')
             end_date_str = request.POST.get('end_date')
@@ -1317,9 +1365,86 @@ def salesreport(request):
 
                 # Return the PDF as a FileResponse
                 return FileResponse(buffer, as_attachment=True, filename='Sales_Report.pdf')
+            
+        elif "downloadexcel" in request.POST:
+            start_date_str = request.POST.get('start_date')
+            end_date_str = request.POST.get('end_date')
+
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+            ords = Order.objects.filter(date_ordered__range=[start_date, end_date])
+
+            if ords:
+                # Create an Excel workbook
+                wb = Workbook()
+                ws = wb.active
+
+                # Add heading
+                heading = ['Sl.No.', 'Ordered By', 'Address', 'Order Date', 'Order Status', 'Payment Type', 'Total']
+                ws.append(heading)
+
+                slno = 0
+                for ord in ords:
+                    slno += 1
+                    ordered_by = ord.customer.username  # Extract the username from the custom user model
+                    address_str = str(ord.address)
+
+                    # Convert the date_ordered to Indian time
+                    indian_timezone = pytz.timezone('Asia/Kolkata')
+                    date_ordered_indian = ord.date_ordered.astimezone(indian_timezone)
+                    date_ordered_naive = date_ordered_indian.replace(tzinfo=None)
+
+                    row = [slno, ordered_by, address_str, date_ordered_naive, ord.order_status, ord.payment_type, ord.total]
+                    ws.append(row)
+
+                # Set column widths
+                for column_cells in ws.columns:
+                    length = max(len(str(cell.value)) for cell in column_cells)
+                    ws.column_dimensions[column_cells[0].column_letter].width = length + 2
+
+                # Create a response with the Excel file
+                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = 'attachment; filename=Sales_Report.xlsx'
+                wb.save(response)
+                return response
 
     return render(request, 'salesreport.html')
 
+
+
+
+
+
+from django.shortcuts import render
+
+
+def cancelreport(request):
+    # if request.method == "POST":
+    #     start_date = request.POST.get("start_date")
+    #     print(start_date,"?????????????????????????????????????????????????date")
+    #     end_date = request.POST.get("end_date")
+    #     cancelled_orders = Order.objects.filter(date_cancelled__range=[start_date, end_date])
+
+    #     print(cancelled_orders,"]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
+
+
+
+    #     # if cancelled_orders.count() == 0:
+    #     #         message = "Sorry! No orders"
+    #     #         context = {"cancelled_orders": cancelled_orders, "message": message}
+    #     # else:
+    #     #         context = {"cancelled_orders": cancelled_orders,}
+    #     #         return render(request, "cancel_report.html", context)
+
+    #     context = {
+    #         "cancelled_orders": cancelled_orders,
+    #         "start_date": start_date,
+    #         "end_date": end_date,
+    #     }
+    #     return render(request, "cancel_report.html", context)
+
+    return render(request, "cancel_report.html")
 
 
 

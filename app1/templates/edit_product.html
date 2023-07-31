@@ -89,16 +89,7 @@
                 <label for="newImages">Add New Images</label>
                 <input type="file" name="image" multiple>
             </div>
-  
-            {% comment %} <div class="form-group mt-2">
-                <label for="deleteImages">Delete Images</label>
-                <select name="delete_images" multiple>
-                    {% for image in images %}
-                        <option value="{{ image.id }}">{{ image.image.name }}</option>
-                    {% endfor %}
-                </select>
-            </div> {% endcomment %}
-    
+
             <span class="error-message">{{ error_message.category }}</span>
     
             <button type="submit" class="btn btn-primary mt-4">Update</button>
