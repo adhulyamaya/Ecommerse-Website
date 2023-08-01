@@ -722,14 +722,11 @@ def changepassword(request):
         return render(request, 'changepassword.html')
 
 
-def cancel_order(request, order_id):
-        order = Order.objects.get(id=order_id)
-        order.delete()
-        return redirect('view_order') 
 
 
 def view_order(request):
     orderobj = Order.objects.all()
+
     context = {
         "orderobj":orderobj
     }
@@ -737,19 +734,36 @@ def view_order(request):
 
 
 
+def cancel_order(request, order_id):
+    
+    order = Order.objects.get(id=order_id)
+    if order.order_status != 'cancelled':
+        order.order_status = 'cancelled'
+        order.save()
+
+    return redirect('view_order')
+
+
+
 def userorder_items(request, order_id):
     orderobj = Order.objects.get(id=order_id)
     items = OrderItems.objects.filter(order=orderobj)
     context = {
-        "itemobj": items,
-       
+        "itemobj": items,       
     }
-    return render(request, 'userorder_items.html', context) 
+    return render(request, 'userorder_items.html', context)
+
+
+
 
 def order_history(request):
-    # orederobj = Order.objects.all()
-    delivered_orders = Order.objects.filter(order_status='delivered')
-    return render(request, 'order_history.html', {'delivered_orders': delivered_orders})
+    orders = Order.objects.filter(order_status__in=['delivered', 'cancelled'])
+    return render(request, 'order_history.html', {'orders': orders})
+
+
+# def order_history(request):   
+#     delivered_orders = Order.objects.filter(order_status='delivered')
+#     return render(request, 'order_history.html', {'delivered_orders': delivered_orders})
    
 
    
@@ -1413,16 +1427,11 @@ def salesreport(request):
 
 
 
-
-
-from django.shortcuts import render
-
-
 def cancelreport(request):
-    # if request.method == "POST":
-    #     start_date = request.POST.get("start_date")
-    #     print(start_date,"?????????????????????????????????????????????????date")
-    #     end_date = request.POST.get("end_date")
+    if request.method == "POST":
+        start_date = request.POST.get("start_date")
+        print(start_date,"?????????????????????????????????????????????????date")
+        end_date = request.POST.get("end_date")
     #     cancelled_orders = Order.objects.filter(date_cancelled__range=[start_date, end_date])
 
     #     print(cancelled_orders,"]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
@@ -1443,7 +1452,7 @@ def cancelreport(request):
     #     }
     #     return render(request, "cancel_report.html", context)
 
-    return render(request, "cancel_report.html")
+    return render(request, "cancelreport.html")
 
 
 

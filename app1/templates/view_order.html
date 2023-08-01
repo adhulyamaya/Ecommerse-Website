@@ -13,6 +13,7 @@
                                 <th>Total</th>
                                 <th>payment type</th>
                                 <th>order status</th>
+                                
                                 <th>Order Date</th>
                                 <th>Order Details</th>
                                 
@@ -29,9 +30,19 @@
                                 <td>{{ order.total }}</td>
                                 <td>{{ order.payment_type }}</td>
                                 <td>{{order.order_status}}</td>
+
+                    
+
+
                                 <td>{{order.date_ordered }}</td>
                             <td><a href="{% url 'userorder_items' order.id %}">view order details</a></td>
-                            <td> <button type="button" onclick="cancelOrder({{ order.id }})" class="btn btn-danger">Cancel  </button></td>
+
+                            {% if order.order_status != 'cancelled' %}
+                                <td><button type="button" onclick="cancelOrder({{ order.id }})" class="btn btn-danger">Cancel</button></td>
+                                {% else %}
+                                <td><button type="button" class="btn btn-secondary" disabled>Order Cancelled</button></td>
+                                {% endif %}
+                            {% comment %} <td> <button type="button" onclick="cancelOrder({{ order.id }})" class="btn btn-danger">Cancel  </button></td> {% endcomment %}
                             <td><a href="{% url 'download_invoice' order.id %}" class="btn btn-primary">Download</a></td> <!-- Add the link for Download Invoice -->
                             </tr>
                             {% endfor %}
