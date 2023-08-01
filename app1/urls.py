@@ -75,6 +75,7 @@ urlpatterns = [
     path("add_product/",views.add_product,name = 'add_product'),
     path("salesreport/",views.salesreport,name = 'salesreport'),
     path("cancelreport/",views.cancelreport,name = 'cancelreport'),
+    path("stockreport/",views.stockreport,name = 'stockreport'),
 
 
     path('generate_invoice/<int:order_id>/', views.generate_invoice, name='generate_invoice'),

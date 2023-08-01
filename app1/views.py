@@ -806,22 +806,28 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 
+
+
+from io import BytesIO
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from app1.models import Order, OrderItems
+
 def generate_invoice(request, order_id):
-    # Fetch the order details from the database using the order_id
-    order = Order.objects.get(id=order_id)
-    order_items = OrderItems.objects.filter(order=order)
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return HttpResponse("Order not found.", status=404)
 
-    # Create a response object with PDF content type
-    response = HttpResponse(content_type='application/pdf')
-
-    # Set the Content-Disposition header to force download
-    response['Content-Disposition'] = f'attachment; filename="invoice_{order_id}.pdf"'
-
-    # Create a PDF document using reportlab
-    doc = SimpleDocTemplate(response, pagesize=letter)
+    # Generate the PDF content using reportlab
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
     elements = []
 
-    # Write the invoice details to the PDF
+    # Customize the content of the invoice based on your requirements
     styles = getSampleStyleSheet()
     heading_style = styles['Heading1']
     heading = f'Invoice for Order #{order_id}'
@@ -834,8 +840,9 @@ def generate_invoice(request, order_id):
     elements.append(customer_info_paragraph)
     elements.append(Spacer(1, 12))  # Add space after customer info
 
+    # Create the data for the order items table
     order_items_data = [['Product', 'Price', 'Quantity', 'Total']]
-    for order_item in order_items:
+    for order_item in OrderItems.objects.filter(order=order):
         item_data = [
             order_item.variant.name,
             f"${order_item.price:.2f}",
@@ -843,6 +850,8 @@ def generate_invoice(request, order_id):
             f"${order_item.total:.2f}"
         ]
         order_items_data.append(item_data)
+
+    # Create the order items table and apply styles
     order_items_table = Table(order_items_data)
     order_items_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
@@ -859,7 +868,7 @@ def generate_invoice(request, order_id):
     ]))
     elements.append(order_items_table)
 
-    total_amount = sum(item.total for item in order_items)
+    total_amount = sum(item.total for item in OrderItems.objects.filter(order=order))
     total_info = f'Total Amount: ${total_amount:.2f}'
     total_info_paragraph = Paragraph(total_info, styles['Normal'])
     elements.append(Spacer(1, 12))  # Add space before total info
@@ -868,7 +877,78 @@ def generate_invoice(request, order_id):
     # Build the PDF document with elements
     doc.build(elements)
 
+    # Set the buffer position to the start to ensure the entire content is written to the response
+    buffer.seek(0)
+
+    # Create a response with PDF content
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="invoice_order_{order_id}.pdf"'
     return response
+
+
+# def generate_invoice(request, order_id):
+#     # Fetch the order details from the database using the order_id
+#     order = Order.objects.get(id=order_id)
+#     order_items = OrderItems.objects.filter(order=order)
+
+#     # Create a response object with PDF content type
+#     response = HttpResponse(content_type='application/pdf')
+
+#     # Set the Content-Disposition header to force download
+#     response['Content-Disposition'] = f'attachment; filename="invoice_{order_id}.pdf"'
+
+#     # Create a PDF document using reportlab
+#     doc = SimpleDocTemplate(response, pagesize=letter)
+#     elements = []
+
+#     # Write the invoice details to the PDF
+#     styles = getSampleStyleSheet()
+#     heading_style = styles['Heading1']
+#     heading = f'Invoice for Order #{order_id}'
+#     heading_paragraph = Paragraph(heading, heading_style)
+#     elements.append(heading_paragraph)
+#     elements.append(Spacer(1, 12))  # Add space after heading
+
+#     customer_info = f'Customer: {order.customer.username}'
+#     customer_info_paragraph = Paragraph(customer_info, styles['Normal'])
+#     elements.append(customer_info_paragraph)
+#     elements.append(Spacer(1, 12))  # Add space after customer info
+
+#     order_items_data = [['Product', 'Price', 'Quantity', 'Total']]
+#     for order_item in order_items:
+#         item_data = [
+#             order_item.variant.name,
+#             f"${order_item.price:.2f}",
+#             order_item.quantity,
+#             f"${order_item.total:.2f}"
+#         ]
+#         order_items_data.append(item_data)
+#     order_items_table = Table(order_items_data)
+#     order_items_table.setStyle(TableStyle([
+#         ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+#         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+#         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+#         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+#         ('FONTSIZE', (0, 0), (-1, 0), 12),
+#         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+#         ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
+#         ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+#         ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+#         ('FONTSIZE', (0, 1), (-1, -1), 10),
+#         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+#     ]))
+#     elements.append(order_items_table)
+
+#     total_amount = sum(item.total for item in order_items)
+#     total_info = f'Total Amount: ${total_amount:.2f}'
+#     total_info_paragraph = Paragraph(total_info, styles['Normal'])
+#     elements.append(Spacer(1, 12))  # Add space before total info
+#     elements.append(total_info_paragraph)
+
+#     # Build the PDF document with elements
+#     doc.build(elements)
+
+#     return response
 
 
 from io import BytesIO 
@@ -1428,21 +1508,25 @@ def salesreport(request):
 
 
 # def cancelreport(request):
-#     if request.method == "POST":
-#         start_date = request.POST.get("start_date")
-#         end_date = request.POST.get("end_date")
+#     if request.method == 'POST':
+#         start_date = request.POST.get('start_date')
+#         end_date = request.POST.get('end_date')
+
+#         if start_date and end_date:
+#             cancelled_orders = Order.objects.filter(
+#                 order_status='cancelled',
+#                 date_ordered__range=[start_date, end_date]
+#             )
+#         else:
+#             cancelled_orders = None
+
+#         return render(request, 'cancelreport.html', {'cancelled_orders': cancelled_orders})
+
+#     return render(request, 'cancelreport.html', {'cancelled_orders': None})
 
 
-
-
-#         cancelled_orders = Order.objects.filter(date_cancelled__range=[start_date, end_date])
-#         return render(request, "cancelreport.html",{"cancelled_orders":cancelled_orders})
-
-
-#     return render(request, "cancelreport.html")
-
-from django.shortcuts import render
-from .models import Order
+import xlwt
+from django.http import HttpResponse
 
 def cancelreport(request):
     if request.method == 'POST':
@@ -1457,9 +1541,179 @@ def cancelreport(request):
         else:
             cancelled_orders = None
 
-        return render(request, 'cancelreport.html', {'cancelled_orders': cancelled_orders})
+        if 'show' in request.POST:
+            start_date_str = request.POST.get('start_date')
+            end_date_str = request.POST.get('end_date')
+
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+            ords = Order.objects.filter(date_ordered__range=[start_date, end_date])
+            return render(request, 'cancelreport.html', {'cancelled_orders': cancelled_orders})
+
+        elif 'download' in request.POST:
+            # PDF Download
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="cancelled_orders_report.pdf"'
+            # Add code here to generate and render the PDF content using libraries like reportlab
+            
+            return response
+
+        elif 'downloadexcel' in request.POST:
+            # Excel Download
+            response = HttpResponse(content_type='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename="cancelled_orders_report.xls"'
+
+            # Create and configure the Excel workbook and worksheet
+            wb = xlwt.Workbook(encoding='utf-8')
+            ws = wb.add_sheet('Cancelled Orders')
+
+            # Write headers
+            headers = [
+                'Order ID',
+                'Customer',
+                'Address',
+                'Order Date',
+                'Order status',
+                'Total',
+                'Coupon Applied',
+                'Payment Type',
+                # Add other fields you want to display in the report
+            ]
+            for col, header in enumerate(headers):
+                ws.write(0, col, header)
+
+            # Write data rows
+            for row, order in enumerate(cancelled_orders, start=1):
+                ws.write(row, 0, order.id)
+                ws.write(row, 1, order.customer)
+                ws.write(row, 2, order.address)
+                ws.write(row, 3, order.date_ordered)
+                ws.write(row, 4, order.order_status)
+                ws.write(row, 5, order.total)
+                ws.write(row, 6, order.coupon)
+                ws.write(row, 7, order.payment_type)
+                # Add other fields you want to display in the report
+
+            # Save the Excel file to the response
+            wb.save(response)
+            return response
 
     return render(request, 'cancelreport.html', {'cancelled_orders': None})
 
 
 
+
+
+
+# def stockreport(request):
+#     variants = Variant.objects.all().values('variant').annotate(total_quantity=models.Sum('quantity'))
+
+
+#     return render(request, 'stockreport.html', {'variants': variants})
+
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+import io
+
+def stockreport(request):
+    variants = Variant.objects.all().values('variant').annotate(total_quantity=models.Sum('quantity'))
+
+    # Create a PDF buffer
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+
+    elements = []
+
+    # Add heading
+    styles = getSampleStyleSheet()
+    heading_style = styles['Heading1']
+    heading = "Quantity Report"
+    heading_paragraph = Paragraph(heading, heading_style)
+    elements.append(heading_paragraph)
+    elements.append(Paragraph("", heading_style))  # Add space after heading
+
+    # Convert queryset to list of tuples for the table
+    data = [('Variant Name', 'Total Quantity')]
+    for variant in variants:
+        data.append((variant['variant'], variant['total_quantity']))
+
+    # Create the table
+    table = Table(data)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.darkgrey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+
+    elements.append(table)
+
+    doc.build(elements)
+    buffer.seek(0)
+
+    # Return the PDF as a FileResponse
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="quantity_report.pdf"'
+    return response
+
+
+
+
+
+# from django.http import HttpResponse
+# from reportlab.lib.pagesizes import letter
+# from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+# from reportlab.lib import colors
+# from reportlab.lib.styles import getSampleStyleSheet
+# import io
+
+# def stockreport(request):
+#     variants = Variant.objects.all().values('variant').annotate(total_quantity=models.Sum('quantity'))
+
+#     # Create a PDF buffer
+#     buffer = io.BytesIO()
+#     doc = SimpleDocTemplate(buffer, pagesize=letter)
+
+#     elements = []
+
+#     # Add heading
+#     styles = getSampleStyleSheet()
+#     heading_style = styles['Heading1']
+#     heading = "Stock Report"
+#     heading_paragraph = Paragraph(heading, heading_style)
+#     elements.append(heading_paragraph)
+#     elements.append(Paragraph("", heading_style))  # Add space after heading
+
+#     # Convert queryset to list of tuples for the table
+#     data = [('Variant Name', 'Total Quantity')]
+#     for variant in variants:
+#         data.append((variant['variant'], variant['total_quantity']))
+
+#     # Create the table
+#     table = Table(data)
+#     table.setStyle(TableStyle([
+#         ('BACKGROUND', (0, 0), (-1, 0), colors.darkgrey),
+#         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+#         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+#         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+#         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+#         ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+#         ('GRID', (0, 0), (-1, -1), 1, colors.black),
+#     ]))
+
+#     elements.append(table)
+
+#     doc.build(elements)
+#     buffer.seek(0)
+
+#     # Return the PDF as a HttpResponse
+#     response = HttpResponse(buffer, content_type='application/pdf')
+#     response['Content-Disposition'] = 'attachment; filename="stock_report.pdf"'
+#     return response
