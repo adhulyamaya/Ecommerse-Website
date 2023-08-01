@@ -1427,33 +1427,39 @@ def salesreport(request):
 
 
 
+# def cancelreport(request):
+#     if request.method == "POST":
+#         start_date = request.POST.get("start_date")
+#         end_date = request.POST.get("end_date")
+
+
+
+
+#         cancelled_orders = Order.objects.filter(date_cancelled__range=[start_date, end_date])
+#         return render(request, "cancelreport.html",{"cancelled_orders":cancelled_orders})
+
+
+#     return render(request, "cancelreport.html")
+
+from django.shortcuts import render
+from .models import Order
+
 def cancelreport(request):
-    if request.method == "POST":
-        start_date = request.POST.get("start_date")
-        print(start_date,"?????????????????????????????????????????????????date")
-        end_date = request.POST.get("end_date")
-    #     cancelled_orders = Order.objects.filter(date_cancelled__range=[start_date, end_date])
+    if request.method == 'POST':
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
 
-    #     print(cancelled_orders,"]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
+        if start_date and end_date:
+            cancelled_orders = Order.objects.filter(
+                order_status='cancelled',
+                date_ordered__range=[start_date, end_date]
+            )
+        else:
+            cancelled_orders = None
 
+        return render(request, 'cancelreport.html', {'cancelled_orders': cancelled_orders})
 
-
-    #     # if cancelled_orders.count() == 0:
-    #     #         message = "Sorry! No orders"
-    #     #         context = {"cancelled_orders": cancelled_orders, "message": message}
-    #     # else:
-    #     #         context = {"cancelled_orders": cancelled_orders,}
-    #     #         return render(request, "cancel_report.html", context)
-
-    #     context = {
-    #         "cancelled_orders": cancelled_orders,
-    #         "start_date": start_date,
-    #         "end_date": end_date,
-    #     }
-    #     return render(request, "cancel_report.html", context)
-
-    return render(request, "cancelreport.html")
-
+    return render(request, 'cancelreport.html', {'cancelled_orders': None})
 
 
 

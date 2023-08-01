@@ -35,6 +35,10 @@
                     <th>Customer</th>
                     <th>Address</th>
                     <th>Order Date</th>
+                    <th>Order status</th>
+                    <th>Total</th>
+                    <th>coupon applied ?</th>
+                    <th>Payment_type</th>
                     <!-- Add other fields you want to display in the report -->
                 </tr>
             </thead>
@@ -44,7 +48,14 @@
                     <td>{{ order.id }}</td>
                     <td>{{ order.customer }}</td>
                     <td>{{ order.address }}</td>
-                    <td>{{ order.date_cancelled }}</td>
+                    <td>{{ order.date_ordered }}</td>
+                    <td>{{ order.order_status }}</td>
+                    <td>{{ order.total }}</td>
+                    <td>{{ order.coupon }}</td>
+                    <td>{{ order.payment_type }}</td>
+
+
+                    
                     <!-- Add other fields you want to display in the report -->
                 </tr>
                 {% endfor %}
