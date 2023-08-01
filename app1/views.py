@@ -565,6 +565,7 @@ def cart_remove(request,item_id):
     cartobj.delete()
     return redirect ("show-cart")
 
+import datetime
 
 
 def checkout(request):
@@ -587,9 +588,8 @@ def checkout(request):
             addressflat = request.POST.get("address")
             address = Address.objects.get(flat=addressflat,username=customer)
        
-            date_ordered = datetime.date.today()
-    
-            date_ordered = datetime.date.today()
+            date_ordered = datetime.today()
+            
             
             orderobj = Order(customer = customer, address=address, date_ordered=date_ordered, total = 0)
             orderobj.save()
@@ -737,7 +737,6 @@ def view_order(request):
 
 
 
-
 def userorder_items(request, order_id):
     orderobj = Order.objects.get(id=order_id)
     items = OrderItems.objects.filter(order=orderobj)
@@ -753,7 +752,7 @@ def order_history(request):
     return render(request, 'order_history.html', {'delivered_orders': delivered_orders})
    
 
-
+   
 def razorupdateorder(request):
     username = request.session.get("username")
     customer = custom_user.objects.get(username=username)
@@ -764,7 +763,7 @@ def razorupdateorder(request):
     finalprice =request.GET.get("finalprice")
     
     address = Address.objects.get(username = customer,flat = addressval)
-    date_ordered = datetime.date.today()
+    date_ordered = datetime.today()
     
     orderobj = Order(customer = customer, address=address, date_ordered=date_ordered, total = finalprice,payment_type="razor pay")
     orderobj.save()

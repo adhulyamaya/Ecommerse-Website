@@ -130,6 +130,7 @@ class Order(models.Model):
     payment_type = models.CharField(max_length=100,choices=PAYMENT_CHOICES,default='cash on delivery')
     total = models.DecimalField(max_digits=10,decimal_places=2,default=0)
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL,null=True,blank= True)
+    
     def __str__(self):
         return f"Order #{self.id} - {self.order_status}"
    
