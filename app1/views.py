@@ -508,7 +508,8 @@ def show_cart(request):
 
             cart_item.coupon = couponobj[0]
             cart_item.save()
-            messages.success(request, 'Coupon applied successfully!')
+            # messages.success(request, 'Coupon applied successfully!')
+        messages.success(request, f'Coupon applied successfully! Discount Price: {couponobj[0].discount_price}')
 
     amount = 0
     quantityobj = 0

@@ -4,6 +4,7 @@
 
 {% block main-content %}
 
+
 <div class="container mr-8 mt-4">
     <div class="col-lg-10  mb-5">
         
@@ -21,7 +22,8 @@
                 {% for item in cart %}
                 <tr>
                     <td class="align-middle">
-                        <img src="{{ item.variant.image1.url }}" alt="" class="img-fluid">
+                        <img src="{{ item.variant.image1.url }}"  alt="" class="" style="height: 100px; width: 100px;">
+
                     </td>
                     <td class="align-middle">
                         <p class="card-text">Price: {{ item.variant.price }}</p>
@@ -42,12 +44,6 @@
                             </div>
                       
                     </td>
-
-
-
-                    {% comment %} <td class="align-middle">${{ amount }}
-
-                    </td> {% endcomment %}
                     
                     <td class="align-middle">
                         <a href="{% url 'cart_remove' item.id %}" class="btn btn-dark" onclick="return confirm('Do you want to remove this product from the cart?');">
@@ -61,12 +57,12 @@
         </table>
     </div>
 </div>
+</div>
           
 
-
-    <div class="container pt-0 sm-0">
-    <div class="card border-secondary col- sm-2">
-         <div class="card-header bg-secondary border-0">
+<div class="container pt-0 sm-0">
+    <div class="card border-secondary col-sm-12 col-md-6 col-lg-7">
+        <div class="card-header bg-secondary border-0">
             <h5 class="font-weight-semi-bold m-0">Cart Summary</h5>
          </div>
         <div class="card-body">
@@ -83,35 +79,6 @@
                 <h6 class="font-weight-medium">₹40</h6>
             </div>
         </div>
-
-        <aside class="col-md-3">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <form method="POST">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label>Have a coupon? </label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" name="coupon" placeholder="coupon">
-                                <span class="input-group-append">
-                                    <button type="submit" class="btn btn-primary">Apply</button>
-                                </span>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        
-            {% if messages %}
-                <div class="messages">
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </aside>
         <div class="card-footer border-secondary bg-transparent">
             <div class="d-flex justify-content-between mt-2">
                 <h5 class="font-weight-bold">Total</h5>
@@ -124,5 +91,37 @@
         </div>
     </div>
 </div>
+<div class="container pt-0 sm-0 col-lg-8">
+    
+<aside class="col-md-3">
+    <div class="card mb-6">
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Have a coupon? </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="coupon" placeholder="coupon">
+                        <span class="input-group-append">
+                            <button type="submit" class="btn btn-primary">Apply</button>
+                        </span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</aside>
 {% endblock main-content %}
 
