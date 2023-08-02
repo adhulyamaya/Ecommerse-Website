@@ -28,7 +28,9 @@
                     <th>Coupon code</th>
                     <th>is_expired</th>
                     <th>Discount price</th>
-                    <th>Minimum amount</th>   
+                    <th>Minimum amount</th>
+                    <th>EDIT </th>
+                    <th> DELETE</th>   
                 </tr>
 
                 <a href="{% url 'coupon_adminadd' %}" class="btn btn-sm btn-primary">ADD</a>
@@ -43,6 +45,12 @@
                 <th>{{c.discount_price}}</th>
                 <th>{{c.minimum_amount }}</th>
                 <th><a href="{% url 'edit_coupon' c.id %}" class="btn btn-sm btn-primary">Edit</a></th>
+                <th>
+                <form method="POST" action="{% url 'delete_coupon' c.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+                </th>
 
                 {% endfor %}
                 </tr>

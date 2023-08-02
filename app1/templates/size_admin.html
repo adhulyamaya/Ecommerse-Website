@@ -2,18 +2,7 @@
 {% load static %}
     <title>SIZE</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-      
-        body {
-            padding: 20px;
-        }
-        .status-active {
-            color: green;
-        }
-        .status-blocked {
-            color: red;
-        }
-    </style>
+    {% block search %} {% endblock search %}
 
 {% block content %}
 <div class="row mt-5"></div>
@@ -25,6 +14,7 @@
                     <th>ID</th>
                     <th>Size</th>
                      <th>Edit</th>
+                     <th>Delete</th>
                     
                 </tr>
                 <a href="{% url 'size_adminadd' %}" class="btn btn-sm btn-primary">ADD</a>
@@ -39,6 +29,13 @@
                     <td>{{ s.size }}</td>
                     <td>
                         <a href="{% url 'edit_size' s.id %}" class="btn btn-sm btn-primary">Edit</a>
+                    </td>
+                    <td>
+
+                        <form method="POST" action="{% url 'delete_size' s.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}

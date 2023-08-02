@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add coupon</title>
-</head>
+{% extends 'admin_home.html' %}
+{% load static %}
+{% block content %}
 <body>
     <h1>Add COUPON</h1>
     <form action="{% url 'coupon_adminadd' %}" method="post">
@@ -22,4 +20,5 @@
         <button type="submit">Submit</button>
     </form>
 </body>
-</html>
+
+{% endblock content %}

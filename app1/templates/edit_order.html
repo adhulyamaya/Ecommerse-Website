@@ -1,20 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Order</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        /* Additional custom styles */
-        body {
-            padding: 20px;
-        }
-        .status-active {
-            color: green;
-        }
-        .status-blocked {
-            color: red;
-        }
-    </style>
+{% extends 'admin_home.html' %}
+{% load static %}
+{% block content %}
 </head>
 <body>
     <div class="container">
@@ -36,4 +22,5 @@
         </form>
     </div>
 </body>
-</html>
+
+{% endblock content %}

@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Size</title>
-</head>
+{% extends 'admin_home.html' %}
+{% load static %}
+{% block content %}
 <body>
     <h1>Edit Size</h1>
     <form action="{% url 'edit_coupon' coupon.id %}" method="post">
@@ -21,5 +19,5 @@
         <BR>
         <button type="submit">Save</button>
     </form>
-</body>
-</html>
+    
+    {% endblock content %}

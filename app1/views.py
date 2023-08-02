@@ -1111,7 +1111,23 @@ def delete_product(request, product_id):
     if request.method == 'POST':       
         product.delete()
         return redirect('products')
-    return render(request, 'delete_product.html', {'product': product})
+    # return render(request, 'delete_product.html', {'product': product})
+
+
+
+# def delete_coupon(request,coupon_id):
+#     couponobj = Coupon.objects.get(id=coupon_id)
+#     if request.method == 'POST':  
+#         couponobj.delete()     
+#         return redirect('admin_coupon')
+#     return render(request, 'delete_coupon.html', {'couponobj': couponobj})
+
+def delete_coupon(request, coupon_id):
+    couponobj = Coupon.objects.get(id=coupon_id)
+    if request.method == 'POST':  
+        couponobj.delete()     
+        return redirect('admin_coupon')
+
 
 
 def category_view(request):
@@ -1221,7 +1237,15 @@ def delete_category(request, category_id):
     if request.method == 'POST':  
         categoryobj.delete()     
         return redirect('category')
-    return render(request, 'delete_category.html', {'category': categoryobj})
+    # return render(request, 'delete_category.html', {'category': categoryobj})
+
+
+def delete_size(request, size_id):
+    sizeobj = Size.objects.get(id=size_id)
+    if request.method == 'POST':  
+        sizeobj.delete()     
+        return redirect('size_admin')
+    
 
 
 

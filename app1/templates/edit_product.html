@@ -1,42 +1,6 @@
- <!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Product</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .error-message {
-            color: red;
-            font-size: 12px;
-        }
-  
-        /* Add your custom styles here */
-        .container {
-            width: fit-content;
-            display: flex;
-        }
-  
-        /* Additional styles for form elements */
-        .form-group {
-            margin-top: 2rem;
-        }
-  
-        label {
-            font-weight: bold;
-        }
-  
-        input[type="text"],
-        select {
-            width: 100%;
-            padding: 0.5rem;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-  
-        button[type="submit"] {
-            margin-top: 1rem;
-        }
-    </style>
-</head>
+{% extends 'admin_home.html' %}
+{% load static %}
+{% block content %}
 <body>
     <div class="container">
         <form class="p-5" method="POST" action="" enctype="multipart/form-data">
@@ -98,7 +62,7 @@
 
     <script defer src="https://cdn.crop.guide/loader/l.js?c=ZXDVHR"></script>
 </body>
-</html>
 
+{% endblock content %}
 
 
