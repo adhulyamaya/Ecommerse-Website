@@ -1,8 +1,10 @@
-         
+
+            
 {% extends 'admin_home.html' %}
 {% load static %}
 <title>quantity report</title>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
 
 
 {% block content %}
@@ -24,8 +26,10 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="{% url 'stockreport' %}" class="btn add-product-btn btn-secondary mt-2 ml-4">Download PDF</a>
-    {% comment %} <button name="download"  type="submit" class="btn add-product-btn btn-secondary mt-2 ml-4 ">Download</button> {% endcomment %}
+    <form action="{% url 'stockreport' %}" method="POST">
+        {% csrf_token %}
+        <button name="download" type="submit" class="btn add-product-btn btn-secondary mt-2 ml-4">Download</button>
+    </form>
 </div>
 {% endblock %}
        

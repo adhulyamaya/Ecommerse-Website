@@ -1701,54 +1701,53 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 import io
 
+from django.http import FileResponse
+from django.db.models import Sum
+
+
 def stockreport(request):
-    variants = Variant.objects.all().values('variant').annotate(total_quantity=models.Sum('quantity'))
+    if request.method == 'POST' and 'download' in request.POST:
+        variants = Variant.objects.all().values('variant').annotate(total_quantity=models.Sum('quantity'))
 
-    # Create a PDF buffer
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=letter)
+        # Create a PDF buffer
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=letter)
 
-    elements = []
+        elements = []
 
-    # Add heading
-    styles = getSampleStyleSheet()
-    heading_style = styles['Heading1']
-    heading = "Stock Report"
-    heading_paragraph = Paragraph(heading, heading_style)
-    elements.append(heading_paragraph)
-    elements.append(Paragraph("", heading_style))  # Add space after heading
+        # Add heading
+        styles = getSampleStyleSheet()
+        heading_style = styles['Heading1']
+        heading = "Stock Report"
+        heading_paragraph = Paragraph(heading, heading_style)
+        elements.append(heading_paragraph)
+        elements.append(Paragraph("", heading_style))  # Add space after heading
 
-    # Convert queryset to list of tuples for the table
-    data = [('Variant Name', 'Total Quantity')]
-    for variant in variants:
-        data.append((variant['variant'], variant['total_quantity']))
+        # Convert queryset to list of tuples for the table
+        data = [('Variant Name', 'Total Quantity')]
+        for variant in variants:
+            data.append((variant['variant'], variant['total_quantity']))
 
-    # Create the table
-    table = Table(data)
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.darkgrey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-    ]))
+        # Create the table
+        table = Table(data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.darkgrey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ]))
 
-    elements.append(table)
+        elements.append(table)
 
-    doc.build(elements)
-    buffer.seek(0)
+        doc.build(elements)
+        buffer.seek(0)
 
-    # Return the PDF as a HttpResponse
-    response = HttpResponse(buffer, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="stock_report.pdf"'
-
-    context = {
-
-            "response":response,
-            "variants":variants
-        }
-
-
-    return render(request, 'stockreport.html',context)
+        return FileResponse(buffer, as_attachment=True, filename='Stock_Report.pdf')
+    else:
+        # Handle GET request by rendering the HTML template
+        variants = Variant.objects.all().values('variant').annotate(total_quantity=Sum('quantity'))
+        context = {'variants': variants}
+        return render(request, 'stockreport.html', context)
