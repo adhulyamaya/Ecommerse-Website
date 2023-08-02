@@ -43,7 +43,7 @@
                                 <td><button type="button" class="btn btn-secondary" disabled>Order Cancelled</button></td>
                                 {% endif %}
                             {% comment %} <td> <button type="button" onclick="cancelOrder({{ order.id }})" class="btn btn-danger">Cancel  </button></td> {% endcomment %}
-                            <td><a href="{% url 'download_invoice' order.id %}" class="btn btn-primary">Download</a></td> <!-- Add the link for Download Invoice -->
+                            <td><a href="{% url 'generate_invoice' order.id %}" class="btn btn-primary">Download</a></td> <!-- Add the link for Download Invoice -->
                             </tr>
                             {% endfor %}
                         </tbody>

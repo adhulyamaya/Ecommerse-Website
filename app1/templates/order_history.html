@@ -32,8 +32,10 @@
                     <td>
                         {% if order.order_status == 'delivered' %}
                             Delivered
+                            <td id="order{{order.id}}"><button class="btn delete-btn btn-danger" data-category-id="{{ order.id }}">Return</button>
                         {% else %}
                             Cancelled
+                            <td><span class="text-secondary"> Return</span></td>
                         {% endif %}
                     </td>
                 </tr>

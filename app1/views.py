@@ -744,6 +744,8 @@ def cancel_order(request, order_id):
 
     return redirect('view_order')
 
+# def return_order(reque)
+
 
 
 def userorder_items(request, order_id):
@@ -841,14 +843,40 @@ def generate_invoice(request, order_id):
     elements.append(customer_info_paragraph)
     elements.append(Spacer(1, 12))  # Add space after customer info
 
+    customer_info = f'Customer Address: {order.address}'
+    customer_info_paragraph = Paragraph(customer_info, styles['Normal'])
+    elements.append(customer_info_paragraph)
+    elements.append(Spacer(1, 12))
+
+    customer_info = f'Payment method: {order.payment_type}'
+    customer_info_paragraph = Paragraph(customer_info, styles['Normal'])
+    elements.append(customer_info_paragraph)
+    elements.append(Spacer(1, 12))
+
+    customer_info = f'Order status: {order.order_status}'
+    customer_info_paragraph = Paragraph(customer_info, styles['Normal'])
+    elements.append(customer_info_paragraph)
+    elements.append(Spacer(1, 12))
+
+    customer_info = f'Ordered Date: {order.date_ordered}'
+    customer_info_paragraph = Paragraph(customer_info, styles['Normal'])
+    elements.append(customer_info_paragraph)
+    elements.append(Spacer(1, 12))
+
+
+
+    customer_info = f'ORDER DETAILS: '
+    customer_info_paragraph = Paragraph(customer_info, styles['Normal'])
+    elements.append(customer_info_paragraph)
+    elements.append(Spacer(1, 30))
     # Create the data for the order items table
     order_items_data = [['Product', 'Price', 'Quantity', 'Total']]
     for order_item in OrderItems.objects.filter(order=order):
         item_data = [
-            order_item.variant.name,
-            f"${order_item.price:.2f}",
+            order_item.variant,
+            f"RS{order_item.price:.2f}",
             order_item.quantity,
-            f"${order_item.total:.2f}"
+            f"RS{order_item.total:.2f}"
         ]
         order_items_data.append(item_data)
 
@@ -857,7 +885,7 @@ def generate_invoice(request, order_id):
     order_items_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('ALIGN', (0, 0), (1, 1), 'CENTER'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 12),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
@@ -866,11 +894,12 @@ def generate_invoice(request, order_id):
         ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
         ('FONTSIZE', (0, 1), (-1, -1), 10),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        
     ]))
     elements.append(order_items_table)
 
     total_amount = sum(item.total for item in OrderItems.objects.filter(order=order))
-    total_info = f'Total Amount: ${total_amount:.2f}'
+    total_info = f'Total Amount: RS {total_amount:.2f}'
     total_info_paragraph = Paragraph(total_info, styles['Normal'])
     elements.append(Spacer(1, 12))  # Add space before total info
     elements.append(total_info_paragraph)
@@ -887,69 +916,6 @@ def generate_invoice(request, order_id):
     return response
 
 
-# def generate_invoice(request, order_id):
-#     # Fetch the order details from the database using the order_id
-#     order = Order.objects.get(id=order_id)
-#     order_items = OrderItems.objects.filter(order=order)
-
-#     # Create a response object with PDF content type
-#     response = HttpResponse(content_type='application/pdf')
-
-#     # Set the Content-Disposition header to force download
-#     response['Content-Disposition'] = f'attachment; filename="invoice_{order_id}.pdf"'
-
-#     # Create a PDF document using reportlab
-#     doc = SimpleDocTemplate(response, pagesize=letter)
-#     elements = []
-
-#     # Write the invoice details to the PDF
-#     styles = getSampleStyleSheet()
-#     heading_style = styles['Heading1']
-#     heading = f'Invoice for Order #{order_id}'
-#     heading_paragraph = Paragraph(heading, heading_style)
-#     elements.append(heading_paragraph)
-#     elements.append(Spacer(1, 12))  # Add space after heading
-
-#     customer_info = f'Customer: {order.customer.username}'
-#     customer_info_paragraph = Paragraph(customer_info, styles['Normal'])
-#     elements.append(customer_info_paragraph)
-#     elements.append(Spacer(1, 12))  # Add space after customer info
-
-#     order_items_data = [['Product', 'Price', 'Quantity', 'Total']]
-#     for order_item in order_items:
-#         item_data = [
-#             order_item.variant.name,
-#             f"${order_item.price:.2f}",
-#             order_item.quantity,
-#             f"${order_item.total:.2f}"
-#         ]
-#         order_items_data.append(item_data)
-#     order_items_table = Table(order_items_data)
-#     order_items_table.setStyle(TableStyle([
-#         ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
-#         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-#         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-#         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-#         ('FONTSIZE', (0, 0), (-1, 0), 12),
-#         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-#         ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
-#         ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-#         ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-#         ('FONTSIZE', (0, 1), (-1, -1), 10),
-#         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-#     ]))
-#     elements.append(order_items_table)
-
-#     total_amount = sum(item.total for item in order_items)
-#     total_info = f'Total Amount: ${total_amount:.2f}'
-#     total_info_paragraph = Paragraph(total_info, styles['Normal'])
-#     elements.append(Spacer(1, 12))  # Add space before total info
-#     elements.append(total_info_paragraph)
-
-#     # Build the PDF document with elements
-#     doc.build(elements)
-
-#     return response
 
 
 from io import BytesIO 
@@ -958,14 +924,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
 def download_invoice(request, order_id):
-    # Retrieve the order and other relevant data based on the order_id
-    # (You may need to adjust this part based on your data model)
-    try:
-        from app1.models import Order
-        order = Order.objects.get(id=order_id)
-    except Order.DoesNotExist:
-        return HttpResponse("Order not found.", status=404)
 
+    order = Order.objects.get(id=order_id)
     # Generate the PDF content using reportlab
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=letter)
@@ -1407,7 +1367,13 @@ def salesreport(request):
         if "show" in request.POST:
             start_date = request.POST.get("start_date")
             end_date = request.POST.get("end_date")
-            orderobjs = Order.objects.filter(date_ordered__range=[start_date, end_date])
+            if start_date == end_date:
+                # If start_date and end_date are the same, we filter for orders on that specific date
+                orderobjs = Order.objects.filter(date_ordered__date=start_date)
+            else:
+                # If start_date and end_date are different, we filter within the range
+                orderobjs = Order.objects.filter(date_ordered__range=[start_date, end_date])
+          
             variantobj = Variant.objects.all()
             if orderobjs.count() == 0:
                 message = "Sorry! No orders"
@@ -1423,7 +1389,14 @@ def salesreport(request):
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
 
-            ords = Order.objects.filter(date_ordered__range=[start_date, end_date])
+            if start_date == end_date:
+                # If start_date and end_date are the same, we filter for orders on that specific date
+                ords = Order.objects.filter(date_ordered__date=start_date)
+            else:
+                # If start_date and end_date are different, we filter within the range
+                ords = Order.objects.filter(date_ordered__range=[start_date, end_date])
+
+            # ords = Order.objects.filter(date_ordered__range=[start_date, end_date])
 
             if ords:
                 # Create a PDF buffer
@@ -1467,6 +1440,7 @@ def salesreport(request):
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
 
+
             ords = Order.objects.filter(date_ordered__range=[start_date, end_date])
 
             if ords:
@@ -1507,23 +1481,6 @@ def salesreport(request):
 
 
 
-
-# def cancelreport(request):
-#     if request.method == 'POST':
-#         start_date = request.POST.get('start_date')
-#         end_date = request.POST.get('end_date')
-
-#         if start_date and end_date:
-#             cancelled_orders = Order.objects.filter(
-#                 order_status='cancelled',
-#                 date_ordered__range=[start_date, end_date]
-#             )
-#         else:
-#             cancelled_orders = None
-
-#         return render(request, 'cancelreport.html', {'cancelled_orders': cancelled_orders})
-
-#     return render(request, 'cancelreport.html', {'cancelled_orders': None})
 
 
 import xlwt
@@ -1604,14 +1561,6 @@ def cancelreport(request):
 
 
 
-
-
-
-# def stockreport(request):
-#     variants = Variant.objects.all().values('variant').annotate(total_quantity=models.Sum('quantity'))
-
-
-#     return render(request, 'stockreport.html', {'variants': variants})
 
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
