@@ -1,25 +1,26 @@
 {% extends 'admin_home.html' %}
 {% load static %}
 {% block content %}
-
-
 <body>
     <div class="container">
         <h1>Edit Category</h1>
-        <form method="POST" action="{% url 'edit_category' category.id %}">
+        <form method="POST" action="{% url 'edit_category' category.id %}" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
                 <label for="category-name">Category Name</label>
                 <input type="text" name="category_name" class="form-control" value="{{ category.name }}">
             </div>
-            <div class="form-row field-category_image">                    
-                <div>    
-                        <label class="required" for="id_product_image">Category image:</label>
-                        
-                            <input type="file" name="image" accept="image/*" id="id_category_image">    
+            <div class="form-row field-category_image">
+                <div>
+                    <label class="required" for="id_product_image">Category image:</label>
+                    <input type="file" name="image" accept="image/*" id="id_category_image">
+                    {% if category.category_image %}
+                        <img src="{{ category.category_image.url }}" alt="{{ category.name }} Image" style="height: 100px; width: 100px;">
+                    {% else %}
+                        <p>No image available</p>
+                    {% endif %}
                 </div>
-            
-        </div>
+            </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
     </div>

@@ -1207,10 +1207,10 @@ def edit_category(request, category_id):
         # print(image)
         print(name,">>>>>>>>")
         print(image,"__________________________________")
+        category_obj.category_image = image
+        # new_category = category(id=category_id, name=name,category_image = image )  
 
-        new_category = category(id=category_id, name=name,category_image = image )  
-
-        new_category.save() 
+        category_obj.save() 
             
         return redirect('category_view')
     return render(request, 'edit_category.html', {'category': category_obj})
@@ -1531,54 +1531,165 @@ def cancelreport(request):
             return render(request, 'cancelreport.html', {'cancelled_orders': cancelled_orders})
 
         elif 'download' in request.POST:
+            start_date_str = request.POST.get('start_date')
+            end_date_str = request.POST.get('end_date')
+
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+            if start_date and end_date:
+                cancelled_orders = Order.objects.filter(
+                    order_status='cancelled',
+                    date_ordered__range=[start_date, end_date]
+                )
+            else:
+                cancelled_orders = None
+
+            if cancelled_orders:
+                # Create a PDF buffer
+                buffer = io.BytesIO()
+                doc = SimpleDocTemplate(buffer, pagesize=letter)
+
+                elements = []
+
+                # Add heading
+                styles = getSampleStyleSheet()
+                heading_style = styles['Heading1']
+                heading = "cancelled products Report"
+                heading_paragraph = Paragraph(heading, heading_style)
+                elements.append(heading_paragraph)
+                elements.append(Spacer(1, 10))  # Add space after heading
+
+                data = [['Sl.No.', 'Ordered By', 'Address',  'Order Date', 'Order Status','payment type', 'Total']]
+                slno = 0
+                for ord in cancelled_orders:
+                    slno += 1
+                    row = [slno, ord.customer ,ord.address,ord.date_ordered,ord.order_status,ord.payment_type,ord.total]
+                    data.append(row)
+
+                table = Table(data)
+                table.setStyle(TableStyle([
+                    # Table styles (same as before)
+                ]))
             # PDF Download
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'attachment; filename="cancelled_orders_report.pdf"'
-            # Add code here to generate and render the PDF content using libraries like reportlab
-            
-            return response
+                elements.append(table)
+
+                doc.build(elements)
+                buffer.seek(0)
+
+                return FileResponse(buffer, as_attachment=True, filename='cancelled_Report.pdf')
 
         elif 'downloadexcel' in request.POST:
+            start_date_str = request.POST.get('start_date')
+            end_date_str = request.POST.get('end_date')
+
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+            if start_date and end_date:
+                cancelled_orders = Order.objects.filter(
+                    order_status='cancelled',
+                    date_ordered__range=[start_date, end_date]
+                )
+            else:
+                cancelled_orders = None
+
+
             # Excel Download
-            response = HttpResponse(content_type='application/ms-excel')
-            response['Content-Disposition'] = 'attachment; filename="cancelled_orders_report.xls"'
+            if cancelled_orders:
+                # Create an Excel workbook
+                wb = Workbook()
+                ws = wb.active
 
-            # Create and configure the Excel workbook and worksheet
-            wb = xlwt.Workbook(encoding='utf-8')
-            ws = wb.add_sheet('Cancelled Orders')
+                # Add heading
+                heading = ['Sl.No.', 'Ordered By', 'Address', 'Order Date', 'Order Status', 'Payment Type', 'Total']
+                ws.append(heading)
 
-            # Write headers
-            headers = [
-                'Order ID',
-                'Customer',
-                'Address',
-                'Order Date',
-                'Order status',
-                'Total',
-                'Coupon Applied',
-                'Payment Type',
-                # Add other fields you want to display in the report
-            ]
-            for col, header in enumerate(headers):
-                ws.write(0, col, header)
+                slno = 0
+                for ord in cancelled_orders:
+                    slno += 1
+                    ordered_by = ord.customer.username  # Extract the username from the custom user model
+                    address_str = str(ord.address)
 
-            # Write data rows
-            for row, order in enumerate(cancelled_orders, start=1):
-                ws.write(row, 0, order.id)
-                ws.write(row, 1, order.customer)
-                ws.write(row, 2, order.address)
-                ws.write(row, 3, order.date_ordered)
-                ws.write(row, 4, order.order_status)
-                ws.write(row, 5, order.total)
-                ws.write(row, 6, order.coupon)
-                ws.write(row, 7, order.payment_type)
-                # Add other fields you want to display in the report
+                    # Convert the date_ordered to Indian time
+                    indian_timezone = pytz.timezone('Asia/Kolkata')
+                    date_ordered_indian = ord.date_ordered.astimezone(indian_timezone)
+                    date_ordered_naive = date_ordered_indian.replace(tzinfo=None)
 
-            # Save the Excel file to the response
-            wb.save(response)
-            return response
+                    row = [slno, ordered_by, address_str, date_ordered_naive, ord.order_status, ord.payment_type, ord.total]
+                    ws.append(row)
 
-    return render(request, 'cancelreport.html', {'cancelled_orders': None})
+                # Set column widths
+                for column_cells in ws.columns:
+                    length = max(len(str(cell.value)) for cell in column_cells)
+                    ws.column_dimensions[column_cells[0].column_letter].width = length + 2
+
+                # Create a response with the Excel file
+                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = 'attachment; filename=cancelledorder_Report.xlsx'
+                wb.save(response)
+                return response
+
+    return render(request, 'cancelreport.html')
+
+
+
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+import io
+
+# def stockreport(request):
+    
+#     if request.method == "POST":
+#         variants = Variant.objects.all().values('variant').annotate(total_quantity=models.Sum('quantity'))
+#         # Create a PDF buffer
+#         buffer = io.BytesIO()
+#         doc = SimpleDocTemplate(buffer, pagesize=letter)
+
+#         elements = []
+
+#         # Add heading
+#         styles = getSampleStyleSheet()
+#         heading_style = styles['Heading1']
+#         heading = "Quantity Report"
+#         heading_paragraph = Paragraph(heading, heading_style)
+#         elements.append(heading_paragraph)
+#         elements.append(Paragraph("", heading_style))  # Add space after heading
+
+#         # Convert queryset to list of tuples for the table
+#         data = [('Variant Name', 'Total Quantity')]
+#         for variant in variants:
+#             data.append((variant['variant'], variant['total_quantity']))
+
+#         # Create the table
+#         table = Table(data)
+#         table.setStyle(TableStyle([
+#             ('BACKGROUND', (0, 0), (-1, 0), colors.darkgrey),
+#             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+#             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+#             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+#             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+#             ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+#             ('GRID', (0, 0), (-1, -1), 1, colors.black),
+#         ]))
+
+#         elements.append(table)
+
+#         doc.build(elements)
+#         buffer.seek(0)
+
+#         # Return the PDF as a FileResponse
+#         response = HttpResponse(buffer, content_type='application/pdf')
+#         response['Content-Disposition'] = 'attachment; filename="quantity_report.pdf"'
+
+        
+        
+#         return render(request, 'stockreport.html',context)
+    
+    
+
 
 
 
@@ -1602,7 +1713,7 @@ def stockreport(request):
     # Add heading
     styles = getSampleStyleSheet()
     heading_style = styles['Heading1']
-    heading = "Quantity Report"
+    heading = "Stock Report"
     heading_paragraph = Paragraph(heading, heading_style)
     elements.append(heading_paragraph)
     elements.append(Paragraph("", heading_style))  # Add space after heading
@@ -1629,62 +1740,15 @@ def stockreport(request):
     doc.build(elements)
     buffer.seek(0)
 
-    # Return the PDF as a FileResponse
+    # Return the PDF as a HttpResponse
     response = HttpResponse(buffer, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="quantity_report.pdf"'
-    return response
+    response['Content-Disposition'] = 'attachment; filename="stock_report.pdf"'
+
+    context = {
+
+            "response":response,
+            "variants":variants
+        }
 
 
-
-
-
-# from django.http import HttpResponse
-# from reportlab.lib.pagesizes import letter
-# from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
-# from reportlab.lib import colors
-# from reportlab.lib.styles import getSampleStyleSheet
-# import io
-
-# def stockreport(request):
-#     variants = Variant.objects.all().values('variant').annotate(total_quantity=models.Sum('quantity'))
-
-#     # Create a PDF buffer
-#     buffer = io.BytesIO()
-#     doc = SimpleDocTemplate(buffer, pagesize=letter)
-
-#     elements = []
-
-#     # Add heading
-#     styles = getSampleStyleSheet()
-#     heading_style = styles['Heading1']
-#     heading = "Stock Report"
-#     heading_paragraph = Paragraph(heading, heading_style)
-#     elements.append(heading_paragraph)
-#     elements.append(Paragraph("", heading_style))  # Add space after heading
-
-#     # Convert queryset to list of tuples for the table
-#     data = [('Variant Name', 'Total Quantity')]
-#     for variant in variants:
-#         data.append((variant['variant'], variant['total_quantity']))
-
-#     # Create the table
-#     table = Table(data)
-#     table.setStyle(TableStyle([
-#         ('BACKGROUND', (0, 0), (-1, 0), colors.darkgrey),
-#         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-#         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-#         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-#         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-#         ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-#         ('GRID', (0, 0), (-1, -1), 1, colors.black),
-#     ]))
-
-#     elements.append(table)
-
-#     doc.build(elements)
-#     buffer.seek(0)
-
-#     # Return the PDF as a HttpResponse
-#     response = HttpResponse(buffer, content_type='application/pdf')
-#     response['Content-Disposition'] = 'attachment; filename="stock_report.pdf"'
-#     return response
+    return render(request, 'stockreport.html',context)
