@@ -77,6 +77,8 @@ urlpatterns = [
     path("cancelreport/",views.cancelreport,name = 'cancelreport'),
     path("stockreport/",views.stockreport,name = 'stockreport'),
 
+    path("edit_variant/<int:variant_id>/",views.edit_variant,name = 'edit_variant'),
+
 
     path('generate_invoice/<int:order_id>/', views.generate_invoice, name='generate_invoice'),
     path('download_invoice/<int:order_id>/', views.download_invoice, name='download_invoice'),

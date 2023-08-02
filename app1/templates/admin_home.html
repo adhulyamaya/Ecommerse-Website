@@ -9,26 +9,15 @@
     <!-- plugins:css -->
     <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <!-- End Plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    {% comment %} <link href="/static/app/css/style.min.css" rel="stylesheet">
-    <link href="{% static 'app/css/style.css' %}" rel="stylesheet"> {% endcomment %}
+ 
     <link href="{% static 'app/assets/css/style.css' %}" rel="stylesheet">
     <link href="{% static 'app/assets/css/maps/style.css.map' %}" rel="stylesheet">
     
-    
-    <!-- End layout styles -->
-    {% comment %} <link rel="shortcut icon" href="{% static 'app/assets/images/favicon.png'%}"/> {% endcomment %}
 
     
   </head>
   <body>
     <div class="container-scroller">
-      <!-- partial:../../partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
 
@@ -287,6 +276,7 @@
         <div class="main-panel">
           <div class="content-wrapper">
             <div class="page-header">
+
               {% block content %}
               <h3 class="page-title"> Chart-js </h3>
               <nav aria-label="breadcrumb">
@@ -296,6 +286,7 @@
                 </ol>
               </nav>
             </div>
+
             <div class="row">
               <div class="col-lg-6 grid-margin stretch-card">
                 <div class="card">
@@ -305,6 +296,7 @@
                   </div>
                 </div>
               </div>
+
               <div class="col-lg-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
@@ -314,6 +306,7 @@
                 </div>
               </div>
             </div>
+
             <div class="row">
               <div class="col-lg-6 grid-margin stretch-card">
                 <div class="card">
@@ -323,6 +316,7 @@
                   </div>
                 </div>
               </div>
+
               <div class="col-lg-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
@@ -331,10 +325,11 @@
                   </div>
                 </div>
               </div>
-            </div>
-            
+            </div>            
             </div>
           </div>
+
+
           
       {% endblock content %}
           <!-- content-wrapper ends -->

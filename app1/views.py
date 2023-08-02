@@ -270,6 +270,10 @@ def otplogin(request):
 
 
 
+
+
+
+
 def shop(request):
     username = request.session["username"]
     user = custom_user.objects.get(username=username)
@@ -279,22 +283,24 @@ def shop(request):
     products = Product.objects.all()
     brands = Brand.objects.all()
     
-    selected_brands = request.POST.getlist('brands') 
-    if selected_brands:
-        # Filter the products based on the selected brands
-        products = products.filter(brand__id__in=selected_brands)
 
 
-    # Add pagination to the products queryset
-    paginator = Paginator(products, 8)  # Show 12 products per page
+           
+
+    sort_param = request.GET.get('sort')
+    if sort_param == 'atoz':
+        products = products.order_by('name')
+    elif sort_param == 'ztoa':
+        products = products.order_by('-name')    
+
+
+    paginator = Paginator(products, 8)
     page = request.GET.get('page')
     try:
         products = paginator.page(page)
     except PageNotAnInteger:
-        # If the page parameter is not an integer, deliver the first page.
         products = paginator.page(1)
     except EmptyPage:
-        # If the page is out of range, deliver the last page of results.
         products = paginator.page(paginator.num_pages)
 
 
@@ -303,7 +309,8 @@ def shop(request):
             products = Product.objects.filter(name__istartswith=search_query)
             return render(request,'shop.html',{ "products": products,
                             "brand": brands,
-                            "wishlist_count":wishlist_count,})  
+                            "wishlist_count":wishlist_count,})
+                              
   
     return render(request,'shop.html',{ "products": products,
         "brand": brands,
@@ -1355,6 +1362,20 @@ def edit_coupon(request,coupon_id):
         return redirect('admin_coupon') 
 
     return render(request, 'edit_coupon.html', {'coupon': coupon_obj})
+
+
+
+
+def edit_variant(request):
+    # variant_obj = Variant.objects.get(id= variant_id)
+    # if request.method == 'POST':
+    #     new_variant = request.POST.get('variant')
+    #     variant_obj.variant = new_variant
+    #     variant_obj.save()
+    #     return redirect('variant_admin')
+    return render(request, 'edit_variant.html')
+
+
 
 
 from datetime import datetime, timedelta
