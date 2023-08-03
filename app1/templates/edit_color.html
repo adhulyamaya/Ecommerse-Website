@@ -4,13 +4,16 @@
     <title>Edit Color</title>
 </head>
 <body>
+    <div class="container">
     <h1>Edit Color</h1>
+    
     <form action="{% url 'edit_color' color.id %}" method="post">
         {% csrf_token %}
         <label for="color">Color:</label>
         <input type="text" id="color" name="color"  value="{{ color.color }}" required>
         <button type="submit">Save</button>
     </form>
+    </div>
 </body>
 
 {% endblock content %}

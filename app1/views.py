@@ -1115,12 +1115,12 @@ def delete_product(request, product_id):
 
 
 
-# def delete_coupon(request,coupon_id):
-#     couponobj = Coupon.objects.get(id=coupon_id)
-#     if request.method == 'POST':  
-#         couponobj.delete()     
-#         return redirect('admin_coupon')
-#     return render(request, 'delete_coupon.html', {'couponobj': couponobj})
+def delete_color(request,color_id):
+    colorobj = Color.objects.get(id=color_id)
+    if request.method == 'POST':  
+        colorobj.delete()     
+        return redirect('color_admin')
+
 
 def delete_coupon(request, coupon_id):
     couponobj = Coupon.objects.get(id=coupon_id)

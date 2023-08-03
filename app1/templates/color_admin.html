@@ -24,6 +24,7 @@
                     <th>ID</th>
                     <th>Color</th>
                     <th>EDIT</th>
+                    <th>Delete</th>
                     
                 </tr>
                 <a href="{% url 'color_adminadd' %}" class="btn btn-sm btn-primary">ADD</a>
@@ -38,6 +39,13 @@
                     <td>{{ c.color }}</td>
                     <td>
                         <a href="{% url 'edit_color' c.id %}" class="btn btn-sm btn-primary">Edit</a>
+                    </td>
+                    <td>
+
+                        <form method="POST" action="{% url 'delete_color' c.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
                     </td>
                     
                 </tr>
