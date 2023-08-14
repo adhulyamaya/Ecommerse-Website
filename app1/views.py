@@ -742,8 +742,7 @@ def view_order(request):
 
 
 
-def cancel_order(request, order_id):
-    
+def cancel_order(request, order_id):    
     order = Order.objects.get(id=order_id)
     if order.order_status != 'cancelled':
         order.order_status = 'cancelled'
@@ -751,8 +750,14 @@ def cancel_order(request, order_id):
 
     return redirect('view_order')
 
-# def return_order(reque)
 
+def return_order(request, order_id):
+        order = Order.objects.get(id=order_id)
+        if order.order_status in ['delivered', 'cancelled']:
+            order.order_status = 'returned'  
+            order.save()
+            return redirect('order_history')  
+      
 
 
 def userorder_items(request, order_id):
@@ -765,16 +770,10 @@ def userorder_items(request, order_id):
 
 
 
-
 def order_history(request):
     orders = Order.objects.filter(order_status__in=['delivered', 'cancelled'])
     return render(request, 'order_history.html', {'orders': orders})
 
-
-# def order_history(request):   
-#     delivered_orders = Order.objects.filter(order_status='delivered')
-#     return render(request, 'order_history.html', {'delivered_orders': delivered_orders})
-   
 
    
 def razorupdateorder(request):
@@ -1250,8 +1249,6 @@ def delete_size(request, size_id):
 
 
 
-
-
 def edit_order(request,order_id):
     orderobj=Order.objects.all()
     order_obj = Order.objects.get(id= order_id)
@@ -1290,9 +1287,9 @@ def userorder_items(request, order_id):
     return render(request, 'userorder_items.html', context)
 
 
-def admin_variant(request):
-    variantobj = Variant.objects.all()
-    return render(request, 'admin_variant.html',{ "variantobj":variantobj })
+# def admin_variant(request):
+#     variantobj = Variant.objects.all()
+#     return render(request, 'admin_variant.html',{ "variantobj":variantobj })
 
 
 def color_admin(request):
@@ -1389,8 +1386,55 @@ def edit_coupon(request,coupon_id):
 
 
 
+def add_variant(request):
+    colorobj = Color.objects.all()
+    sizeobj = Size.objects.all()
+    productobj = Product.objects.all()
+    context = {
+        "colorobj": colorobj,
+        "sizeobj": sizeobj,
+        "productobj": productobj
+    }
+    if request.method == 'POST':
+        variant_name = request.POST.get('name')
+        product_name = request.POST.get('product')
+        product_obj = Product.objects.get(name=product_name)
+        color_name = request.POST.get('color')
+        color_obj = Color.objects.get(color=color_name)
+        size_name = request.POST.get('size')
+        size_obj = Size.objects.get(size=size_name)
+        quantity = request.POST.get('quantity')
+        price = request.POST.get('Price')
+        image = request.FILES.get('image')
+        image = request.FILES.get('image')
+        image = request.FILES.get('image')
+        image = request.FILES.get('image')
+        new_variant = Variant(
+            variant=variant_name,
+            Product=product_obj,
+            Color=color_obj,
+            Size=size_obj,
+            quantity=quantity,
+            price=price,
+            image1=image,
+            image2=image,
+            image3=image,
+            image4=image
+            
+        )
+        new_variant.save()
+        return redirect('admin_variant') 
 
-def edit_variant(request):
+    return render(request, 'add_variant.html', context)
+
+
+def admin_variant(request):
+    variantobj = Variant.objects.all()
+    return render(request, 'admin_variant.html',{ "variantobj":variantobj })
+
+
+
+def edit_variant(request,variant_id):
     # variant_obj = Variant.objects.get(id= variant_id)
     # if request.method == 'POST':
     #     new_variant = request.POST.get('variant')

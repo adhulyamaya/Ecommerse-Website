@@ -1,0 +1,88 @@
+{% extends 'admin_home.html' %}
+{% load static %}
+{% block content %}
+
+<form method="POST" action="{% url 'add_variant' %}"  enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label for="name">variant</label>
+        <input type="text" name="name" class="form-control"  >
+     </div>
+
+    <div class="form-group">
+        <label for="product">Product</label>
+        <select name="product" class="form-control">
+            {% for p in productobj %}
+            <option>{{ p.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label for="color">Color</label>
+        <select name="color" class="form-control">
+            {% for c in colorobj %}
+            <option>{{ c.color }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="size">Size</label>
+        <select name="size" class="form-control">
+            {% for s in sizeobj %}
+            <option>{{ s.size }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+
+     <div class="form-group">
+        <label for="category-name">quantity</label>
+        <input type="text" name = "quantity" class ="form-control" >
+     </div>
+
+     <div class="form-group">
+        <label for="category-name">Price</label>
+        <input type="text" name = "Price" class ="form-control" >
+     </div>
+
+
+     <div class="form-row field-category_image">
+            
+        <div>
+
+                <label class="required" for="id_product_image">Product image 1:</label>
+                
+                    <input type="file" name="image" accept="image/*" id="id_product_image">
+
+        </div>
+        <div>
+
+            <label class="required" for="id_product_image">Product image 2:</label>
+            
+                <input type="file" name="image" accept="image/*" id="id_product_image">
+
+    </div>
+    <div class="form-row field-category_image">
+            
+        <div>
+
+                <label class="required" for="id_product_image">Product image 3:</label>
+                
+                    <input type="file" name="image" accept="image/*" id="id_product_image">
+
+        </div>
+        <div>
+
+            <label class="required" for="id_product_image">Product image 4:</label>
+            
+                <input type="file" name="image" accept="image/*" id="id_product_image">
+
+    </div>
+    
+</div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form> 
+{% endblock content %}

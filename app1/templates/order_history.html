@@ -17,6 +17,7 @@
                     <th>Total</th>
                     <th>payment type</th>
                     <th>order status</th>
+                    <th>return status</th>
                    
                 </tr>
             </thead>
@@ -28,19 +29,34 @@
                     <td>{{ order.address }}</td>
                     <td>{{ order.date_ordered }}</td>
                     <td>{{order.total}}</td> 
-                    <td>{{ order.payment_type }}</td>                    
+                    <td>{{ order.payment_type }}</td>
+
                     <td>
                         {% if order.order_status == 'delivered' %}
                             Delivered
-                            <td id="order{{order.id}}"><button class="btn delete-btn btn-danger" data-category-id="{{ order.id }}">Return</button>
+                            <td ><button type="button" onclick="returnOrder({{ order.id }})"  class="btn btn-danger" data-category-id="{{ order.id }}">Return</button>
                         {% else %}
-                            Cancelled
-                            <td><span class="text-secondary"> Return</span></td>
+                            returned
+                            <td><button type="button" class="btn btn-secondary" disabled>Order returned</button></td>
+
                         {% endif %}
                     </td>
+                    
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+
+    <script>
+        function returnOrder(orderId) {
+            const confirmation = confirm('Are you sure you want to return this order?');
+            if (confirmation) {
+                window.location.href = `/return_order/${orderId}/`;
+            }
+        }
+    </script>
+    
+    
     {% endblock main-content %}

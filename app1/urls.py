@@ -60,6 +60,7 @@ urlpatterns = [
     path('changepassword/',views.changepassword,name = 'changepassword'),
     path('userorder_items/<int:order_id>/"',views.userorder_items,name = 'userorder_items'),
     path('cancel_order/<int:order_id>/', views.cancel_order, name='cancel_order'),
+    path('return_order/<int:order_id>/', views.return_order, name='return_order'),
     path('coupon/', views.admin_coupon, name='admin_coupon'),
     path('coupon_adminadd/', views.coupon_adminadd, name='coupon_adminadd'),
     path('category/', views.category_view, name='category_view'),
@@ -73,13 +74,14 @@ urlpatterns = [
     path('category/', views.category_view, name='category'),
     path("add_category/",views.add_category,name = 'add_category'),
     path("add_product/",views.add_product,name = 'add_product'),
+
+    path('admin_variant/',views.admin_variant, name='admin_variant') ,
+    path("add_variant/",views.add_variant,name = 'add_variant'),
+    
     path("salesreport/",views.salesreport,name = 'salesreport'),
     path("cancelreport/",views.cancelreport,name = 'cancelreport'),
     path("stockreport/",views.stockreport,name = 'stockreport'),
-
     path("edit_variant/<int:variant_id>/",views.edit_variant,name = 'edit_variant'),
-
-
     path('generate_invoice/<int:order_id>/', views.generate_invoice, name='generate_invoice'),
     path('download_invoice/<int:order_id>/', views.download_invoice, name='download_invoice'),
     path('edit_category/<int:category_id>/', views.edit_category, name='edit_category'),

@@ -13,12 +13,10 @@
                                 <th>Total</th>
                                 <th>payment type</th>
                                 <th>order status</th>
-                                
                                 <th>Order Date</th>
                                 <th>Order Details</th>
-                                
                                 <th>Cancel order</th>
-                                <th>Download Invoice</th>  <!-- Add this header for the Download Invoice column -->
+                                <th>Download Invoice</th> 
                             </tr>
                         </thead>
                         <tbody>
@@ -30,11 +28,9 @@
                                 <td>{{ order.total }}</td>
                                 <td>{{ order.payment_type }}</td>
                                 <td>{{order.order_status}}</td>
-
-                    
-
-
                                 <td>{{order.date_ordered }}</td>
+
+                                
                             <td><a href="{% url 'userorder_items' order.id %}">view order details</a></td>
 
                             {% if order.order_status != 'cancelled' %}
