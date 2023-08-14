@@ -99,13 +99,10 @@ def user_login(request):
         if request.method == 'POST':
             username = request.POST.get('username')
             password = request.POST.get('password')
-
             if not username.strip() or not password.strip():
                 return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
-
             try:
                 user = custom_user.objects.get(username=username, password=password)
-
                 if user is not None:
                     if not user.is_superuser:
                         if user.status:
@@ -115,10 +112,8 @@ def user_login(request):
                             return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
                     else:
                         return render(request, 'admin_home.html')
-
             except custom_user.DoesNotExist:
                 return render(request, 'user_login.html', {'user404': 'Wrong credentials'})
-
     return render(request, 'user_login.html')
 
 
@@ -1236,7 +1231,7 @@ def delete_category(request, category_id):
     if request.method == 'POST':  
         categoryobj.delete()     
         return redirect('category')
-    # return render(request, 'delete_category.html', {'category': categoryobj})
+   
 
 
 def delete_size(request, size_id):
@@ -1442,6 +1437,15 @@ def edit_variant(request,variant_id):
     #     variant_obj.save()
     #     return redirect('variant_admin')
     return render(request, 'edit_variant.html')
+
+
+def delete_variant(request,variant_id):   
+    variant_obj = Variant.objects.get(id= variant_id)
+    if request.method == 'POST':  
+        variant_obj.delete()     
+        return redirect('admin_variant')
+  
+   
 
 
 

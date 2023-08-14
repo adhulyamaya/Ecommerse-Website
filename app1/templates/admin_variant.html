@@ -15,6 +15,7 @@
                     <th>Product</th>
                     <th>Color</th>
                     <th>Size</th>
+                    <th>image</th>
                     <th>Edit</th>
                     <th>Delete</th>
                     
@@ -32,11 +33,12 @@
                     <td>{{ variant.Product }}</td>
                     <td>{{ variant.Color }}</td>
                     <td>{{ variant.Size }}</td>
+                    <td><img src="{{ variant.image1.url }}" ></td>
                      <td>
                         <a href="{% url 'edit_variant' variant.id  %}" class="btn btn-sm btn-primary">Edit</a>
                     </td> 
                      <td>
-                        <form method="POST" action="">
+                        <form method="POST" action="{% url 'delete_variant' variant.id  %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                         </form>

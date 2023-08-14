@@ -88,13 +88,15 @@ urlpatterns = [
     path('edit_coupon/<int:coupon_id>/', views.edit_coupon, name='edit_coupon'),
     # path('update_category/<int:category_id>/', views.update_category, name='update_category'),
     path('delete_category/<int:category_id>/', views.delete_category, name='delete_category'),
+    path('delete/<int:product_id>/',views.delete_product, name='delete_product'),
     path('delete_color/<int:color_id>/',views.delete_color, name='delete_color'),
     path('delete_coupon/<int:coupon_id>/', views.delete_coupon, name='delete_coupon'),
     path('delete_size/<int:size_id>/', views.delete_size, name='delete_size'),
     path('admin_user/<int:user_id>/', views.block_unblock_user, name='block_unblock_user'),
     path('edit/<int:product_id>/', views.edit_product, name='edit_product'),
     path('edit_order/<int:order_id>/', views.edit_order, name='edit_order'),
-    path('delete/<int:product_id>/',views.delete_product, name='delete_product'),
+
+    path('delete_variant/<int:variant_id>/',views.delete_variant, name='delete_variant'),
    
     path('color_admin',views.color_admin, name='color_admin'),
     path('color_adminadd/',views.color_adminadd, name='color_adminadd'),
