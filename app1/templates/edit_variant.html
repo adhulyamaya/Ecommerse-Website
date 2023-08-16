@@ -1,11 +1,68 @@
+
+
 {% extends 'admin_home.html' %}
 {% load static %}
 
 {% block content %}
 
+<form method="POST" action="{% url 'edit_variant' variant_obj.id %}" enctype="multipart/form-data">
+    {% csrf_token %}
 
+    <div class="form-group">
+        <label for="name">Variant</label>
+        <input type="text" name="variant" value="{{ variant_obj.variant }}" class="form-control">
+    </div>
 
+    <div class="form-group">
+        <label for="product">Product</label>
+        <select name="product" class="form-control">
+            {% for p in productobj %}
+            <option {% if p.id == variant_obj.product.id %}selected{% endif %}>{{ p.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    {% comment %} <div class="form-group">
+        <label for="color">Color</label>
+        <select name="color" class="form-control">
+            {% for c in colorobj %}
+            <option {% if c.id == variant_obj.color.id %}selected{% endif %}>{{ c.color }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
+    <div class="form-group">
+        <label for="size">Size</label>
+        <select name="size" class="form-control">
+            {% for s in sizeobj %}
+            <option {% if s.id == variant_obj.size.id %}selected{% endif %}>{{ s.size }}</option>
+            {% endfor %}
+        </select>
+    </div> {% endcomment %}
+
+    <div class="form-group">
+        <label for="quantity">Quantity</label>
+        <input type="text" name="quantity" value="{{ variant_obj.quantity }}" class="form-control">
+    </div>
+
+    <div class="form-group">
+        <label for="Price">Price</label>
+        <input type="text" name="price" value="{{ variant_obj.price }}" class="form-control">
+    </div>
+
+    <div class="form-row field-category_image">
+        <div>
+            <label class="required" for="image1">Product image 1:</label>
+            <input type="file" name="image1" accept="image/*" id="image1">
+        </div>
+        <!-- Repeat similar blocks for image2, image3, and image4 -->
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form> 
 
 {% endblock content %}
+
+
+
 

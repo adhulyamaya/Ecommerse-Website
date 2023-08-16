@@ -40,7 +40,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.http import JsonResponse
 
-from datetime import datetime as dt
+from datetime import date, datetime as dt
 from datetime import datetime
 from django.http import FileResponse
 import io
@@ -1209,17 +1209,8 @@ def edit_category(request, category_id):
     if request.method == 'POST':  
         name = request.POST.get("category_name") 
         image = request.FILES.get("image")
-
         category_obj.name = name
-
-        # if image: 
-        #     category_obj.category_image = image
-        # print(image)
-        print(name,">>>>>>>>")
-        print(image,"__________________________________")
-        category_obj.category_image = image
-        # new_category = category(id=category_id, name=name,category_image = image )  
-
+        category_obj.category_image = image 
         category_obj.save() 
             
         return redirect('category_view')
@@ -1430,14 +1421,70 @@ def admin_variant(request):
 
 
 def edit_variant(request,variant_id):
-    # variant_obj = Variant.objects.get(id= variant_id)
-    # if request.method == 'POST':
-    #     new_variant = request.POST.get('variant')
-    #     variant_obj.variant = new_variant
-    #     variant_obj.save()
-    #     return redirect('variant_admin')
-    return render(request, 'edit_variant.html')
+    variant_obj = Variant.objects.get(id= variant_id)
+    # colorobj = Color.objects.all()
+    # sizeobj = Size.objects.all()
+    # productobj = Product.objects.all()
+    if request.method == 'POST':
+        new_variant = request.POST.get('variant')
+        Product = request.POST.get("Product") 
+        Color = request.POST.get("Color")
+        Size = request.POST.get("Size")
+        quantity = request.POST.get("quantity")
+        price = request.POST.get("price")
+        image1 = request.FILES.get("image1")
+        image2 = request.FILES.get("image2")
+        image3 = request.FILES.get("image3")
+        image4 = request.FILES.get("image4")
+        productobj = Product.objects.get(name=Product)
 
+        variant_obj.variant = new_variant
+        variant_obj.Product = Product
+        variant_obj.Color = Color
+        variant_obj.Size = Size
+        variant_obj.quantity = quantity
+        variant_obj.price = price
+        variant_obj.image1 = image1
+        variant_obj.image2 = image2
+        variant_obj.image3 = image3
+        variant_obj.image4 = image4
+        variant_obj.save()
+
+
+        return redirect('variant_admin')
+    return render(request, 'edit_variant.html',{'variant_obj': variant_obj,
+        
+        "productobj": productobj})
+
+def edit_product(request, product_id):
+    product = Product.objects.get(id=product_id)
+    categoryobjs = category.objects.all()
+    brandobjs = Brand.objects.all()
+    existing_image = product.image if product.image else None
+    if request.method == "POST":
+        name = request.POST.get('name')
+        brand = request.POST.get('brand')
+        cat = request.POST.get('category')
+        image = request.FILES.get('image')
+        description = request.POST.get('description')
+
+        catobj = category.objects.filter(name=cat).first()
+        
+        brandobj = Brand.objects.get(brand=brand)
+        
+        print(catobj,">>>>>>>",name,brandobj)
+        product.name=name
+        product.brand=brandobj
+        product.category=catobj
+        product.description=description
+        if image:
+            product.image=image
+        else:
+            product.image=existing_image
+        product.save()
+        return redirect(products)
+
+    return render(request, 'edit_product.html', {'product': product,'categoryobjs':categoryobjs,'brandobjs':brandobjs})
 
 def delete_variant(request,variant_id):   
     variant_obj = Variant.objects.get(id= variant_id)
@@ -1446,6 +1493,236 @@ def delete_variant(request,variant_id):
         return redirect('admin_variant')
   
    
+# def dashboard(request):
+#     return render(request,"dashboard.html")
+
+
+def dashboard(request):
+    if request.method == "POST":
+        startdate = request.POST.get("startdate")
+        enddate = request.POST.get("enddate")
+    else:
+        startdate = date(2023, 6, 1)
+        enddate = date(2023, 6, 30)
+
+    orderobjs = Order.objects.filter(date_ordered__range=(startdate, enddate))
+    itemobjs = OrderItems.objects.filter(order__in=orderobjs, variant__isnull=False)
+    
+    orderdict = {}
+    for item in itemobjs:
+        product_name = item.variant.Product.name
+        orderdict[product_name] = orderdict.get(product_name, 0) + item.quantity
+
+    top_product = None
+    if orderdict:
+        top_product = max(orderdict, key=orderdict.get)
+
+    returninitiatedobjs = Order.objects.filter(order_status='returned')
+    returned_items = OrderItems.objects.filter(order__in=returninitiatedobjs, variant__isnull=False)
+    
+    returndict = {}
+    for returned_item in returned_items:
+        product_name = returned_item.variant.Product.name
+        returndict[product_name] = returndict.get(product_name, 0) + 1
+
+    top_returned_product = None
+    if returndict:
+        top_returned_product = max(returndict, key=returndict.get)
+
+    context = {
+        "orderdict": orderdict,
+        "returndict": returndict,
+        "top_product": top_product,
+        "top_returned_product": top_returned_product,
+        "startdate": startdate,
+        "enddate": enddate,
+    }
+
+    return render(request, "dashboard.html", context)
+
+
+
+# from datetime import date
+# from django.shortcuts import render, redirect
+# from .models import Order
+
+# @never_cache 
+# def dashboard(request):
+#     if 'adminuser' in request.session:
+#         if request.method == "POST":
+#             startdate = request.POST.get("startdate")
+#             enddate = request.POST.get("enddate")
+#             orderobjs = Order.objects.filter(date_ordered__range=(startdate, enddate))
+#         else:
+#             startdate = date(2023, 6, 1)
+#             enddate = date(2023, 6, 30)
+#             orderobjs = Order.objects.filter(date_ordered__range=(startdate, enddate))
+        
+#         orderdict = {}
+#         for item in orderobjs:
+#             if item.variant.product.name not in orderdict:
+#                 orderdict[item.variant.product.name] = item.quantity
+#             else:
+#                 orderdict[item.variant.product.name] += item.quantity
+        
+#         try:
+#             top_count = max(orderdict.values())
+#         except ValueError:
+#             top_count = 0
+        
+#         top_product = None
+#         for key, value in orderdict.items():
+#             if value == top_count:
+#                 top_product = key
+#                 break
+        
+#         returninitiatedobjs = Order.objects.filter(order_status='returned')
+
+#         returndict = {}
+#         for order_item in returninitiatedobjs:
+#             product_name = order_item.variant.product.name
+#             if product_name not in returndict:
+#                 returndict[product_name] = 1
+#             else:
+#                 returndict[product_name] += 1
+        
+#         try:
+#             top_returned_count = max(returndict.values())
+#         except ValueError:
+#             top_returned_count = 0
+
+#         top_returned_product = None
+#         for key, value in returndict.items():
+#             if value == top_returned_count:
+#                 top_returned_product = key
+#                 break
+
+#         context = {
+#             "orderdict": orderdict,
+#             "returndict": returndict,
+#             "top_product": top_product,
+#             "top_returned_product": top_returned_product,
+#             "startdate": startdate,
+#             "enddate": enddate
+#         }
+#         return render(request, "dashboard.html", context)
+#     else:
+#         return redirect('adminlogin')
+
+
+# from django.shortcuts import render, redirect
+# from .models import Order
+
+# def dashboard(request):
+#     if "adminuser" in request.session:
+#         orderobjs = Order.objects.all()
+#         top_returned_product = None
+#         top_product = None
+#         top_count = None
+#         orderdict = {}
+        
+#         for order in orderobjs:
+#             for item in order.orderitems_set.all():  # Assuming related_name is set to "orderitems_set"
+#                 product_name = item.variant.product.name
+#                 if product_name not in orderdict:
+#                     orderdict[product_name] = item.quantity
+#                 else:
+#                     orderdict[product_name] += item.quantity
+        
+#         try:
+#             top_count = max(orderdict.values())
+#         except ValueError:
+#             pass
+        
+#         for key, value in orderdict.items():
+#             if value == top_count:
+#                 top_product = key
+#                 break
+        
+#         returninitiatedobjs = Order.objects.filter(order_status='returned')
+#         returndict = {}
+        
+#         for order in returninitiatedobjs:
+#             for item in order.orderitems_set.all():
+#                 product_name = item.variant.product.name
+#                 if product_name not in returndict:
+#                     returndict[product_name] = 1
+#                 else:
+#                     returndict[product_name] += 1
+        
+#         try:
+#             top_returned_count = max(returndict.values())
+#         except ValueError:
+#             pass
+        
+#         for key, value in returndict.items():
+#             if value == top_returned_count:
+#                 top_returned_product = key
+        
+#         context = {
+#             "orderdict": orderdict,
+#             "returndict": returndict,
+#             "top_product": top_product,
+#             "top_count": top_count,
+#             "top_returned_product": top_returned_product
+#         }
+        
+#         return render(request, "dashboard.html", context)
+#     else:
+#         return redirect('adminlogin')
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

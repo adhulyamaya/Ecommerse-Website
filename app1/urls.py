@@ -106,7 +106,7 @@ urlpatterns = [
     path('edit_size/<int:size_id>/',views.edit_size, name='edit_size'),
     path('razorupdateorder/',views.razorupdateorder, name='razorupdateorder'),
     
-
+    path("dashboard/",views.dashboard,name = 'dashboard'), 
     
     
 
