@@ -108,6 +108,6 @@ urlpatterns = [
     
     path("dashboard/",views.dashboard,name = 'dashboard'), 
     
-    
+    path("trial/",views.trial,name ='trial'), 
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

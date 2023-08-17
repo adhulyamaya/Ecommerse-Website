@@ -1,4 +1,6 @@
 
+
+
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -229,6 +231,23 @@ img {
 								<span class="fa fa-star"></span>
 							</div>
 							<span class="review-no">41 reviews</span>
+
+
+        {% for variant in variantobj %}
+        <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+          <div class="card product-item border-0 mb-4">
+            {% comment %} <a href="{% url 'variant_detail' product_id=product.id variant_id=variant.id %}"> {% endcomment %}
+              <img src="{{ variant.image1.url }}" alt="" class="card-img-top" style="height: 400px">
+            </a>
+            <div class="card-body">
+              <p class="card-title">{{ variant.variant }}</p>
+              <p class="card-text">Color: {{ variant.Color.color }}</p>
+              <p class="card-text">Size: {{ variant.Size.size }}</p>
+              <p class="card-text">Price: {{ variant.price }}</p> 
+            </div>
+          </div>
+        </div>
+      
 						</div>
 						<p class="product-description">{{ product.description }}</p>
 						<h4 class="price">current price: <span>{{ variant.price }}</span></h4>
@@ -251,15 +270,16 @@ img {
                                 <input type = "hidden" name="variant_id" value="{{ variant.id }}">
                             <button type="submit" class="like btn btn-default" >wishlist<span class="fa fa-heart"></span></button>
                             </form>
+
+                            {% endfor %}
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-  </body>
-</html> 
-
 
 
     
+</html> 
+
