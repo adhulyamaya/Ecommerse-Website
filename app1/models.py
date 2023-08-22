@@ -58,6 +58,19 @@ class Brand(models.Model):
     def __str__(self):
         return f"{self.id} - {self.brand}" 
     
+
+class Offer(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    offer_type = models.CharField(max_length=20, choices=[('percentage', 'Percentage'), ('fixed_amount', 'Fixed Amount')])
+    discount = models.FloatField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    
+    def __str__(self):
+        return self.name
+    
+    
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -66,9 +79,15 @@ class Product(models.Model):
     description = models.TextField()
     sales_count = models.PositiveIntegerField(default=0)
     wardrobe_essential = models.BooleanField(default=False)
+    offer = models.ForeignKey(Offer, on_delete=models.SET_NULL, blank=True, null=True)
     image = models.ImageField(blank=True, upload_to='images/')  
     def __str__(self):
         return self.name
+    
+
+
+
+
 class Variant(models.Model):
     id = models.AutoField(primary_key=True)
     variant = models.CharField(max_length=100,blank= True,null= True)
@@ -77,12 +96,16 @@ class Variant(models.Model):
     Size = models.ForeignKey(Size,on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     price = models.FloatField(default=0) 
+    offer = models.ForeignKey(Offer, on_delete=models.SET_NULL, blank=True, null=True)
     image1 = models.ImageField(blank=True, upload_to='images/') 
     image2 = models.ImageField(blank=True, upload_to='images/') 
     image3 = models.ImageField(blank=True, upload_to='images/') 
     image4 = models.ImageField(blank=True, upload_to='images/') 
+
     def __str__(self):
         return self.variant
+    
+
 
 class Coupon(models.Model):
     coupon_code= models.CharField(max_length=100 ,blank=True,null = True)
@@ -100,6 +123,7 @@ class Cart(models.Model):
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL,null=True,blank= True)
     discount_price= models.DecimalField(max_digits=10,decimal_places=2,default=0)
     quantity = models.PositiveIntegerField(default=1)
+    offer = models.ForeignKey(Offer, on_delete=models.SET_NULL, null=True, blank=True) 
     
     def total_cost(self):
         return self.quantity * self.variant.price  

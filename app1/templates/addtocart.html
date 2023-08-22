@@ -3,18 +3,14 @@
 {% block tittle%} cart {% endblock tittle %}
 
 {% block main-content %}
-
-
 <div class="container mr-10 mt-4">
-    <div class="col-lg-10  mb-5">
-        
+    <div class="col-lg-10  mb-5">        
         <table class="table table-bordered text-center mb-2" >
             <thead class="bg-secondary text-dark">
                 <tr>
                     <th>Products</th>
                     <th>Price</th>
                     <th>Quantity</th>
-                    {% comment %} <th>Total</th> {% endcomment %}
                     <th>Remove</th>
                 </tr>
             </thead>
@@ -25,17 +21,28 @@
                         <img src="{{ item.variant.image1.url }}"  alt="" class="" style="height: 100px; width: 100px;">
 
                     </td>
-                    <td class="align-middle">
+                    {% comment %} <td class="align-middle">
                         <p class="card-text">Price: {{ item.variant.price }}</p>
-                    </td>
+                    </td> {% endcomment %}
+
+
+                   <td class="align-middle">
+                {% if item.variant.Product.offer %}
+                    <p class="card-text">
+                        Price: <s>₹ {{ item.variant.price }}</s> ₹ {{ item.variant.discounted_price }}
+                    </p>
+                {% else %}
+                    <p class="card-text">Price: ₹ {{ item.variant.price }}</p>
+                {% endif %}
+            </td>
+                    
                     <td class="align-middle">
                       
                             <div class="p-3 ml-4 align-middle">
                                 <a href="{% url 'cart_dec' item.id %}" class="mr-2" style="color: black;">
                                     <i class="fa fa-minus"></i>
                                 </a>
-                            
-                            {% comment %} <input type="text" class="form-control form-control-sm  text-center" value="{{ item.quantity }}"> {% endcomment %}
+        
                             {{item.quantity}}
                           
                                 <a href="{% url 'cart_inc' item.id %}" class="ml-2" style="color: black;">
@@ -46,7 +53,7 @@
                     </td>
                     
                     <td class="align-middle">
-                        <a href="{% url 'cart_remove' item.id %}" class="btn btn-dark" onclick="return confirm('Do you want to remove this product from the cart?');">
+                        <a href="{% url 'cart_remove' item.id %}" class="btn btn-danger" onclick="return confirm('Do you want to remove this product from the cart?');">
                             <i class="fa fa-times"></i>
                         </a>
                         

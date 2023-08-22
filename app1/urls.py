@@ -57,6 +57,7 @@ urlpatterns = [
     path('view_order/',views.view_order,name = 'view_order'),
     path('order_history/',views.order_history,name = 'order_history'),
     path('product/<int:product_id>/variant/<int:variant_id>/', views.variant_detail, name='variant_detail'),
+    # path('get_variant_info/',views.get_variant_info,name="get_variant_info"),
     path('changepassword/',views.changepassword,name = 'changepassword'),
     path('userorder_items/<int:order_id>/"',views.userorder_items,name = 'userorder_items'),
     path('cancel_order/<int:order_id>/', views.cancel_order, name='cancel_order'),

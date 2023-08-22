@@ -323,6 +323,36 @@ def shop_before(request):
     return render (request,"shop_before.html",context)
 
 
+# def product_detail(request, product_id):
+#     product = Product.objects.get(id=product_id)
+#     colobj = Color.objects.all()
+#     sizeobj = Size.objects.all()
+#     variants = Variant.objects.filter(Product=product)
+#     sizes = Variant.objects.filter(Product=product).values_list('Size__size', flat=True).distinct()
+#     colors = Variant.objects.filter(Product=product).values_list('Color__color', flat=True).distinct()
+
+#     # Handle form submission
+#     if request.method == 'POST':
+#         selected_colors = request.POST.getlist('color')
+#         selected_size = request.POST.get('size')
+
+#         if selected_colors:
+#             variants = variants.filter(Color__id__in=selected_colors)
+
+#         if selected_size:
+#             variants = variants.filter(Size__id=selected_size)
+
+#     context = {
+#         'product': product,
+#         'sizes': sizes,
+#         'colors': colors,
+#         'variants': variants,
+#         'colobj': colobj,
+#         'sizeobj': sizeobj,
+#     }
+#     return render(request, 'product_detail.html', context)
+
+
 def product_detail(request, product_id):
     product = Product.objects.get(id=product_id)
     colobj = Color.objects.all()
@@ -342,6 +372,17 @@ def product_detail(request, product_id):
         if selected_size:
             variants = variants.filter(Size__id=selected_size)
 
+    if product.offer:
+        for variant in variants:
+            if product.offer.offer_type == 'percentage':
+                discounted_price = variant.price - (variant.price * product.offer.discount / 100)
+            elif product.offer.offer_type == 'fixed_amount':
+                discounted_price = variant.price - product.offer.discount
+            variant.discounted_price = max(discounted_price, 0)  
+    else:
+        for variant in variants:
+            variant.discounted_price = variant.price
+
     context = {
         'product': product,
         'sizes': sizes,
@@ -354,30 +395,93 @@ def product_detail(request, product_id):
 
 
 
-def product_detail(request, product_id):
-    product = Product.objects.get(id=product_id)
-    colobj = Color.objects.all()
-    sizeobj = Size.objects.all()
-    variants = Variant.objects.filter(Product=product)
-    sizes = Variant.objects.filter(Product=product).values_list('Size__size', flat=True).distinct()
-    colors = Variant.objects.filter(Product=product).values_list('Color__color', flat=True).distinct()
-    selected_color = request.POST.getlist('colors')
 
-    selected_color = request.POST.getlist('colors')
-    if selected_color:
-        variants = variants.filter(Color__id__in=selected_color)
+# def product_detail(request, product_id):
+#     product = Product.objects.get(id=product_id)
+#     colobj = Color.objects.all()
+#     sizeobj = Size.objects.all()
+#     variants = Variant.objects.filter(Product=product)
+#     sizes = Variant.objects.filter(Product=product).values_list('Size__size', flat=True).distinct()
+#     colors = Variant.objects.filter(Product=product).values_list('Color__color', flat=True).distinct()
+#     selected_color = request.POST.getlist('colors')
+
+#     selected_color = request.POST.getlist('colors')
+#     if selected_color:
+#         variants = variants.filter(Color__id__in=selected_color)
     
-    selected_size = request.POST.get('size')
-    if selected_size:
-        variants = variants.filter(Size__id__in = selected_size)   
-    context = {'product': product, 'sizes': sizes, 'colors': colors,'variants': variants,"colobj":colobj,"sizeobj":sizeobj}
-    return render(request, 'product_detail.html',context)
-
-
+#     selected_size = request.POST.get('size')
+#     if selected_size:
+#         variants = variants.filter(Size__id__in = selected_size)   
+#     context = {'product': product, 'sizes': sizes, 'colors': colors,'variants': variants,"colobj":colobj,"sizeobj":sizeobj}
+#     return render(request, 'product_detail.html',context)
 def variant_detail(request, product_id, variant_id):
     product = get_object_or_404(Product, id=product_id)
     variant = get_object_or_404(Variant, id=variant_id, Product=product)
-    return render(request, 'variants.html', {'product': product, 'variant': variant})
+
+    colorobj = Color.objects.all()
+    sizeobj = Size.objects.all()
+    print("Variant Price:", variant.price)
+    print("Offer:", variant.offer)
+
+    if product.offer:
+        print("Product Offer Type:", product.offer.offer_type)
+        print("Product Offer Discount:", product.offer.discount)
+
+        if product.offer.offer_type == 'percentage':
+            offer_price = variant.price * (1 - product.offer.discount / 100)
+        elif product.offer.offer_type == 'fixed_amount':
+            offer_price = variant.price - product.offer.discount
+        else:
+            offer_price = variant.price
+        offer_price = max(offer_price, 0)
+        print("Calculated Offer Price from Product Offer:", offer_price)
+    else:
+        offer_price = variant.price
+        print("No Product Offer, Using Variant Price:", offer_price)
+
+    return render(request, 'variants.html', {'product': product, 'variant': variant, "colorobj": colorobj,
+                                             "sizeobj": sizeobj, 'offer_price': offer_price})
+
+
+# def variant_detail(request, product_id, variant_id):
+#     product = get_object_or_404(Product, id=product_id)
+#     variant = get_object_or_404(Variant, id=variant_id, Product=product)
+
+#     colorobj = Color.objects.all()
+#     sizeobj = Size.objects.all()
+#     print("Variant Price:", variant.price)
+#     print("Offer:", variant.offer)
+
+#     for variant in variant:
+#         if variant.Product.offer:
+#             if variant.Product.offer.offer_type == 'percentage':
+#                 discounted_price = variant.price - (variant.price * variant.Product.offer.discount / 100)
+#                 print(discounted_price,"..")
+#             elif variant.Product.offer.offer_type == 'fixed_amount':
+#                 discounted_price = variant.price - variant.Product.offer.discount
+#                 print(discounted_price,"............")
+#             variant.discounted_price = max(discounted_price, 0)  # Ensure the price is not negative
+#         else:
+#             variant.discounted_price = variant.price
+
+#     if variant.offer:
+#         print("Offer Type:", variant.offer.offer_type)
+#         print("Offer Discount:", variant.offer.discount)
+
+#         if variant.offer.offer_type == 'percentage':
+#             offer_price = variant.price * (1 - variant.offer.discount / 100)
+#         elif variant.offer.offer_type == 'fixed_amount':
+#             offer_price = variant.price - variant.offer.discount
+#         else:
+#             offer_price = variant.price
+#         offer_price = max(offer_price, 0)
+#         print("Calculated Offer Price:", offer_price)
+#     else:
+#         offer_price = variant.price
+#         print("No Offer, Using Original Price:", offer_price)
+#     return render(request, 'variants.html', {'product': product, 'variant': variant,"colorobj":colorobj,"sizeobj":sizeobj,
+#                                              'offer_price': offer_price})
+    
 
 
 def user_profile(request):
@@ -480,7 +584,7 @@ def add_to_cart(request):
 #       value = i.quantity * i.variant.price
 #       amount = amount + value
 #       total = amount +40
-#       quantityobj +=i.quantity
+#       quantityobj +=i.quantityshow_cart
 #   return render (request,'addtocart.html',{'cart': cart,'total':total,'amount':amount,
 #                                            'quantityobj':quantityobj,"cart_count":cart_count})
 
@@ -488,7 +592,6 @@ def add_to_cart(request):
 
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-
 
 
 def show_cart(request):
@@ -510,35 +613,93 @@ def show_cart(request):
 
             cart_item.coupon = couponobj[0]
             cart_item.save()
-            # messages.success(request, 'Coupon applied successfully!')
         messages.success(request, f'Coupon applied successfully! Discount Price: {couponobj[0].discount_price}')
 
     amount = 0
     quantityobj = 0
     for cart_item in cart_items:
-        value = cart_item.quantity * cart_item.variant.price
-        amount += value
+        if cart_item.variant.offer:
+            if cart_item.variant.offer.offer_type == 'percentage':
+                discounted_price = cart_item.variant.price * (1 - cart_item.variant.offer.discount / 100)
+                print(discounted_price ,"ooooooooo")
+            elif cart_item.variant.offer.offer_type == 'fixed_amount':
+                discounted_price = cart_item.variant.price - cart_item.variant.offer.discount
+                print(discounted_price,"llllllllll")
+            else:
+                discounted_price = cart_item.variant.price
+                print(discounted_price)
+            item_price = discounted_price * cart_item.quantity
+            print(item_price,"kkkkkk")
+        else:
+            item_price = cart_item.variant.price * cart_item.quantity
+
+            print(item_price,"mmmmmm")
+
+        cart_item.item_price = item_price   
+
+        amount += item_price
         quantityobj += cart_item.quantity
 
     coupon_discount = 0
     if couponobj and couponobj.exists(): 
-        print(couponobj,",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")
         coupon_discount = couponobj[0].discount_price
-        print(coupon_discount,"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-        amount =Decimal(amount) - coupon_discount
-        print (amount)
-
+        amount = Decimal(amount) - coupon_discount
+        print(amount)
     total = amount + 40
-    print(total,">>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-    context = {'cart': cart_items,
+    context = {
+        'cart': cart_items,
         'total': total,
         'amount': amount,
         'quantityobj': quantityobj,
         'coupon_discount': coupon_discount,
-        'cart_count': cart_count }
+        'cart_count': cart_count
+    }
 
-    return render(request, 'addtocart.html',context)
+    return render(request, 'addtocart.html', context)
+
+
+
+# def show_cart(request):
+#     username = custom_user.objects.get(username=request.session["username"])
+#     cart_items = Cart.objects.filter(username=username)
+#     cart_count = cart_items.count()
+#     couponobj = None
+#     if request.method == 'POST':
+#         coupon = request.POST.get("coupon")
+#         couponobj = Coupon.objects.filter(coupon_code__icontains=coupon)
+#         if not couponobj.exists():
+#             messages.warning(request, 'Invalid Coupon')
+#             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+#         for cart_item in cart_items:
+#             if cart_item.coupon:
+#                 messages.warning(request, 'Coupon already applied')
+#                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+#             cart_item.coupon = couponobj[0]
+#             cart_item.save()
+#         messages.success(request, f'Coupon applied successfully! Discount Price: {couponobj[0].discount_price}')
+#     amount = 0
+#     quantityobj = 0
+#     for cart_item in cart_items:
+#         value = cart_item.quantity * cart_item.variant.price
+#         amount += value
+#         quantityobj += cart_item.quantity
+
+#     coupon_discount = 0
+#     if couponobj and couponobj.exists(): 
+#         coupon_discount = couponobj[0].discount_price
+#         amount =Decimal(amount) - coupon_discount
+#         print (amount)
+#     total = amount + 40
+
+#     context = {'cart': cart_items,
+#         'total': total,
+#         'amount': amount,
+#         'quantityobj': quantityobj,
+#         'coupon_discount': coupon_discount,
+#         'cart_count': cart_count }
+
+#     return render(request, 'addtocart.html',context)
 
 
 
@@ -655,6 +816,12 @@ def user_product(request, Category_id):
        
     }
     return render(request, 'user_product.html', context)
+
+
+
+
+
+
 
 def contact(request):
     return render(request,"contact.html")

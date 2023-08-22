@@ -52,7 +52,17 @@
               <p class="card-title">{{ variant.variant }}</p>
               <p class="card-text">Color: {{ variant.Color.color }}</p>
               <p class="card-text">Size: {{ variant.Size.size }}</p>
+
               <p class="card-text">Price: {{ variant.price }}</p> 
+
+
+            {% if variant.Product.offer %}
+                
+              <p class="card-text">Price: <s>{{ variant.price }}</s> {{ variant.discounted_price }}</p>
+                       
+            {% endif %}
+            
+
             </div>
           </div>
         </div>
@@ -60,6 +70,7 @@
       </div>
     </div>
   </div>
+  
     
 
 

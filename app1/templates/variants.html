@@ -20,6 +20,8 @@
     <script src="{% static 'app/magiczoom/magiczoom.js' %}"></script>
     {% comment %} <script src="{% static 'app/magiczoom/magiczoom.cs' %}"></script> {% endcomment %}
     <link rel="stylesheet" href="{% static 'app/magiczoom/magiczoom.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 
 
@@ -231,15 +233,50 @@ img {
 							<span class="review-no">41 reviews</span>
 						</div>
 						<p class="product-description">{{ product.description }}</p>
+
 						<h4 class="price">current price: <span>{{ variant.price }}</span></h4>
+          
+            <h4 class="price">offer price: <span>{{ offer_price }}</span></h4>
+
 						<p class="vote"><p>Category: {{ product.category }}</p><strong> Brand: {{ product.brand }}</strong></p>
 						<h5 class="sizes">sizes:
 							<span class="size" data-toggle="tooltip" title="small">{{ variant.Size.size }}</span>
 							
 						</h5>
-						<h5 class="colors">colors:
-							<span class="color"> {{variant.Color.color }}</span>
+
+            <h5 class="sizes">color:
+							<span class="size" data-toggle="tooltip" title="small">{{ variant.Color.color }}</span>
+							
 						</h5>
+            <ul class="preview-thumbnail nav nav-tabs">
+						  <li class="active"><a data-target="#pic-1" data-toggle="tab"><img src="{{ variant.image1.url }}"  /></a></li>
+						  <li><a data-target="#pic-2" data-toggle="tab"><img src="{{ variant.image2.url  }}"/></a></li>
+              <li><a data-target="#pic-3" data-toggle="tab"><img src="{{ variant.image3.url  }}"/></a></li>
+              <li><a data-target="#pic-4" data-toggle="tab"><img src="{{ variant.image2.url  }}"/></a></li>
+						</ul> 
+
+            {% comment %} {% for c in colorobj %} {% endcomment %}
+							{% comment %} <span class="color"> {{variant.Color.color }}</span> {% endcomment %}
+              {% comment %} <span class="color"> {{c.color }}</span>
+						</h5>
+            {% endfor %} {% endcomment %}
+
+            {% comment %} <select class="form-control" id="sizeSelector_{{ variant.id }}">
+              <option value="" disabled selected>Select Size</option>
+              {% for s in sizeobj %}
+                  <option value="{{ s.id }}">{{ s.size }}</option>
+              {% endfor %}
+            </select>
+
+            <h5 class="colors">colors:
+            <select class="form-control" id="colorSelector_{{ variant.id }}">
+              <option value="" disabled selected>Select Color</option>
+              {% for c in colorobj %}
+                  <option value="{{ c.id }}">{{ c.color }}</option>
+              {% endfor %}
+            </select>
+           {% endcomment %}
+
 						<div class="action">
                             <form action="{% url 'add-to-cart' %}" method="POST" class="d-inline">
                                 {% csrf_token %}
@@ -257,6 +294,63 @@ img {
 			</div>
 		</div>
 	</div>
+
+
+
+
+
+
+  {% comment %} <script>
+    $(document).ready(function() {
+        {% for variant in variants %}
+        $('#colorSelector_{{ variant.id }}').change(function() {
+            var selectedColorId = $(this).val();
+    
+            if (selectedColorId) {
+                $.ajax({
+                    url: `/get_variant_details_by_color/${selectedColorId}/`, // Adjust the URL
+                    method: 'GET',
+                    success: function(data) {
+                        $('#variantDetails_{{ variant.id }}').html(data);
+                    },
+                    error: function() {
+                        console.log('Error fetching variant details.');
+                    }
+                });
+            } else {
+                $('#variantDetails_{{ variant.id }}').empty();
+            }
+        });
+        {% endfor %}
+    });
+    </script>
+
+    <script>
+      $(document).ready(function() {
+          {% for variant in variants %}
+          $('#sizeSelector_{{ variant.id }}').change(function() {
+              var selectedSizeId = $(this).val();
+      
+              if (selectedSizeId) {
+                  $.ajax({
+                      url: `/get_variant_details_by_size/${selectedSizeId}/`, // Adjust the URL
+                      method: 'GET',
+                      success: function(data) {
+                          $('#variantDetails_{{ variant.id }}').html(data);
+                      },
+                      error: function() {
+                          console.log('Error fetching variant details.');
+                      }
+                  });
+              } else {
+                  $('#variantDetails_{{ variant.id }}').empty();
+              }
+          });
+          {% endfor %}
+      });
+      </script> {% endcomment %}
+      
+    
   </body>
 </html> 
 
