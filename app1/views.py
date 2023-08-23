@@ -274,14 +274,9 @@ def shop(request):
     user = custom_user.objects.get(username=username)
     wishlistobj = Wishlist.objects.filter(username=user)
     wishlist_count = wishlistobj.count()
-
     products = Product.objects.all()
     brands = Brand.objects.all()
-    
-
-
-           
-
+  
     sort_param = request.GET.get('sort')
     if sort_param == 'atoz':
         products = products.order_by('name')
@@ -361,7 +356,6 @@ def product_detail(request, product_id):
     sizes = Variant.objects.filter(Product=product).values_list('Size__size', flat=True).distinct()
     colors = Variant.objects.filter(Product=product).values_list('Color__color', flat=True).distinct()
 
-    # Handle form submission
     if request.method == 'POST':
         selected_colors = request.POST.getlist('color')
         selected_size = request.POST.get('size')
@@ -394,26 +388,6 @@ def product_detail(request, product_id):
     return render(request, 'product_detail.html', context)
 
 
-
-
-# def product_detail(request, product_id):
-#     product = Product.objects.get(id=product_id)
-#     colobj = Color.objects.all()
-#     sizeobj = Size.objects.all()
-#     variants = Variant.objects.filter(Product=product)
-#     sizes = Variant.objects.filter(Product=product).values_list('Size__size', flat=True).distinct()
-#     colors = Variant.objects.filter(Product=product).values_list('Color__color', flat=True).distinct()
-#     selected_color = request.POST.getlist('colors')
-
-#     selected_color = request.POST.getlist('colors')
-#     if selected_color:
-#         variants = variants.filter(Color__id__in=selected_color)
-    
-#     selected_size = request.POST.get('size')
-#     if selected_size:
-#         variants = variants.filter(Size__id__in = selected_size)   
-#     context = {'product': product, 'sizes': sizes, 'colors': colors,'variants': variants,"colobj":colobj,"sizeobj":sizeobj}
-#     return render(request, 'product_detail.html',context)
 def variant_detail(request, product_id, variant_id):
     product = get_object_or_404(Product, id=product_id)
     variant = get_object_or_404(Variant, id=variant_id, Product=product)
@@ -442,45 +416,6 @@ def variant_detail(request, product_id, variant_id):
     return render(request, 'variants.html', {'product': product, 'variant': variant, "colorobj": colorobj,
                                              "sizeobj": sizeobj, 'offer_price': offer_price})
 
-
-# def variant_detail(request, product_id, variant_id):
-#     product = get_object_or_404(Product, id=product_id)
-#     variant = get_object_or_404(Variant, id=variant_id, Product=product)
-
-#     colorobj = Color.objects.all()
-#     sizeobj = Size.objects.all()
-#     print("Variant Price:", variant.price)
-#     print("Offer:", variant.offer)
-
-#     for variant in variant:
-#         if variant.Product.offer:
-#             if variant.Product.offer.offer_type == 'percentage':
-#                 discounted_price = variant.price - (variant.price * variant.Product.offer.discount / 100)
-#                 print(discounted_price,"..")
-#             elif variant.Product.offer.offer_type == 'fixed_amount':
-#                 discounted_price = variant.price - variant.Product.offer.discount
-#                 print(discounted_price,"............")
-#             variant.discounted_price = max(discounted_price, 0)  # Ensure the price is not negative
-#         else:
-#             variant.discounted_price = variant.price
-
-#     if variant.offer:
-#         print("Offer Type:", variant.offer.offer_type)
-#         print("Offer Discount:", variant.offer.discount)
-
-#         if variant.offer.offer_type == 'percentage':
-#             offer_price = variant.price * (1 - variant.offer.discount / 100)
-#         elif variant.offer.offer_type == 'fixed_amount':
-#             offer_price = variant.price - variant.offer.discount
-#         else:
-#             offer_price = variant.price
-#         offer_price = max(offer_price, 0)
-#         print("Calculated Offer Price:", offer_price)
-#     else:
-#         offer_price = variant.price
-#         print("No Offer, Using Original Price:", offer_price)
-#     return render(request, 'variants.html', {'product': product, 'variant': variant,"colorobj":colorobj,"sizeobj":sizeobj,
-#                                              'offer_price': offer_price})
     
 
 
@@ -558,40 +493,15 @@ def add_to_cart(request):
     variant = Variant.objects.get(id=variant_id)
     try:
         cart_item = Cart.objects.get(username=username, variant=variant)
-        # If the variant exists, increment the quantity
         cart_item.quantity += 1
         cart_item.save()
     except Cart.DoesNotExist:
-        # If the variant does not exist, create a new cart item
         cart_item = Cart(username=username, variant=variant, quantity=1)
         cart_item.save()
-
-        print(cart_item,"achuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
-    # cart = Cart(username=username, variant=variant,quantity = 1)
-    # cart.save()
     return redirect("show-cart")
 
-
-
-
-# def show_cart(request):
-#   username=custom_user.objects.get(username=request.session["username"])
-#   cart = Cart.objects.filter(username = username)
-#   cart_count = Cart.objects.filter(username = username).count()
-#   amount = 0
-#   quantityobj=0
-#   for i in cart:
-#       value = i.quantity * i.variant.price
-#       amount = amount + value
-#       total = amount +40
-#       quantityobj +=i.quantityshow_cart
-#   return render (request,'addtocart.html',{'cart': cart,'total':total,'amount':amount,
-#                                            'quantityobj':quantityobj,"cart_count":cart_count})
-
-
-
-from django.contrib import messages
-from django.http import HttpResponseRedirect
+# from django.contrib import messages
+# from django.http import HttpResponseRedirect
 
 
 def show_cart(request):
@@ -614,31 +524,27 @@ def show_cart(request):
             cart_item.coupon = couponobj[0]
             cart_item.save()
         messages.success(request, f'Coupon applied successfully! Discount Price: {couponobj[0].discount_price}')
-
     amount = 0
     quantityobj = 0
     for cart_item in cart_items:
-        if cart_item.variant.offer:
-            if cart_item.variant.offer.offer_type == 'percentage':
-                discounted_price = cart_item.variant.price * (1 - cart_item.variant.offer.discount / 100)
-                print(discounted_price ,"ooooooooo")
-            elif cart_item.variant.offer.offer_type == 'fixed_amount':
-                discounted_price = cart_item.variant.price - cart_item.variant.offer.discount
-                print(discounted_price,"llllllllll")
+        variant = cart_item.variant  # Get the variant associated with the cart item
+        product = variant.Product  # Get the product associated with the variant
+
+        if product.offer:
+            if product.offer.offer_type == 'percentage':
+                discounted_price = variant.price * (1 - product.offer.discount / 100)
+            elif product.offer.offer_type == 'fixed_amount':
+                discounted_price = variant.price - product.offer.discount
             else:
-                discounted_price = cart_item.variant.price
-                print(discounted_price)
+                discounted_price = variant.price
             item_price = discounted_price * cart_item.quantity
-            print(item_price,"kkkkkk")
         else:
-            item_price = cart_item.variant.price * cart_item.quantity
+            item_price = variant.price * cart_item.quantity
 
-            print(item_price,"mmmmmm")
-
-        cart_item.item_price = item_price   
-
+        cart_item.item_price = item_price
         amount += item_price
         quantityobj += cart_item.quantity
+
 
     coupon_discount = 0
     if couponobj and couponobj.exists(): 
@@ -657,50 +563,6 @@ def show_cart(request):
     }
 
     return render(request, 'addtocart.html', context)
-
-
-
-# def show_cart(request):
-#     username = custom_user.objects.get(username=request.session["username"])
-#     cart_items = Cart.objects.filter(username=username)
-#     cart_count = cart_items.count()
-#     couponobj = None
-#     if request.method == 'POST':
-#         coupon = request.POST.get("coupon")
-#         couponobj = Coupon.objects.filter(coupon_code__icontains=coupon)
-#         if not couponobj.exists():
-#             messages.warning(request, 'Invalid Coupon')
-#             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-#         for cart_item in cart_items:
-#             if cart_item.coupon:
-#                 messages.warning(request, 'Coupon already applied')
-#                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-#             cart_item.coupon = couponobj[0]
-#             cart_item.save()
-#         messages.success(request, f'Coupon applied successfully! Discount Price: {couponobj[0].discount_price}')
-#     amount = 0
-#     quantityobj = 0
-#     for cart_item in cart_items:
-#         value = cart_item.quantity * cart_item.variant.price
-#         amount += value
-#         quantityobj += cart_item.quantity
-
-#     coupon_discount = 0
-#     if couponobj and couponobj.exists(): 
-#         coupon_discount = couponobj[0].discount_price
-#         amount =Decimal(amount) - coupon_discount
-#         print (amount)
-#     total = amount + 40
-
-#     context = {'cart': cart_items,
-#         'total': total,
-#         'amount': amount,
-#         'quantityobj': quantityobj,
-#         'coupon_discount': coupon_discount,
-#         'cart_count': cart_count }
-
-#     return render(request, 'addtocart.html',context)
-
 
 
 def cart_inc(request,item_id):
@@ -734,7 +596,6 @@ import datetime
 
 def checkout(request):
   if "username" in request.session:
-    print(RAZORPAY_API_SECRET_KEY,"####################")
     username=custom_user.objects.get(username=request.session["username"])
     cartobj = Cart.objects.filter(username = username)
     addobj = Address.objects.filter(username = username)
@@ -853,13 +714,6 @@ def wishlist_remove(request,item_id):
     wishlistobj.delete()
     return redirect ("wishlist")
 
-
-
-
-
-
-
-
 def wallet(request):
     orderobj= Order.objects.filter(order_status='returned')
     context = {
@@ -892,16 +746,14 @@ def changepassword(request):
         return render(request, 'changepassword.html')
 
 
-
-
 def view_order(request):
-    orderobj = Order.objects.all()
-
+    username = request.session["username"]
+    userobj = custom_user.objects.get(username=username)   
+    orderobjs = Order.objects.filter(customer=userobj)    
     context = {
-        "orderobj":orderobj
-    }
-    return render(request, 'view_order.html',context )
-
+        "orderobjs": orderobjs,
+    }    
+    return render(request, 'view_order.html', context)
 
 
 def cancel_order(request, order_id):    
@@ -919,8 +771,6 @@ def return_order(request, order_id):
             order.order_status = 'returned'  
             order.save()
             return redirect('order_history')  
-      
-
 
 def userorder_items(request, order_id):
     orderobj = Order.objects.get(id=order_id)
@@ -932,8 +782,10 @@ def userorder_items(request, order_id):
 
 
 
-def order_history(request):
-    orders = Order.objects.filter(order_status__in=['delivered', 'cancelled'])
+def order_history(request): 
+    username = request.session["username"]
+    userobj = custom_user.objects.get(username=username) 
+    orders = Order.objects.filter(customer=userobj,order_status__in=['delivered', 'cancelled'])
     return render(request, 'order_history.html', {'orders': orders})
 
 

@@ -68,6 +68,7 @@ urlpatterns = [
     path('edit_category/<int:category_id>/', views.edit_category, name='edit_category'),
     
     path('admin_user/', views.admin_user, name='admin_user'),
+    
     path('products/',views.products, name='products'),
     path('admin_variant/',views.admin_variant, name='admin_variant'),
     path('orderadmin/',views.orderadmin, name='orderadmin'),

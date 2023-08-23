@@ -26,15 +26,14 @@
                     </td> {% endcomment %}
 
 
-                   <td class="align-middle">
-                {% if item.variant.Product.offer %}
-                    <p class="card-text">
-                        Price: <s>₹ {{ item.variant.price }}</s> ₹ {{ item.variant.discounted_price }}
-                    </p>
-                {% else %}
-                    <p class="card-text">Price: ₹ {{ item.variant.price }}</p>
-                {% endif %}
-            </td>
+                    <td>
+                        {% if item.variant.Product.offer %}
+                            <s>₹ {{ item.variant.price }}</s> ₹ {{ item.item_price }}
+                        {% else %}
+                            ₹ {{ item.variant.price }}
+                        {% endif %}
+                    </td>
+                    
                     
                     <td class="align-middle">
                       
@@ -65,6 +64,8 @@
     </div>
 </div>
 </div>
+
+
           
 
 <div class="container pt-0 sm-0">
