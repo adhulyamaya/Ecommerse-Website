@@ -639,6 +639,22 @@ def checkout(request):
 
     total_cost =Decimal(total_cost) - coupon_discount
 
+    for item in cartobj:
+       variant = item.variant
+       product = variant.Product
+
+    if product.offer:
+        if product.offer.offer_type == 'percentage':
+            discounted_price = variant.price * (1 - product.offer.discount / 100)
+        elif product.offer.offer_type == 'fixed_amount':
+            discounted_price = variant.price - product.offer.discount
+        else:
+            discounted_price = variant.price
+
+        item.discounted_price = discounted_price
+
+        total_cost = round(Decimal(discounted_price) * item.quantity + 40)
+
     client = razorpay.Client(
     auth=(RAZORPAY_API_KEY, RAZORPAY_API_SECRET_KEY))
     amount=int(total_cost*100)
