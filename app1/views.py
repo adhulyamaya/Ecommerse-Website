@@ -758,7 +758,8 @@ def changepassword(request):
 def view_order(request):
     username = request.session["username"]
     userobj = custom_user.objects.get(username=username)   
-    orderobjs = Order.objects.filter(customer=userobj)    
+    orderobjs = Order.objects.filter(customer=userobj) 
+
     context = {
         "orderobjs": orderobjs,
     }    
