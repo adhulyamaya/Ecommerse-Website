@@ -31,7 +31,7 @@
 <body>
     
   
-    <div class="row align-items-center py-1 px-xl-4">
+    <div class="row align-items-center py-1 px-xl-4" style=" background-color: aliceblue;">
         <div class="d-flex align-items-center">
             <div class="mr-5 d-none d-lg-block">
                 <a href="" class="text-decoration-none">
@@ -93,9 +93,9 @@
                     <form action="" method="POST" class="flex-grow-1">
                         {% csrf_token %}
                         <div class="input-group" style="width: 300px;">
-                            <input type="text" class="form-control" name="search" placeholder="Search...">
+                            <input type="text" class="form-control" name="search" placeholder="Search Category...">
                             <div class="input-group-append">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-secondary">
                                     <i class="fa fa-search"></i>
                                 </button>
                             </div>
@@ -109,9 +109,9 @@
                     <a href="#" class="nav-link dropdown-toggle " data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true"></i></a>
                     <div class="dropdown-menu rounded-0 m-0">
                         <a href="{% url 'user_profile' %}" class="dropdown-item">profile</a>
-                        <a href="{% url 'changepassword' %}" class="dropdown-item">change password</a>
-                        <a href="{% url 'logout' %}">
-                            <button type="button">logout</button>
+                        <a href="{% url 'changepassword' %}" class="dropdown-item">change password</a><br>
+                        <a href="{% url 'logout' %}" class="text-dark" style="margin-left: 15%; background-color: azure;">
+                           logout
                         </a>
                     </div>
                 </div>

@@ -27,7 +27,7 @@ import razorpay
 from PINKVILLA.settings import RAZORPAY_API_SECRET_KEY,RAZORPAY_API_KEY
 
 
-client=vonage.Client(key="23594a08",secret="asBI3u5U6nnRnMd6")
+client=vonage.Client(key="f08d1f71",secret="F0ZGgnFUWczQkXVm")
 sms=vonage.Sms(client)
 
 from django.contrib import messages
@@ -197,8 +197,7 @@ def signup(request):
         password = request.POST.get('password')
         cpassword = request.POST.get('cpassword')
         phone_number = request.POST.get("phone_number")
-        print(phone_number)
-
+       
         error = None
         if not name or name.strip() == '':
             error = 'Name is required.'
@@ -220,8 +219,8 @@ def signup(request):
             responseData = sms.send_message(
                 {
                     "from": "Vonage APIs",
-                    "to": "+918156814429",
-                    "text": f"Your OTP is: {otp}",
+                    "to": "+917907231472",
+                    "text": f"Pinkvilla .Your OTP is: {otp}",
                 }
             )
             if responseData["messages"][0]["status"] == "0":
@@ -235,7 +234,8 @@ def signup(request):
             print(form.username)
             form.save()
             request.session['otp'] = otp
-            return redirect('otp_grn')
+            request.session['username'] = name
+            return redirect(otp_grn)
             # return render(request, 'otplogin.html', {'otp': otp})
 
     else:
@@ -247,6 +247,8 @@ def otp_grn(request):
         otp= request.session['otp']
         if request.POST.get('otp') == otp:
             del request.session['otp']
+            username = request.session.get('username')
+            request.session['username'] = username
             return render(request, 'user_home.html')
         else:
             # OTP is invalid, render the OTP verification page again with an error message
@@ -260,8 +262,7 @@ def otp_grn(request):
 
 
 
-def otplogin(request):
-    return render(request, 'otplogin.html') 
+
 
 
 
@@ -538,6 +539,7 @@ def show_cart(request):
             else:
                 discounted_price = variant.price
             item_price = discounted_price * cart_item.quantity
+            item_price = round(item_price)   #using round function .. the item price is rounded
         else:
             item_price = variant.price * cart_item.quantity
 
@@ -609,34 +611,24 @@ def checkout(request):
             customer = custom_user.objects.get(username=username)
             cartobj = Cart.objects.filter(username = customer)
             addobj = Address.objects.filter(username = customer)
-
             addressflat = request.POST.get("address")
-            address = Address.objects.get(flat=addressflat,username=customer)
-       
-            date_ordered = datetime.today()
-            
-            
+            address = Address.objects.get(flat=addressflat,username=customer)       
+            date_ordered = datetime.today()            
             orderobj = Order(customer = customer, address=address, date_ordered=date_ordered, total = 0)
-            orderobj.save()
-        
+            orderobj.save()        
             for item in cartobj:
                 pdtvariant = item.variant
                 price = item.variant.price
                 quantity = item.quantity
                 item_total = quantity*price
-
                 orderitemobj = OrderItems(variant = pdtvariant, order = orderobj,
-                                            quantity=quantity, price=price, total = item_total)
-                    
+                                            quantity=quantity, price=price, total = item_total)                    
                 orderitemobj.save()
-                print(orderitemobj,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
                 pdtvariant.quantity -= quantity
                 pdtvariant.save()
-
                 orderobj.total += item_total
-
                 item.delete()
+                
             orderobj.save()
             print("Order successfully processed!")
             return redirect(ordersuccess) 
@@ -666,8 +658,11 @@ def checkout(request):
     return render (request,"checkout.html",context)
   
 
+
+
 def ordersuccess(request):
     return render (request,"ordersuccess.html")
+
 
 def user_product(request, Category_id):
     categoryobj=category.objects.get(id=Category_id)
@@ -680,15 +675,13 @@ def user_product(request, Category_id):
 
 
 
-
-
-
-
 def contact(request):
     return render(request,"contact.html")
 
+
 def about(request):
     return render(request,"about.html")
+
 
 def add_to_wishlist(request):
     username=custom_user.objects.get(username=request.session["username"])

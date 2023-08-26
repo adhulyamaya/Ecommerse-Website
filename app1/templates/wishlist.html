@@ -14,12 +14,13 @@
 <!-- Page Header End -->
 
 
-
-<div class="container pt-4 sm-8 ">
-    <div class="col-lg-8  mb-5 ml-5">
+{% comment %} 
+<div class="container pt-4 sm-8 "> {% endcomment %}
+    <div class="col-lg-10  mb-5 ml-5">
         
         <table class="table table-bordered text-center mb-0 ml-5 " style="">
-            <thead class="bg-secondary text-dark ">
+            <thead class="thead-dark">
+            {% comment %} <thead class="bg-secondary text-dark "> {% endcomment %}
                 <tr>
                     <th>Products</th>
                     <th>Name</th>
@@ -50,7 +51,7 @@
                 <tr>
                    
                     <td class="align-middle">
-                        <img src="{{ item.variant.image1.url }}" alt="">
+                        <img src="{{ item.variant.image1.url }}" alt=""   style="height: 100px; width: 100px;">
                     </td>
                     <td>{{item.variant.variant}}</td>
                     <td class="align-middle">

@@ -412,8 +412,8 @@ body{
 
 
 <!-- Page Header Start -->
- <div class="container-fluid bg-secondary mb-5">
-    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+ <div class="container-fluid bg-secondary mb-5" style="height:20vh ;">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 150px">
         <h1 class="font-weight-semi-bold text-uppercase mb-3">Checkout</h1>
         <div class="d-inline-flex">
             <p class="m-0"><a href="">Home</a></p>
@@ -427,83 +427,74 @@ body{
 <!-- Checkout Start -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <div class="container pb-5 mb-2">    
-      <div class="cart-item d-md-flex justify-content-between"><span class="remove-item"><i class="fa fa-times"></i></span>
+<div class="container pb-5 mb-2">
+  <div class="row">
+      <div class="col-md-7">
           {% for item in cartobj %}
-            <div class="px-3 my-3">
-                    <div class="cart-item-product-thumb">
+          <div class="cart-item d-md-flex justify-content-between mb-3">
+              <span class="remove-item"><i class="fa fa-times"></i></span>
+              <div class="d-flex flex-md-row flex-column px-3 my-3">
+                  <div class="cart-item-product-thumb">
                       <img src="{{ item.variant.image1.url }}" alt="" class="img-fluid">
-                    </div>
-                    <div class="cart-item-product-info">
-                        <h4 class="cart-item-product-title"> </h4>
-                        <span><strong>{{ item.variant.variant }}</strong> </span>
-                        <span><strong>Color:</strong> {{item.variant.Color}}</span>
-                        <span><strong>Size:</strong> {{item.variant.Size}}</span>
-                    </div>
-            </div>
-          <div class="px-3 my-3 text-center">
-              <div class="cart-item-label">Quantity:</div>
-                <div class="count-input">
-                  {{ item.quantity }}
-              </div>
-            </div>
-              <div class="px-3 my-3 text-center">
-              <div class="cart-item-label">Price:</div>
-              <div class="count-input">
-                {{ item.variant.price }}
-              </div>
-              
-          </div>
-        
-          {% endfor%}
-
-          <div class="px-3 my-3 text-center">
-              <div class="cart-item-label">Subtotal :</div>
-              <div id="total_cost" class="count-input">
-                {{total_cost}}
-              </div>
-          </div>
-        </div>
-    
-  <aside class =" col-md-7">
-    <div class = "card mb-3">
-        <div class = " card-body">
-          <form action="{% url 'checkout'  %}" method="POST" name="order_post">
-              {% csrf_token %}
-                          <div>
-                                  <p>Choose Address: </p>
-                                  <select id="addressid" name="address"> 
-                                      {% for address in addobj %}
-                                          <option value="{{ address.flat }}">{{ address.flat }}, {{ address.locality }}, {{ address.city }}</option>
-                                        
-                                      {% endfor %}
-                                  </select>
-                                  <br><br>
-                                <a class  href="{% url 'user_profile' %}">add new address</a> 
-                          </div>
+                  </div>
+                  <div class="cart-item-product-info mt-2 mt-md-0">
+                      <h4 class="cart-item-product-title">{{ item.variant.variant }}</h4>
+                      <span><strong>Color:</strong> {{item.variant.Color}}</span>
+                      <span><strong>Size:</strong> {{item.variant.Size}}</span>
+                      <div class="cart-item-label mt-2">Quantity: {{ item.quantity }}</div>
+                  </div>
+                  <div class="px-3 my-3 text-center">
+                      <div class="cart-item-label">Price:</div>
+                      <div class="count-input">
+                          {% if item.variant.Product.offer %}
+                          <s>₹ {{ item.variant.price }}</s> ₹ {{ item.item_price }}
+                          {% else %}
+                          ₹ {{ item.variant.price }}
+                          {% endif %}
                       </div>
                   </div>
-                  <br>  
-                </div>
-                <hr class="my-2">
-              <div class="row pt-3 pb-5 mb-2">
-              <div class="col-md-2">
-              <a class="btn btn-style-1 btn-primary btn-block" href="{% url 'shop' %}"><i class="fe-icon-refresh-ccw"></i>&nbsp;Update Cart</a>
               </div>
-
-              <div class="col-md-2">
-              <button type="submit" class="btn btn-style-1 btn-success btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;COD</button>
-              {% comment %} <button type="submit" class="btn btn-style-1 btn-success btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;pay with razorpay</button> {% endcomment %}
+          </div>
+          {% endfor %}
+      </div>
+      <div class="col-md-4"  >
+          <div class="px-3 my-3 text-center" style="border: 1px solid #ccc;padding: 30px;margin-top: 20px; background-color: #f8f9fa;">
+              <div class="cart-item-label">Subtotal :</div>
+              <div id="total_cost" class="count-input">
+                  {{total_cost}}
               </div>
-              {% comment %} <div class="col-md-3">
-                <button type="submit" class="btn btn-style-1 btn-primary btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;pay with razorpay</button>
-              </div> {% endcomment %}
-              <br>
-              <br>
-              <div class="col-md-2">
+          </div>
+          <form action="{% url 'checkout'  %}" method="POST" name="order_post">
+            {% csrf_token %}
+          <hr class="my-2">
+          <div class="px-3">
+              <p>Choose Address:</p>
+              <select id="addressid" name="address">
+                  {% for address in addobj %}
+                  <option value="{{ address.flat }}">{{ address.flat }}, {{ address.locality }}, {{ address.city }}</option>
+                  {% endfor %}
+              </select>
+              <br><br>
+              <a class="btn btn-style-1 btn-primary" href="{% url 'user_profile' %}">Add New Address</a>
+          </div>
+          <hr class="my-2">
+          <div class="px-3">
+              <a class="btn btn-style-1 btn-primary" href="{% url 'shop' %}"><i class="fe-icon-refresh-ccw"></i>&nbsp;Update Cart</a>
+          </div>
+          <hr class="my-2">
+          <div class="col-md-4">
+            <button type="submit" class="btn btn-style-1 btn-success btn-block" ><i class="fe-icon-credit-card"></i>&nbsp;COD</button>
+            </div>
+            <hr class="my-2">
+            <div class="col-md-6">
               <button type="submit" class="btn btn-style-1 btn-primary btn-block" id="rzp-button1">Execute with Razorpay</button>
-
               </div>
+      </div>
+  </div>
+</div>
+
+
+            
           </form> 
 
 </div>
@@ -522,9 +513,9 @@ var options = {
     "key": "{{api_key}}", // Enter the Key ID generated from the Dashboard
     "amount": "{{amount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
     "currency": "INR",
-    "name": "Acme Corp",
-    "description": "Test Transaction",
-    "image": "https://example.com/your_logo",
+    "name": "Pinkvilla",
+    "description": "Original Transaction",
+    "image": "https://i.pinimg.com/originals/ca/95/86/ca95869a038bf9903b7d181b7ab5c627.png",
     "order_id": "{{order_id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
     "handler": function (response){
       //var addressval=$("#addressdropdown").val()

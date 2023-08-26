@@ -25,9 +25,9 @@ urlpatterns = [
     path('shop/',views.shop, name='shop'),
 
     path('signup/', views.signup, name='signup'),
-    path('otplogin/', views.otplogin, name='otplogin'),
+    # path('otplogin/', views.otplogin, name='otplogin'),
     # path('otplogin/<str:otp>/', views.otplogin, name='otplogin'),
-    path('otp_grn/', views.otp_grn, name='otp_grn'),
+    path('user_home/', views.otp_grn, name='otp_grn'),
     path('logout', views.user_logout, name='logout'),
     path('user_product/<int:Category_id>/', views.user_product, name='user_product'),
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
@@ -68,7 +68,7 @@ urlpatterns = [
     path('edit_category/<int:category_id>/', views.edit_category, name='edit_category'),
     
     path('admin_user/', views.admin_user, name='admin_user'),
-    
+
     path('products/',views.products, name='products'),
     path('admin_variant/',views.admin_variant, name='admin_variant'),
     path('orderadmin/',views.orderadmin, name='orderadmin'),

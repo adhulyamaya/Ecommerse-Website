@@ -32,12 +32,12 @@
     
   
     <div class="row align-items-center py-1 px-xl-4">
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center" style=" background-color: aliceblue;">
             <div class="mr-5 d-none d-lg-block">
                 <a href="" class="text-decoration-none">
                     <h1 class="mb-3 display-5 font-weight-semi-bold">
                       
-                             <img src="{% static "app/img/product/logo2.jpg" %}" alt="Logo" class="img-fluid"  style="width: 90px; height: auto; ">
+                             <img src="{% static "app/img/product/logo2.png" %}" alt="OHYEA" class="img-fluid"  style="width: 90px; height: auto; ">
                     </h1>
                 </a>
             </div>
@@ -92,22 +92,41 @@
                     </div>
                 </form>
     
-                <a href="{% url 'wishlist' %}" class="btn border ml-3">
+                
+
+                <a href="{% url 'wishlist' %}" class="btn border ml-3" onclick="checkAuthentication(event, '{% url 'wishlist' %}')">
                     <i class="fas fa-heart"></i>
                 </a>
-                <a href="{% url 'show-cart' %}" class="btn border ml-1">
+                <a href="{% url 'show-cart' %}" class="btn border ml-1" onclick="checkAuthentication(event, '{% url 'show-cart' %}')">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
-                <a href="{% url 'user_profile' %}" class="btn border ml-1">
+                <a href="{% url 'user_profile' %}" class="btn border ml-1" onclick="checkAuthentication(event, '{% url 'user_profile' %}')">
                     <i class="fa fa-user" aria-hidden="true"></i>
                 </a>
+            
             </div>
         </div>
     </div>
     
    
     <!-- Topbar End -->
-
+    <script>
+        function redirectToLogin() {
+            window.location.href = "{% url 'user_login' %}";
+        }
+    
+        function checkAuthentication(event, targetUrl) {
+            var isAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+            if (!isAuthenticated) {
+                event.preventDefault(); // Prevent the default link behavior
+                redirectToLogin();
+            } else {
+                // If authenticated, proceed to the clicked link
+                window.location.href = targetUrl;
+            }
+        }
+    </script>
+    
     
    <!-- Navbar Start -->
 

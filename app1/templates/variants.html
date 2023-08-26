@@ -204,9 +204,11 @@ img {
 						
 						<div class="preview-pic tab-content">
 						  <div class="tab-pane active" id="pic-1">
-                <a href="{{ variant.image1.url  }}" class="MagicZoom" >
-                  <img  src="{{ variant.image1.url  }}" />
-                </a>
+                <div class="image-wrapper">
+                  <a href="{{ variant.image1.url }}" class="MagicZoom">
+                      <img src="{{ variant.image1.url }}" />
+                  </a>
+              </div>
                 
                 </div>
 						 
@@ -249,11 +251,24 @@ img {
 							
 						</h5>
             <ul class="preview-thumbnail nav nav-tabs">
-						  <li class="active"><a data-target="#pic-1" data-toggle="tab"><img src="{{ variant.image1.url }}"  /></a></li>
-						  <li><a data-target="#pic-2" data-toggle="tab"><img src="{{ variant.image2.url  }}"/></a></li>
-              <li><a data-target="#pic-3" data-toggle="tab"><img src="{{ variant.image3.url  }}"/></a></li>
-              <li><a data-target="#pic-4" data-toggle="tab"><img src="{{ variant.image2.url  }}"/></a></li>
-						</ul> 
+              <li class="active">
+                  <a data-target="#pic-1" data-toggle="tab">
+                      <img src="{{ variant.image1.url }}" data-image-url="{{ variant.image1.url }}" />
+                  </a>
+              </li>
+              <li>
+                  <a data-target="#pic-2" data-toggle="tab">
+                      <img src="{{ variant.image2.url }}" data-image-url="{{ variant.image2.url }}" />
+                  </a>
+              </li>
+              <li>
+                  <a data-target="#pic-3" data-toggle="tab">
+                      <img src="{{ variant.image3.url }}" data-image-url="{{ variant.image3.url }}" />
+                  </a>
+              </li>
+              <!-- Add other variants as needed -->
+          </ul>
+          
 
             {% comment %} {% for c in colorobj %} {% endcomment %}
 							{% comment %} <span class="color"> {{variant.Color.color }}</span> {% endcomment %}
@@ -297,7 +312,18 @@ img {
 
 
 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+  <script>
+    $(document).ready(function() {
+        $('.preview-thumbnail img').on('click', function() {
+            var imageUrl = $(this).data('image-url');
+            $('.preview-pic img').attr('src', imageUrl);
+
+            $('.MagicZoom').attr('href', imageUrl);
+        });
+    });
+</script>
 
 
   {% comment %} <script>
